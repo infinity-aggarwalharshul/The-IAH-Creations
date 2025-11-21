@@ -1,6 +1,6 @@
 # 🚀 IAH Creations - AI-Powered Web Development Platform
 
-[![Version](https://img.shields.io/badge/version-3.9.0-blue.svg)](https://github.com/iahcreations/platform)
+[![Version](https://img.shields.io/badge/version-4.3.0-blue.svg)](https://github.com/iahcreations/platform)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/iahcreations/platform/graphs/commit-activity)
@@ -27,6 +27,14 @@ Transform your web development workflow with cutting-edge AI, trillion-scale dat
 - [Contributing](#-contributing)
 - [Support](#-support)
 - [Roadmap](#-roadmap)
+
+---
+
+## 🌐 **Connect With Us**
+
+- **YouTube**: [The IAH Creations](https://www.youtube.com/@theiahcreations)
+- **Instagram**: [@theiahcreations](https://www.instagram.com/theiahcreations?igsh=MXdpbnhkMWVkcjdn)
+- **Website**: [iahcreations.com](https://iahcreations.com)
 
 ---
 
