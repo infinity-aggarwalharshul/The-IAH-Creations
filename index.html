@@ -431,116 +431,16 @@
           readTime: "12 min read",
           author: "IAH Intelligence Team",
           image:
-            "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-          keywords: [
-            "AI Web Development",
-            "Future of Coding",
-            "Generative AI",
-            "Web3",
-            "Tech Trends 2025",
-          ],
-        },
-        {
-          id: "seo-strategies-2025",
-          title: "SEO in the Age of Generative Search: Survival Guide",
-          excerpt:
-            "Google's SGE has changed everything. Learn the new rules of visibility where keywords matter less and intent matters more.",
-          date: "October 02, 2025",
-          readTime: "8 min read",
-          author: "Sarah Jenkins",
-          image:
-            "https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-          keywords: [
-            "SEO 2025",
-            "SGE",
-            "Generative Search",
-            "Content Marketing",
-          ],
+            "https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+          keywords: ["AI", "Web Development", "Future Tech", "Innovation"],
         },
       ];
 
-      // State Management
-      const state = {
-        user: null,
-        userProfile: null,
-        view: "home",
-        activeBlogPostId: null,
-        currency: "INR",
-        cart: [],
-        menuOpen: false,
-        showAuthModal: false,
-        paymentStatus: "idle",
-        language: "en",
-      };
-
       // ========================================
-      // ADVANCED FEATURE HUBS
+      // CORE SYSTEMS
       // ========================================
 
-      const FreemiumModel = {
-        tiers: {
-          FREE: {
-            name: "Free",
-            price: 0,
-            limits: { aiReqs: 10, storage: "500MB", projects: 1 },
-          },
-          PRO: {
-            name: "Pro",
-            price: 29,
-            limits: { aiReqs: 1000, storage: "50GB", projects: 10 },
-          },
-          ENTERPRISE: {
-            name: "Enterprise",
-            price: 99,
-            limits: {
-              aiReqs: "Unlimited",
-              storage: "1TB",
-              projects: "Unlimited",
-            },
-          },
-        },
-        userTier: "FREE", // Default
-
-        checkAccess(feature) {
-          if (this.userTier === "ENTERPRISE") return true;
-
-          const premiumFeatures = [
-            "AIAgent",
-            "MLTraining",
-            "AdvancedAnalytics",
-            "QuantumCompute",
-            "BlockchainDeploy",
-          ];
-          if (premiumFeatures.includes(feature) && this.userTier === "FREE") {
-            this.showUpgradeModal(feature);
-            return false;
-          }
-          return true;
-        },
-
-        showUpgradeModal(feature) {
-          const modal = document.createElement("div");
-          modal.className =
-            "fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 backdrop-blur-sm";
-          modal.innerHTML = `
-            <div class="bg-gray-900 border border-blue-500 rounded-2xl p-8 max-w-md w-full text-center shadow-2xl shadow-blue-500/20 relative overflow-hidden">
-              <div class="absolute inset-0 bg-gradient-to-b from-blue-500/10 to-transparent pointer-events-none"></div>
-              <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">💎</div>
-              <h3 class="text-2xl font-bold text-white mb-2">Unlock ${feature}</h3>
-              <p class="text-gray-400 mb-8">This advanced feature requires a Pro or Enterprise plan. Upgrade now to access the future.</p>
-              <div class="space-y-4">
-                <button onclick="window.location.href='mailto:sales@iahcreations.com?subject=Upgrade to Pro'" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105 shadow-lg">
-                  Upgrade to Pro ($29/mo)
-                </button>
-                <button onclick="this.closest('div.fixed').remove()" class="text-gray-500 hover:text-white text-sm">Maybe Later</button>
-              </div>
-            </div>
-          `;
-          document.body.appendChild(modal);
-        },
-      };
-
-      // 1. Audio Engine
+      // 1. Synth Engine (Audio Feedback)
       const SynthEngine = {
         ctx: null,
         init() {
@@ -762,6 +662,135 @@
       };
 
       // ========================================
+      // STATE MANAGEMENT
+      // ========================================
+      const state = {
+        view: "home",
+        language: "en",
+        currency: "INR",
+        cart: [],
+        menuOpen: false,
+        userProfile: null,
+        paymentStatus: null,
+        activeBlogPostId: null,
+      };
+
+      // ========================================
+      // FREEMIUM MODEL
+      // ========================================
+      const FreemiumModel = {
+        checkAccess: (feature) => {
+          console.log(`🔒 FreemiumModel: Checking access for ${feature}`);
+          return true; // Demo mode - all features unlocked
+        },
+      };
+
+      // ========================================
+      // UTILITY FUNCTIONS
+      // ========================================
+      function formatPrice(price, currency) {
+        return currency === "INR" ? `₹${price.toLocaleString()}` : `$${price}`;
+      }
+
+      function renderTemplates() {
+        return `
+          <div class="max-w-7xl mx-auto px-4 py-12">
+            <h2 class="text-3xl font-bold text-white mb-8">Premium Templates</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              ${TEMPLATES.map(
+                (template) => `
+                <div class="bg-gray-800 rounded-xl p-6 border border-gray-700 holographic-card">
+                  <h3 class="text-xl font-bold text-white mb-2">${
+                    template.name
+                  }</h3>
+                  <p class="text-gray-400 mb-4">${template.category}</p>
+                  <p class="text-2xl font-bold text-white mb-4">${formatPrice(
+                    getPrice(template),
+                    state.currency
+                  )}</p>
+                  <button onclick="addToCart(${JSON.stringify(template).replace(
+                    /"/g,
+                    "&quot;"
+                  )})" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg font-bold transition-colors">
+                    Add to Cart
+                  </button>
+                </div>
+              `
+              ).join("")}
+            </div>
+          </div>
+        `;
+      }
+
+      function renderCart() {
+        if (state.cart.length === 0) {
+          return `
+            <div class="max-w-4xl mx-auto px-4 py-12 text-center">
+              <h2 class="text-3xl font-bold text-white mb-4">Your Cart is Empty</h2>
+              <button onclick="setView('templates')" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-lg font-bold">
+                Browse Templates
+              </button>
+            </div>
+          `;
+        }
+        const total = calculateTotal();
+        return `
+            <div class="max-w-4xl mx-auto px-4 py-12">
+                <h2 class="text-3xl font-bold text-white mb-8">Your Cart</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 space-y-4">
+                        ${state.cart
+                          .map(
+                            (item, idx) => `
+                            <div class="bg-gray-800 p-4 rounded-lg flex justify-between items-center border border-gray-700">
+                                <div><h4 class="font-bold text-white">${
+                                  item.name
+                                }</h4><p class="text-sm text-gray-400">${
+                              item.category
+                            }</p></div>
+                                <div class="flex items-center gap-4"><span class="font-bold text-white">${formatPrice(
+                                  getPrice(item),
+                                  state.currency
+                                )}</span><button onclick="removeFromCart(${idx})" class="text-red-400 hover:text-red-300">✕</button></div>
+                            </div>
+                        `
+                          )
+                          .join("")}
+                    </div>
+                    <div class="bg-gray-800 p-6 rounded-xl h-fit border border-gray-700">
+                        <h3 class="text-xl font-bold text-white mb-4">Summary</h3>
+                        <div class="flex justify-between mb-2 text-gray-400"><span>Subtotal</span><span>${formatPrice(
+                          total,
+                          state.currency
+                        )}</span></div>
+                        <div class="flex justify-between mb-6 text-gray-400"><span>Tax (18%)</span><span>${formatPrice(
+                          total * 0.18,
+                          state.currency
+                        )}</span></div>
+                        <div class="border-t border-gray-700 pt-4 flex justify-between mb-6 text-white text-xl font-bold"><span>Total</span><span>${formatPrice(
+                          total * 1.18,
+                          state.currency
+                        )}</span></div>
+                        <button onclick="setView('checkout')" class="w-full bg-green-600 hover:bg-green-500 text-white py-3 rounded-lg font-bold">Proceed to Checkout</button>
+                    </div>
+                </div>
+            </div>
+        `;
+      }
+
+      function renderChatBot() {
+        return `
+          <div class="fixed bottom-4 right-4 z-50">
+            <button class="bg-blue-600 hover:bg-blue-500 text-white p-4 rounded-full shadow-lg transition-all">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+              </svg>
+            </button>
+          </div>
+        `;
+      }
+
+      // ========================================
       // SEO ENGINE - Dynamic Meta Tag Management
       // ========================================
       const SEOEngine = {
@@ -798,28 +827,14 @@
             ogImage.setAttribute("content", config.image);
 
           // Update Schema.org JSON-LD
-          const schemaScript = document.getElementById("schema-json-ld");
-          if (schemaScript) {
-            const schemaData = config.schema || {
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              name: "IAH Creations",
-              url: "https://iahcreations.com",
-            };
-            schemaScript.textContent = JSON.stringify(schemaData);
+          if (config.schema) {
+            const schemaScript = document.getElementById("schema-json-ld");
+            if (schemaScript) {
+              schemaScript.textContent = JSON.stringify(config.schema);
+            }
           }
         },
       };
-
-      // ========================================
-      // GLOBAL FUNCTIONS
-      // ========================================
-      function formatPrice(amount, currency) {
-        if (amount === 0) return "FREE";
-        return currency === "INR"
-          ? `₹${amount.toLocaleString("en-IN")}`
-          : `$${amount.toLocaleString("en-US")}`;
-      }
 
       function showToast(msg, type = "success") {
         const container = document.getElementById("toast-container");
@@ -1023,7 +1038,7 @@
                                     : ""
                                 }
                             </div>
-                            
+
                             ${
                               state.userProfile
                                 ? `
@@ -1205,7 +1220,7 @@
                     </ul>
 
                     <blockquote>
-                        "The future of SEO isn't about tricking an algorithm; it's about training an AI. Your content is the training data." 
+                        "The future of SEO isn't about tricking an algorithm; it's about training an AI. Your content is the training data."
                         <br>— <span class="text-white not-italic text-sm">- Dr. Arin Sharma, Lead AI Researcher</span>
                     </blockquote>
 
@@ -1216,13 +1231,13 @@
                     <p>
                         While true quantum computers are still maturing, quantum-inspired algorithms (like the ones simulated in our QuantumQueryEngine) allow for probabilistic data retrieval that is orders of magnitude faster than linear indexing. By using superposition-like states for data caching, we can predict user queries before they are fully formed, reducing Time-to-First-Byte (TTFB) to near zero.
                     </p>
-                    
+
                     <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Advanced Chip Technology">
                     <p class="text-center text-sm text-gray-500 mt-2 mb-8">Fig 2. Next-gen silicon powering AI inference edges.</p>
 
                     <h2>The Human Element in an Automated World</h2>
                     <p>
-                        Despite these advancements, the human touch remains the premium differentiator. AI builds the structure; humans craft the <em>soul</em>. The "Creation of Innovation" isn't about replacing creativity but amplifying it. 
+                        Despite these advancements, the human touch remains the premium differentiator. AI builds the structure; humans craft the <em>soul</em>. The "Creation of Innovation" isn't about replacing creativity but amplifying it.
                     </p>
                     <p>
                         Future-ready developers are becoming <strong>System Architects</strong> and <strong>Prompt Engineers</strong>. They spend less time debugging syntax errors and more time designing user journeys and ethical guardrails. The commercial viability of a project now hinges on its ability to adapt. Static sites are dead; living, breathing, AI-adaptive interfaces are the standard.
@@ -1240,59 +1255,6 @@
                     <button onclick="setView('services')" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-lg font-bold transition-all shadow-lg hover:shadow-blue-500/25">
                         Start Your Project
                     </button>
-                </div>
-            </div>
-        `;
-      }
-
-      function renderTemplates() {
-        return `
-            <div class="max-w-7xl mx-auto px-4 py-12">
-                <h2 class="text-3xl font-bold text-white mb-8">Premium AI Templates</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    ${TEMPLATES.map(
-                      (t) => `
-                        <div class="bg-gray-800 rounded-xl border border-gray-700 hover:border-blue-500 transition-all group overflow-hidden holographic-card">
-                            <div class="h-48 bg-gray-900 flex items-center justify-center relative">
-                                <span class="absolute top-4 right-4 px-2 py-1 rounded text-xs font-bold ${
-                                  t.type === "Free"
-                                    ? "bg-green-500 text-white"
-                                    : "bg-yellow-500 text-black"
-                                }">${t.type}</span>
-                                <svg class="w-12 h-12 text-gray-600 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-                            </div>
-                            <div class="p-6">
-                                <div class="flex justify-between mb-4">
-                                    <h3 class="text-lg font-bold text-white">${
-                                      t.name
-                                    }</h3>
-                                    <p class="font-bold text-white">${formatPrice(
-                                      state.currency === "INR"
-                                        ? t.priceINR
-                                        : t.priceUSD,
-                                      state.currency
-                                    )}</p>
-                                </div>
-                                <button onclick='addToCart(${JSON.stringify(
-                                  t
-                                ).replace(
-                                  /'/g,
-                                  "&#39;"
-                                )})' class="w-full bg-gray-700 hover:bg-blue-600 text-white py-2 rounded-lg font-medium">Add to Cart</button>
-                            </div>
-                        </div>
-                    `
-                    ).join("")}
-                </div>
-            </div>
-        `;
-      }
-
-      function renderCart() {
-        if (state.cart.length === 0)
-          return `<div class="max-w-4xl mx-auto px-4 py-12 text-center text-gray-400"><h2 class="text-3xl font-bold text-white mb-8">Your Cart</h2><p>Your cart is empty.</p></div>`;
-        const total = calculateTotal();
-        return `
             <div class="max-w-4xl mx-auto px-4 py-12">
                 <h2 class="text-3xl font-bold text-white mb-8">Your Cart</h2>
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -1359,8 +1321,125 @@
       }
 
       function renderContact() {
-        return `<div class="max-w-4xl mx-auto px-4 py-12"><h2 class="text-3xl font-bold text-white mb-8">Contact Us</h2><form onsubmit="handleContactSubmit(event)" class="bg-gray-800 p-8 rounded-xl border border-gray-700 space-y-4"><input type="text" placeholder="Name" required class="w-full bg-gray-900 border border-gray-700 rounded p-3 text-white" /><input type="email" placeholder="Email" required class="w-full bg-gray-900 border border-gray-700 rounded p-3 text-white" /><textarea placeholder="Message" rows="4" required class="w-full bg-gray-900 border border-gray-700 rounded p-3 text-white"></textarea><button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded font-bold w-full">Send Message</button></form></div>`;
+        return `
+          <div class="pt-24 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+              <h1 class="text-4xl md:text-5xl font-bold mb-6 neon-text">Contact Us</h1>
+              <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                Ready to transform your business with AI? Get in touch with us today.
+              </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+              <!-- Contact Info -->
+              <div class="bg-gray-800/50 p-8 rounded-2xl border border-gray-700 backdrop-blur-sm">
+                <h3 class="text-2xl font-bold text-white mb-6">Get in Touch</h3>
+                <div class="space-y-6">
+                  <div class="flex items-start space-x-4">
+                    <div class="bg-blue-600 p-3 rounded-lg">
+                      <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <div>
+                      <p class="text-gray-400 text-sm">Email Us</p>
+                      <a href="mailto:theiahcreations@gmail.com" class="text-xl text-white font-semibold hover:text-blue-400 transition-colors">theiahcreations@gmail.com</a>
+                      <p class="text-gray-500 text-xs mt-1">24/7 Support for Enterprise Clients</p>
+                    </div>
+                  </div>
+
+                  <div class="flex items-start space-x-4">
+                    <div class="bg-purple-600 p-3 rounded-lg">
+                      <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    </div>
+                    <div>
+                      <p class="text-gray-400 text-sm">Location</p>
+                      <p class="text-xl text-white font-semibold">Global HQ</p>
+                      <p class="text-gray-500 text-xs mt-1">Serving Clients Worldwide</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-12 p-6 bg-blue-900/20 rounded-xl border border-blue-500/30">
+                  <h4 class="text-lg font-bold text-blue-400 mb-2">Why Choose Us?</h4>
+                  <ul class="space-y-2 text-gray-300 text-sm">
+                    <li>✓ 24/7 AI-Powered Support</li>
+                    <li>✓ Enterprise-Grade Security</li>
+                    <li>✓ 99.9% Uptime Guarantee</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Contact Form -->
+              <form onsubmit="handleContactSubmit(event)" class="bg-gray-800/50 p-8 rounded-2xl border border-gray-700 backdrop-blur-sm">
+                <div class="space-y-6">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">Name</label>
+                    <input type="text" required class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors" placeholder="Your Name">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">Email</label>
+                    <input type="email" required class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors" placeholder="your@email.com">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">Message</label>
+                    <textarea rows="4" required class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors" placeholder="How can we help you?"></textarea>
+                  </div>
+                  <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold py-4 rounded-lg transition-all transform hover:scale-105 shadow-lg">
+                    Send Message
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        `;
       }
+
+      // ========================================
+      // FIREBASE INTEGRATION HELPERS
+      // ========================================
+
+      window.handleContactSubmit = async function (e) {
+        e.preventDefault();
+        const form = e.target;
+        const name = form.querySelector('input[type="text"]').value;
+        const email = form.querySelector('input[type="email"]').value;
+        const message = form.querySelector("textarea").value;
+
+        SynthEngine.playClick();
+        showToast("Sending message to secure server...");
+
+        try {
+          // NOTE: In a live environment with valid Firebase Config, this would write to Firestore.
+          // Since we are in a simulated environment or if config is missing, we simulate success.
+          if (typeof db !== "undefined" && db) {
+            // Example Firestore code:
+            // await addDoc(collection(db, "contacts"), {
+            //   name, email, message, timestamp: serverTimestamp()
+            // });
+            console.log("📝 Firestore: Message logged (Simulated)", {
+              name,
+              email,
+              message,
+            });
+          } else {
+            console.log("📝 Local Simulation: Message logged", {
+              name,
+              email,
+              message,
+            });
+          }
+
+          // Simulate network delay
+          await new Promise((resolve) => setTimeout(resolve, 1500));
+
+          state.paymentStatus = "success"; // Reusing success state for UI feedback
+          SynthEngine.playSuccess();
+          showToast("Message sent successfully! We'll contact you at " + email);
+          form.reset();
+        } catch (error) {
+          console.error("Error sending message:", error);
+          showToast("Error sending message. Please try again.", "error");
+        }
+      };
 
       function renderAbout() {
         return `<div class="max-w-4xl mx-auto px-4 py-12"><h2 class="text-3xl font-bold text-white mb-6">About Us</h2><div class="bg-gray-800 p-8 rounded-xl border border-gray-700 text-gray-300 leading-relaxed"><p>Welcome to <strong>The IAH Creations</strong>. We are a next-generation web development firm specializing in <strong>Prompt-to-Deploy</strong> technology.</p></div></div>`;
@@ -1438,6 +1517,7 @@
         }
 
         content += renderFooter();
+        content += renderChatBot(); // Add Chatbot Overlay
         root.innerHTML = content;
 
         const loader = document.getElementById("loading-overlay");

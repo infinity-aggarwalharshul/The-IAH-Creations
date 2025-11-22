@@ -51,30 +51,11 @@ Transform your web development workflow with cutting-edge AI, trillion-scale dat
 - 🎤 **Voice-Enabled** - Speech recognition & synthesis in multiple languages
 - ⚡ **Trillion-Scale Queries** - QuantumQuery Engine for massive data
 - 💰 **Freemium Model** - Free tier with Pro & Enterprise upgrades
-- ⚖️ **Legally Protected** - Full IP protection (India & International)
-
----
-
-## ✨ **Key Features**
-
-### **🤖 AI & Machine Learning**
-
-- ✅ Gemini 2.0 Flash - Latest Google AI model
-- ✅ Advanced NLP v3.0 - Natural language processing
-- ✅ Sentiment Analysis v2.5 - Real-time emotion detection
-- ✅ Smart Recommendations - Personalized suggestions
-- ✅ Intent Detection - 6 intent categories, 85%+ accuracy
-- ✅ Brainstorming Assistant - AI-powered creative ideation
-
-### **🗄️ Database Infrastructure**
-
-| Database           | Tier                | Best For                       |
-| ------------------ | ------------------- | ------------------------------ |
-| **Firestore**      | Free/Pro/Enterprise | Real time NoSQL, mobile apps   |
-| **Cloud SQL**      | Pro/Enterprise      | MySQL/PostgreSQL, transactions |
-| **BigQuery**       | Enterprise          | Petabyte analytics, ML         |
-| **Cloud Spanner**  | Enterprise          | Global distributed SQL         |
-| **Cloud Bigtable** | Enterprise          | IoT, time-series data          |
+  | **Firestore** | Free/Pro/Enterprise | Real time NoSQL, mobile apps |
+  | **Cloud SQL** | Pro/Enterprise | MySQL/PostgreSQL, transactions |
+  | **BigQuery** | Enterprise | Petabyte analytics, ML |
+  | **Cloud Spanner** | Enterprise | Global distributed SQL |
+  | **Cloud Bigtable** | Enterprise | IoT, time-series data |
 
 ### **🌍 Globalization (20+ Languages)**
 
@@ -162,22 +143,44 @@ npx serve .
 
 ### **Configuration**
 
-1. **Firebase Setup** (line ~550 in index.html)
+1.  **Firebase Setup (Recommended for Production)**
+    - **Why Firebase?** We recommend Google Firebase because it offers a generous **Spark Plan (Free)** which includes:
+      - **Hosting**: Fast and secure global hosting.
+      - **Firestore Database**: Up to **50,000 reads/day** and **20,000 writes/day** (approx. 2M requests/month) for free.
+      - **Authentication**: Unlimited email/social logins.
+    - **How to Setup**:
+      1.  Go to [console.firebase.google.com](https://console.firebase.google.com/).
+      2.  Create a new project "IAH-Creations-Platform".
+      3.  Enable **Firestore Database** and **Authentication** (Email/Google).
+      4.  Copy your web app configuration keys.
+      5.  Replace the `firebaseConfig` object in `index.html` (line ~550):
 
 ```javascript
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
+  apiKey: "YOUR_ACTUAL_API_KEY",
   authDomain: "your-project.firebaseapp.com",
   projectId: "your-project-id",
-  // ...
+  storageBucket: "your-project.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "1:123456789:web:abcdef",
 };
 ```
 
-2. **Gemini API** (line ~700)
+2.  **Gemini API** (line ~700)
 
 ```javascript
 AIHub.models.gemini.apiKey = "YOUR_GEMINI_API_KEY";
 ```
+
+---
+
+## 📞 **Contact & Support**
+
+For enterprise inquiries, technical support, or custom AI solutions:
+
+- **Email**: [theiahcreations@gmail.com](mailto:theiahcreations@gmail.com)
+- **YouTube**: [The IAH Creations](https://www.youtube.com/@theiahcreations)
+- **Instagram**: [@theiahcreations](https://www.instagram.com/theiahcreations?igsh=MXdpbnhkMWVkcjdn)
 
 ---
 
