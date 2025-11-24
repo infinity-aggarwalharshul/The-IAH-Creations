@@ -221,6 +221,28 @@
         border: 1px solid rgba(59, 130, 246, 0.3);
         box-shadow: 0 0 20px rgba(59, 130, 246, 0.1);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .holographic-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.05),
+          transparent
+        );
+        transition: 0.5s;
+      }
+
+      .holographic-card:hover::before {
+        left: 100%;
       }
 
       .holographic-card:hover {
@@ -343,15 +365,46 @@
 
       let app, auth, db;
       try {
+        // Check if config is valid (not dummy)
+        if (finalConfig.apiKey === "dummy" || !finalConfig.apiKey) {
+          throw new Error("Missing or dummy API key");
+        }
         app = initializeApp(finalConfig);
         auth = getAuth(app);
         db = getFirestore(app);
-        console.log("[System] Firebase initialized successfully");
+        console.log(
+          "%c[System] Firebase initialized successfully",
+          "color: green; font-weight: bold;"
+        );
       } catch (e) {
-        console.warn("[System] Running in offline/demo mode:", e);
+        console.warn(
+          "%c[System] Running in DEMO MODE (Offline)",
+          "color: orange; font-weight: bold;"
+        );
+        console.log("Reason:", e.message);
+
+        // Mock Firebase Objects for Demo Mode
         app = {};
-        auth = { currentUser: null, onAuthStateChanged: () => {} };
-        db = {};
+        auth = {
+          currentUser: null,
+          onAuthStateChanged: (cb) => {
+            // Simulate a check delay
+            setTimeout(() => cb(null), 500);
+            return () => {};
+          },
+          signInAnonymously: async () => {
+            console.log("👻 Demo: Signed in anonymously");
+            return { user: { uid: "demo_user", isAnonymous: true } };
+          },
+        };
+        db = {
+          // Mock Firestore methods if needed for other parts of the app
+          collection: () => ({}),
+          addDoc: async (col, data) => {
+            console.log("📝 Demo Firestore Write:", data);
+            return { id: "demo_doc_" + Date.now() };
+          },
+        };
       }
 
       const appId =
@@ -367,58 +420,162 @@
         {
           id: 1,
           name: "Nexus E-Com AI",
+          type: "Web App",
           category: "E-Commerce",
           priceUSD: 199,
           priceINR: 14999,
-          type: "Premium",
           features: ["AI Recommendations", "Dynamic Pricing", "Inventory Bot"],
+          image:
+            "https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?auto=format&fit=crop&w=800&q=80",
         },
         {
           id: 2,
           name: "Portfolio Minimal",
+          type: "Website",
           category: "Portfolio",
           priceUSD: 0,
           priceINR: 0,
-          type: "Free",
           features: ["Basic SEO", "Responsive Design"],
+          image:
+            "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=800&q=80",
         },
         {
           id: 3,
           name: "CyberDash Admin",
+          type: "Web App",
           category: "Dashboard",
           priceUSD: 149,
           priceINR: 11999,
-          type: "Premium",
           features: ["Real-time Analytics", "Threat Map", "User Management"],
+          image:
+            "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80",
         },
         {
           id: 4,
           name: "HealthBot Med",
+          type: "Web App",
           category: "Healthcare",
           priceUSD: 299,
           priceINR: 24999,
-          type: "Premium",
           features: ["HIPAA Compliant", "Symptom Checker AI", "Telehealth"],
+          image:
+            "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=80",
         },
         {
           id: 5,
           name: "EduSmart LMS",
+          type: "Web App",
           category: "Education",
           priceUSD: 199,
           priceINR: 14999,
-          type: "Premium",
           features: ["Auto-Grading", "Personalized Learning", "Video Hosting"],
+          image:
+            "https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=800&q=80",
         },
         {
           id: 6,
           name: "BlogStarter AI",
+          type: "Website",
           category: "Blog",
           priceUSD: 0,
           priceINR: 0,
-          type: "Free",
           features: ["Markdown Support", "Basic Themes"],
+          image:
+            "https://images.unsplash.com/photo-1499750310159-52f8fdebafd3?auto=format&fit=crop&w=800&q=80",
+        },
+        {
+          id: 7,
+          name: "CorpLanding Pro",
+          type: "Website",
+          category: "Business",
+          priceUSD: 49,
+          priceINR: 3999,
+          features: ["Lead Gen Forms", "A/B Testing", "Fast Load"],
+          image:
+            "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80",
+        },
+        {
+          id: 8,
+          name: "SaaS Starter Kit",
+          type: "Web App",
+          category: "SaaS",
+          priceUSD: 249,
+          priceINR: 19999,
+          features: ["Auth Ready", "Stripe Integration", "Dashboard"],
+          image:
+            "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80",
         },
       ];
+
+      const LANGUAGES = [
+        {
+          id: "react",
+          name: "React",
+          icon: '<svg class="w-12 h-12 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>',
+        },
+        {
+          id: "vue",
+          name: "Vue.js",
+          icon: '<svg class="w-12 h-12 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+        },
+        {
+          id: "angular",
+          name: "Angular",
+          icon: '<svg class="w-12 h-12 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>',
+        },
+        {
+          id: "python",
+          name: "Python (Django)",
+          icon: '<svg class="w-12 h-12 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>',
+        },
+        {
+          id: "php",
+          name: "PHP (Laravel)",
+          icon: '<svg class="w-12 h-12 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>',
+        },
+        {
+          id: "html",
+          name: "HTML5 / CSS3",
+          icon: '<svg class="w-12 h-12 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>',
+        },
+      ];
+
+      const FAQS = [
+        {
+          q: "How does the AI Chatbot work?",
+          a: "Our chatbot uses Gemini 2.0 Flash to understand context and provide real-time support.",
+        },
+        {
+          q: "Can I use my own domain?",
+          a: "Yes, all premium templates support custom domain mapping.",
+        },
+        {
+          q: "Is the payment secure?",
+          a: "Absolutely. We use Stripe and Razorpay for bank-grade security.",
+        },
+        {
+          q: "Do you offer refunds?",
+          a: "We offer a 7-day money-back guarantee for all premium templates.",
+        },
+      ];
+
+      const PRIVACY_POLICY = `
+        <h3>1. Data Collection</h3>
+        <p>We collect basic user information to provide our services. This includes name, email, and usage data.</p>
+        <h3>2. Data Usage</h3>
+        <p>Your data is used to improve our AI models and provide personalized recommendations.</p>
+        <h3>3. Security</h3>
+        <p>We use AES-256 encryption for all sensitive data.</p>
+      `;
+
+      const TERMS_CONDITIONS = `
+        <h3>1. Acceptance</h3>
+        <p>By using our platform, you agree to these terms.</p>
+        <h3>2. Usage</h3>
+        <p>You may not use our platform for illegal activities.</p>
+        <h3>3. Liability</h3>
+        <p>IAH Creations is not liable for any damages arising from the use of our platform.</p>
+      `;
 
       const BLOG_POSTS = [
         {
@@ -433,6 +590,62 @@
           image:
             "https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
           keywords: ["AI", "Web Development", "Future Tech", "Innovation"],
+        },
+        {
+          id: "ai-business-transformation-2025",
+          title: "The Future of AI in Business 2025: A Comprehensive Guide",
+          excerpt:
+            "Discover how Artificial Intelligence is reshaping the global business landscape, from automated customer service to predictive analytics and blockchain integration.",
+          date: "November 24, 2025",
+          readTime: "15 min read",
+          author: "Dr. Arin Sharma",
+          image:
+            "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+          keywords: [
+            "Business Strategy",
+            "AI Adoption",
+            "FinTech",
+            "Automation",
+          ],
+          content: `
+            <p class="lead text-xl text-gray-300 mb-8 font-light border-l-4 border-green-500 pl-6">
+                In 2025, AI is no longer a buzzword—it's the backbone of modern enterprise. This guide explores the integration of AI agents, decentralized finance, and autonomous systems.
+            </p>
+
+            <h2>1. The Rise of Autonomous AI Agents</h2>
+            <p>
+                Businesses are moving beyond simple chatbots to fully autonomous agents capable of negotiating contracts, managing supply chains, and optimizing marketing campaigns in real-time. These agents operate 24/7, ensuring that no opportunity is missed.
+            </p>
+            <img src="https://images.unsplash.com/photo-1531746790731-6c087fecd65a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="AI Agents at Work">
+
+            <h2>2. Financial Revolution: Crypto & UPI Integration</h2>
+            <p>
+                The friction in global payments is disappearing. With the integration of Unified Payments Interface (UPI) and cryptocurrency gateways, businesses can accept payments from anywhere in the world instantly.
+            </p>
+            <ul>
+                <li><strong>Instant Settlements:</strong> No more waiting T+2 days.</li>
+                <li><strong>Lower Fees:</strong> Blockchain transactions reduce intermediary costs by up to 90%.</li>
+                <li><strong>Global Reach:</strong> Accept INR, USD, ETH, and BTC seamlessly.</li>
+            </ul>
+
+            <h2>3. SEO in the Age of AI</h2>
+            <p>
+                Search Engine Optimization has evolved into Answer Engine Optimization (AEO). It's not just about ranking for keywords; it's about being the cited source for AI models like Gemini and GPT-5.
+            </p>
+            <blockquote>
+                "To win in 2025, you don't just optimize for humans; you optimize for the machines that serve humans."
+            </blockquote>
+
+            <h2>4. Sustainable Tech Infrastructure</h2>
+            <p>
+                Green computing is a priority. AI models are being optimized to run on low-power edge devices, reducing the carbon footprint of digital services.
+            </p>
+
+            <h2>Conclusion</h2>
+            <p>
+                The future belongs to those who adapt. By integrating these technologies today, you ensure your business remains competitive tomorrow.
+            </p>
+          `,
         },
       ];
 
@@ -673,6 +886,19 @@
         userProfile: null,
         paymentStatus: null,
         activeBlogPostId: null,
+        chatOpen: false,
+        messages: [
+          {
+            role: "bot",
+            text: "Hello! I'm the IAH AI Assistant. How can I help you today?",
+          },
+        ],
+        paymentMethod: "card",
+        templateViewMode: "categories", // categories (Type), languages, subcategories (Category), list
+        selectedCategory: null, // Web App, Website
+        selectedLanguage: null, // React, Vue, etc.
+        selectedSubCategory: null, // E-Commerce, Portfolio, etc.
+        previewTemplate: null, // Template object for preview modal
       };
 
       // ========================================
@@ -693,34 +919,309 @@
       }
 
       function renderTemplates() {
+        // 1. Category Selection (Web App vs Website)
+        if (state.templateViewMode === "categories") {
+          return `
+                <div class="max-w-7xl mx-auto px-4 py-12">
+                    <h2 class="text-3xl font-bold text-white mb-8 text-center">Select Project Type</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                        <div onclick="selectTemplateCategory('Web App')" class="cursor-pointer bg-gray-800 hover:bg-gray-700 p-12 rounded-2xl border border-gray-700 hover:border-blue-500 transition-all text-center group holographic-card">
+                            <div class="w-20 h-20 bg-blue-900/50 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                                <svg class="w-10 h-10 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                            </div>
+                            <h3 class="text-2xl font-bold text-white mb-2">Web Applications</h3>
+                            <p class="text-gray-400">Complex functionality, dashboards, SaaS, and AI tools.</p>
+                        </div>
+                        <div onclick="selectTemplateCategory('Website')" class="cursor-pointer bg-gray-800 hover:bg-gray-700 p-12 rounded-2xl border border-gray-700 hover:border-purple-500 transition-all text-center group holographic-card">
+                            <div class="w-20 h-20 bg-purple-900/50 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                                <svg class="w-10 h-10 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                            </div>
+                            <h3 class="text-2xl font-bold text-white mb-2">Websites</h3>
+                            <p class="text-gray-400">Portfolios, landing pages, blogs, and corporate sites.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 2. Language Selection
+        if (state.templateViewMode === "languages") {
+          return `
+                <div class="max-w-7xl mx-auto px-4 py-12">
+                    <button onclick="resetTemplateView()" class="mb-8 flex items-center text-gray-400 hover:text-white">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                        Back to Types
+                    </button>
+                    <h2 class="text-3xl font-bold text-white mb-8 text-center">Select Preferred Language</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                        ${LANGUAGES.map(
+                          (lang) => `
+                            <div onclick="selectTemplateLanguage('${lang.name}')" class="cursor-pointer bg-gray-800 hover:bg-gray-700 p-8 rounded-xl border border-gray-700 hover:border-green-500 transition-all text-center holographic-card group">
+                                <div class="mb-4 flex justify-center group-hover:scale-110 transition-transform">${lang.icon}</div>
+                                <h3 class="text-xl font-bold text-white">${lang.name}</h3>
+                            </div>
+                        `
+                        ).join("")}
+                    </div>
+                </div>
+            `;
+        }
+
+        // 3. Sub-Category Selection
+        if (state.templateViewMode === "subcategories") {
+          const subCategories = [
+            ...new Set(
+              TEMPLATES.filter((t) => t.type === state.selectedCategory).map(
+                (t) => t.category
+              )
+            ),
+          ];
+          return `
+                <div class="max-w-7xl mx-auto px-4 py-12">
+                    <button onclick="state.templateViewMode = 'languages'; render();" class="mb-8 flex items-center text-gray-400 hover:text-white">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                        Back to Languages
+                    </button>
+                    <h2 class="text-3xl font-bold text-white mb-8 text-center">Select ${
+                      state.selectedCategory
+                    } Category</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        ${subCategories
+                          .map(
+                            (cat) => `
+                            <div onclick="selectTemplateSubCategory('${cat}')" class="cursor-pointer bg-gray-800 hover:bg-gray-700 p-8 rounded-xl border border-gray-700 hover:border-blue-500 transition-all text-center holographic-card">
+                                <h3 class="text-xl font-bold text-white">${cat}</h3>
+                            </div>
+                        `
+                          )
+                          .join("")}
+                    </div>
+                </div>
+            `;
+        }
+
+        // 4. Template List
+        const filteredTemplates = TEMPLATES.filter(
+          (t) =>
+            t.type === state.selectedCategory &&
+            t.category === state.selectedSubCategory
+        );
         return `
           <div class="max-w-7xl mx-auto px-4 py-12">
-            <h2 class="text-3xl font-bold text-white mb-8">Premium Templates</h2>
+            <button onclick="state.templateViewMode = 'subcategories'; render();" class="mb-8 flex items-center text-gray-400 hover:text-white">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Back to Categories
+            </button>
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold text-white">${
+                  state.selectedSubCategory
+                } Templates</h2>
+                <span class="bg-gray-800 text-gray-300 px-4 py-2 rounded-full border border-gray-700 text-sm">Language: <span class="text-blue-400 font-bold">${
+                  state.selectedLanguage
+                }</span></span>
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              ${TEMPLATES.map(
-                (template) => `
-                <div class="bg-gray-800 rounded-xl p-6 border border-gray-700 holographic-card">
-                  <h3 class="text-xl font-bold text-white mb-2">${
+              ${filteredTemplates
+                .map(
+                  (template) => `
+                <div class="bg-gray-800 rounded-xl overflow-hidden border border-gray-700 holographic-card group">
+                  <div class="h-48 overflow-hidden relative">
+                    <img src="${template.image}" alt="${
                     template.name
-                  }</h3>
-                  <p class="text-gray-400 mb-4">${template.category}</p>
-                  <p class="text-2xl font-bold text-white mb-4">${formatPrice(
-                    getPrice(template),
-                    state.currency
-                  )}</p>
-                  <button onclick="addToCart(${JSON.stringify(template).replace(
-                    /"/g,
-                    "&quot;"
-                  )})" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg font-bold transition-colors">
-                    Add to Cart
-                  </button>
+                  }" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                        <button onclick="openPreview(${JSON.stringify(
+                          template
+                        ).replace(
+                          /"/g,
+                          "&quot;"
+                        )})" class="bg-white text-black font-bold px-4 py-2 rounded-full hover:bg-gray-200 transition-colors">Preview</button>
+                    </div>
+                  </div>
+                  <div class="p-6">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-xl font-bold text-white">${
+                          template.name
+                        }</h3>
+                        <span class="bg-blue-900/50 text-blue-400 text-xs px-2 py-1 rounded border border-blue-500/30">${
+                          template.type
+                        }</span>
+                    </div>
+                    <p class="text-gray-400 mb-4 text-sm">${
+                      template.category
+                    }</p>
+                    <ul class="mb-6 space-y-2">
+                        ${template.features
+                          .map(
+                            (f) =>
+                              `<li class="text-gray-500 text-sm flex items-center"><svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>${f}</li>`
+                          )
+                          .join("")}
+                    </ul>
+                    <div class="flex items-center justify-between mt-auto">
+                        <p class="text-2xl font-bold text-white">${formatPrice(
+                          getPrice(template),
+                          state.currency
+                        )}</p>
+                        <button onclick="addToCart(${JSON.stringify(
+                          template
+                        ).replace(
+                          /"/g,
+                          "&quot;"
+                        )})" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-bold transition-colors">
+                            Add to Cart
+                        </button>
+                    </div>
+                  </div>
                 </div>
               `
-              ).join("")}
+                )
+                .join("")}
             </div>
           </div>
         `;
       }
+
+      function renderPreviewModal() {
+        if (!state.previewTemplate) return "";
+        const t = state.previewTemplate;
+        return `
+            <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+                <div class="bg-gray-900 w-full max-w-6xl h-[90vh] rounded-2xl border border-gray-700 flex flex-col overflow-hidden shadow-2xl relative">
+                    <button onclick="closePreview()" class="absolute top-4 right-4 z-10 bg-gray-800 text-white p-2 rounded-full hover:bg-gray-700">✕</button>
+                    
+                    <div class="flex flex-col md:flex-row h-full">
+                        <!-- Visual Preview -->
+                        <div class="w-full md:w-2/3 bg-black relative border-r border-gray-800">
+                            <div class="absolute top-4 left-4 bg-black/50 text-white px-3 py-1 rounded text-sm backdrop-blur">Live Preview</div>
+                            <img src="${
+                              t.image
+                            }" class="w-full h-full object-cover opacity-80" alt="Preview">
+                        </div>
+                        
+                        <!-- Code & Actions -->
+                        <div class="w-full md:w-1/3 p-8 flex flex-col bg-gray-800">
+                            <h2 class="text-3xl font-bold text-white mb-2">${
+                              t.name
+                            }</h2>
+                            <p class="text-blue-400 mb-6">${
+                              state.selectedLanguage
+                            } • ${t.category}</p>
+                            
+                            <div class="bg-gray-900 rounded-lg p-4 mb-6 flex-grow overflow-hidden relative border border-gray-700">
+                                <div class="absolute top-2 right-2 text-xs text-gray-500">index.${
+                                  state.selectedLanguage === "Python (Django)"
+                                    ? "py"
+                                    : "js"
+                                }</div>
+                                <pre class="text-green-400 text-xs font-mono opacity-50 blur-[1px] select-none">
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+
+export default function App() {
+  const [count, setCount] = useState(0);
+  
+  // ... Premium Code Hidden ...
+  
+  return (
+    &lt;div className="app"&gt;
+      &lt;Header /&gt;
+      &lt;Hero /&gt;
+    &lt;/div&gt;
+  );
+}
+                                </pre>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="bg-gray-800/90 p-4 rounded-lg border border-gray-600 text-center">
+                                        <svg class="w-8 h-8 text-yellow-500 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                        <p class="text-white font-bold text-sm">Premium Code</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-4 mt-auto">
+                                <div class="flex justify-between items-center text-white font-bold text-xl border-b border-gray-700 pb-4">
+                                    <span>Price</span>
+                                    <span>${formatPrice(
+                                      getPrice(t),
+                                      state.currency
+                                    )}</span>
+                                </div>
+                                <button onclick="addToCart(${JSON.stringify(
+                                  t
+                                ).replace(
+                                  /"/g,
+                                  "&quot;"
+                                )})" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-lg font-bold shadow-lg transition-all">
+                                    Add to Cart
+                                </button>
+                                <button onclick="handleDownload()" class="w-full bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg font-bold border border-gray-600 flex items-center justify-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                    Download Source Code
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+      }
+
+      window.selectTemplateCategory = function (category) {
+        state.selectedCategory = category;
+        state.templateViewMode = "languages"; // Next Step: Language
+        SynthEngine.playClick();
+        render();
+      };
+
+      window.selectTemplateLanguage = function (language) {
+        state.selectedLanguage = language;
+        state.templateViewMode = "subcategories"; // Next Step: SubCategory
+        SynthEngine.playClick();
+        render();
+      };
+
+      window.selectTemplateSubCategory = function (subCategory) {
+        state.selectedSubCategory = subCategory;
+        state.templateViewMode = "list";
+        SynthEngine.playClick();
+        render();
+      };
+
+      window.resetTemplateView = function () {
+        state.templateViewMode = "categories";
+        state.selectedCategory = null;
+        state.selectedLanguage = null;
+        state.selectedSubCategory = null;
+        SynthEngine.playClick();
+        render();
+      };
+
+      window.openPreview = function (template) {
+        state.previewTemplate = template;
+        render();
+      };
+
+      window.closePreview = function () {
+        state.previewTemplate = null;
+        render();
+      };
+
+      window.handleDownload = function () {
+        // Paywall Logic
+        if (state.userProfile && state.userProfile.isPro) {
+          SynthEngine.playSuccess();
+          showToast("Downloading source code...");
+          setTimeout(() => showToast("Download Complete!"), 2000);
+        } else {
+          SynthEngine.playClick();
+          showToast("Purchase required to download code.", "error");
+          // Optionally redirect to checkout or show modal
+          state.previewTemplate = null;
+          addToCart(state.previewTemplate || TEMPLATES[0]); // Fallback
+          setView("cart");
+        }
+      };
 
       function renderCart() {
         if (state.cart.length === 0) {
@@ -780,11 +1281,57 @@
 
       function renderChatBot() {
         return `
-          <div class="fixed bottom-4 right-4 z-50">
-            <button class="bg-blue-600 hover:bg-blue-500 text-white p-4 rounded-full shadow-lg transition-all">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-              </svg>
+          <div class="fixed bottom-4 right-4 z-50 flex flex-col items-end">
+            ${
+              state.chatOpen
+                ? `
+                <div class="bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl w-80 md:w-96 mb-4 overflow-hidden flex flex-col holographic-card" style="height: 500px;">
+                    <div class="bg-gray-900 p-4 border-b border-gray-700 flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                            <h3 class="font-bold text-white">IAH AI Assistant</h3>
+                        </div>
+                        <button onclick="toggleChat()" class="text-gray-400 hover:text-white">✕</button>
+                    </div>
+                    <div class="flex-1 p-4 overflow-y-auto space-y-4" id="chat-messages">
+                        ${state.messages
+                          .map(
+                            (msg) => `
+                            <div class="flex ${
+                              msg.role === "user"
+                                ? "justify-end"
+                                : "justify-start"
+                            }">
+                                <div class="max-w-[80%] p-3 rounded-xl ${
+                                  msg.role === "user"
+                                    ? "bg-blue-600 text-white rounded-tr-none"
+                                    : "bg-gray-700 text-gray-200 rounded-tl-none"
+                                }">
+                                    ${msg.text}
+                                </div>
+                            </div>
+                        `
+                          )
+                          .join("")}
+                    </div>
+                    <form onsubmit="handleChatSubmit(event)" class="p-4 bg-gray-900 border-t border-gray-700">
+                        <div class="flex gap-2">
+                            <input type="text" id="chat-input" placeholder="Ask anything..." class="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white p-2 rounded-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `
+                : ""
+            }
+            <button onclick="toggleChat()" class="bg-blue-600 hover:bg-blue-500 text-white p-4 rounded-full shadow-lg transition-all transform hover:scale-110">
+              ${
+                state.chatOpen
+                  ? `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>`
+                  : `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>`
+              }
             </button>
           </div>
         `;
@@ -947,6 +1494,12 @@
 
       window.handlePayment = async function () {
         SynthEngine.playClick();
+
+        if (state.paymentMethod === "qr") {
+          // QR Logic is handled in renderCheckout by showing the image
+          // Here we just simulate confirmation
+        }
+
         showToast("Processing payment...");
         setTimeout(() => {
           state.paymentStatus = "success";
@@ -954,7 +1507,63 @@
           showToast("Payment successful! Order confirmed.");
           state.cart = [];
           render();
-        }, 1500);
+        }, 2000);
+      };
+
+      window.toggleChat = function () {
+        state.chatOpen = !state.chatOpen;
+        SynthEngine.playClick();
+        render();
+        if (state.chatOpen) {
+          setTimeout(() => {
+            const chatContainer = document.getElementById("chat-messages");
+            if (chatContainer)
+              chatContainer.scrollTop = chatContainer.scrollHeight;
+          }, 100);
+        }
+      };
+
+      window.handleChatSubmit = async function (e) {
+        e.preventDefault();
+        const input = document.getElementById("chat-input");
+        const text = input.value.trim();
+        if (!text) return;
+
+        state.messages.push({ role: "user", text });
+        input.value = "";
+        render();
+
+        // Scroll to bottom
+        setTimeout(() => {
+          const chatContainer = document.getElementById("chat-messages");
+          if (chatContainer)
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }, 50);
+
+        // Simulate AI Response
+        try {
+          const response = await AIHub.generate(text);
+          state.messages.push({ role: "bot", text: response });
+          SynthEngine.playSuccess();
+          render();
+          setTimeout(() => {
+            const chatContainer = document.getElementById("chat-messages");
+            if (chatContainer)
+              chatContainer.scrollTop = chatContainer.scrollHeight;
+          }, 50);
+        } catch (err) {
+          state.messages.push({
+            role: "bot",
+            text: "I'm having trouble connecting to the mainframe. Please try again.",
+          });
+          render();
+        }
+      };
+
+      window.setPaymentMethod = function (method) {
+        state.paymentMethod = method;
+        SynthEngine.playClick();
+        render();
       };
 
       function getPrice(item) {
@@ -986,42 +1595,53 @@
                             </span>
                         </div>
 
-                        <div class="hidden md:block">
-                            <div class="ml-10 flex items-baseline space-x-4">
-                                <button onclick="setView('home')" class="px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                                  state.view === "home"
-                                    ? "bg-gray-800 text-blue-400 neon-text"
-                                    : "text-gray-300 hover:text-white hover:bg-gray-700"
-                                }">Home</button>
-                                <button onclick="setView('services')" class="px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                                  state.view === "services"
-                                    ? "bg-gray-800 text-blue-400 neon-text"
-                                    : "text-gray-300 hover:text-white hover:bg-gray-700"
-                                }">Services</button>
-                                <button onclick="setView('templates')" class="px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                                  state.view === "templates"
-                                    ? "bg-gray-800 text-blue-400 neon-text"
-                                    : "text-gray-300 hover:text-white hover:bg-gray-700"
-                                }">Templates</button>
-                                <button onclick="setView('blog')" class="px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                                  state.view === "blog" ||
-                                  state.view === "blog-post"
-                                    ? "bg-gray-800 text-blue-400 neon-text"
-                                    : "text-gray-300 hover:text-white hover:bg-gray-700"
-                                }">Blog</button>
-                                <button onclick="setView('contact')" class="px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                                  state.view === "contact"
-                                    ? "bg-gray-800 text-blue-400 neon-text"
-                                    : "text-gray-300 hover:text-white hover:bg-gray-700"
-                                }">Contact</button>
+                        <div class="hidden md:flex items-center space-x-4">
+                            <button onclick="setView('home')" class="px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                              state.view === "home"
+                                ? "text-blue-400"
+                                : "text-gray-300 hover:text-white"
+                            }">Home</button>
+                            <button onclick="setView('services')" class="px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                              state.view === "services"
+                                ? "text-blue-400"
+                                : "text-gray-300 hover:text-white"
+                            }">Services</button>
+                            <button onclick="setView('templates')" class="px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                              state.view === "templates"
+                                ? "text-blue-400"
+                                : "text-gray-300 hover:text-white"
+                            }">Templates</button>
+                            <button onclick="setView('blog')" class="px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                              state.view === "blog"
+                                ? "text-blue-400"
+                                : "text-gray-300 hover:text-white"
+                            }">Blog</button>
+
+                            <!-- More Dropdown -->
+                            <div class="relative group">
+                                <button class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white flex items-center">
+                                    More <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </button>
+                                <div class="absolute right-0 mt-0 w-48 bg-gray-800 rounded-md shadow-lg py-1 hidden group-hover:block border border-gray-700">
+                                    <button onclick="setView('about')" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white">About Us</button>
+                                    <button onclick="setView('faq')" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white">FAQs</button>
+                                    <button onclick="setView('privacy')" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white">Privacy Policy</button>
+                                    <button onclick="setView('terms')" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white">Terms & Conditions</button>
+                                </div>
                             </div>
+
+                            <button onclick="setView('contact')" class="px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                              state.view === "contact"
+                                ? "text-blue-400"
+                                : "text-gray-300 hover:text-white"
+                            }">Contact</button>
                         </div>
 
                         <div class="flex items-center space-x-4">
-                            <button onclick="GlobalizationHub.changeLanguage(state.language === 'en' ? 'hi' : 'en')" class="text-xs font-bold bg-gray-800 px-2 py-1 rounded border border-gray-600 hover:border-blue-400 transition-colors">
+                            <button onclick="GlobalizationHub.changeLanguage(state.language === 'en' ? 'hi' : 'en')" class="hidden sm:block text-xs font-bold bg-gray-800 px-2 py-1 rounded border border-gray-600 hover:border-blue-400 transition-colors">
                                 🌐 ${state.language.toUpperCase()}
                             </button>
-                            <button onclick="toggleCurrency()" class="text-xs font-bold bg-gray-800 px-2 py-1 rounded border border-gray-600 hover:border-blue-400 transition-colors">
+                            <button onclick="toggleCurrency()" class="hidden sm:block text-xs font-bold bg-gray-800 px-2 py-1 rounded border border-gray-600 hover:border-blue-400 transition-colors">
                                 ${
                                   state.currency === "INR" ? "🇮🇳 INR" : "🇺🇸 USD"
                                 }
@@ -1039,39 +1659,35 @@
                                 }
                             </div>
 
-                            ${
-                              state.userProfile
-                                ? `
-                                <button onclick="setView('dashboard')" class="flex items-center space-x-2 text-gray-300 hover:text-white">
-                                    <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center font-bold border border-blue-400">
-                                        ${state.userProfile.name[0]}
-                                    </div>
-                                </button>
-                            `
-                                : `
-                                <button onclick="openAuthModal()" class="text-sm bg-gray-800 hover:bg-gray-700 px-3 py-2 rounded border border-gray-700">
-                                    Login
-                                </button>
-                            `
-                            }
-
-                            <button onclick="toggleMenu()" class="md:hidden text-gray-300">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/>
+                            <!-- Hamburger Menu Button (Visible on all screens as requested, but usually md:hidden. Keeping standard behavior for now but ensuring it works) -->
+                            <button onclick="toggleMenu()" class="text-gray-300 hover:text-white p-2">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                                 </svg>
                             </button>
                         </div>
                     </div>
                 </div>
+
+                <!-- Mobile Menu Overlay -->
                 ${
                   state.menuOpen
                     ? `
-                    <div class="md:hidden bg-gray-800 pb-4">
-                        <button onclick="setView('home')" class="block w-full text-left px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white">Home</button>
-                        <button onclick="setView('blog')" class="block w-full text-left px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white">Blog</button>
-                        <button onclick="setView('services')" class="block w-full text-left px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white">Services</button>
-                        <button onclick="setView('templates')" class="block w-full text-left px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white">Templates</button>
-                        <button onclick="setView('contact')" class="block w-full text-left px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white">Contact</button>
+                    <div class="absolute top-16 right-0 w-64 bg-gray-900 border-l border-gray-800 shadow-2xl h-[calc(100vh-4rem)] overflow-y-auto transition-transform transform translate-x-0 z-40">
+                        <div class="p-4 space-y-2">
+                            <button onclick="setView('home')" class="block w-full text-left px-4 py-3 rounded hover:bg-gray-800 text-gray-300 hover:text-white">Home</button>
+                            <button onclick="setView('services')" class="block w-full text-left px-4 py-3 rounded hover:bg-gray-800 text-gray-300 hover:text-white">Services</button>
+                            <button onclick="setView('templates')" class="block w-full text-left px-4 py-3 rounded hover:bg-gray-800 text-gray-300 hover:text-white">Templates</button>
+                            <button onclick="setView('blog')" class="block w-full text-left px-4 py-3 rounded hover:bg-gray-800 text-gray-300 hover:text-white">Blog</button>
+                            <div class="border-t border-gray-800 my-2"></div>
+                            <button onclick="setView('about')" class="block w-full text-left px-4 py-3 rounded hover:bg-gray-800 text-gray-300 hover:text-white">About Us</button>
+                            <button onclick="setView('faq')" class="block w-full text-left px-4 py-3 rounded hover:bg-gray-800 text-gray-300 hover:text-white">FAQs</button>
+                            <button onclick="setView('privacy')" class="block w-full text-left px-4 py-3 rounded hover:bg-gray-800 text-gray-300 hover:text-white">Privacy Policy</button>
+                            <button onclick="setView('terms')" class="block w-full text-left px-4 py-3 rounded hover:bg-gray-800 text-gray-300 hover:text-white">Terms & Conditions</button>
+                            <button onclick="setView('contact')" class="block w-full text-left px-4 py-3 rounded hover:bg-gray-800 text-gray-300 hover:text-white">Contact</button>
+                            <div class="border-t border-gray-800 my-2"></div>
+                            <button onclick="toggleCurrency()" class="block w-full text-left px-4 py-3 rounded hover:bg-gray-800 text-gray-300 hover:text-white">Switch Currency (${state.currency})</button>
+                        </div>
                     </div>
                 `
                     : ""
@@ -1192,10 +1808,17 @@
 
                 <article class="prose prose-invert max-w-none">
                     <p class="lead text-xl text-gray-300 mb-8 font-light border-l-4 border-purple-500 pl-6">
-                        ${
-                          post.excerpt
-                        } In this comprehensive analysis, we dissect the technological convergence of Generative AI, Quantum Computing, and Web3, and what it means for the commercial web landscape.
+                        ${post.content || post.excerpt}
                     </p>
+                    ${
+                      !post.content
+                        ? `
+                    <p>
+                        In this comprehensive analysis, we dissect the technological convergence of Generative AI, Quantum Computing, and Web3, and what it means for the commercial web landscape.
+                    </p>
+                    `
+                        : ""
+                    }
 
                     <h2>The Paradigm Shift: From Manual to Modular Intelligence</h2>
                     <p>
@@ -1442,22 +2065,358 @@
       };
 
       function renderAbout() {
-        return `<div class="max-w-4xl mx-auto px-4 py-12"><h2 class="text-3xl font-bold text-white mb-6">About Us</h2><div class="bg-gray-800 p-8 rounded-xl border border-gray-700 text-gray-300 leading-relaxed"><p>Welcome to <strong>The IAH Creations</strong>. We are a next-generation web development firm specializing in <strong>Prompt-to-Deploy</strong> technology.</p></div></div>`;
+        return `
+            <div class="max-w-4xl mx-auto px-4 py-12">
+                <h2 class="text-4xl font-bold text-white mb-8 text-center neon-text">About IAH Creations</h2>
+                <div class="bg-gray-800 p-8 rounded-xl border border-gray-700 text-gray-300 leading-relaxed space-y-6">
+                    <p class="text-lg">
+                        Welcome to <strong>The IAH Creations</strong>, a pioneering force in the AI-native web development landscape. Founded with the vision of democratizing enterprise-grade technology, we bridge the gap between complex coding frameworks and intuitive human intent.
+                    </p>
+                    <p>
+                        Our platform leverages <strong>Generative AI, Quantum-Inspired Query Engines, and Global Cloud Infrastructure</strong> to deliver websites that are not just static pages, but living, breathing digital assets.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                        <div class="bg-gray-900 p-4 rounded-lg text-center">
+                            <h4 class="text-2xl font-bold text-blue-400 mb-2">500+</h4>
+                            <p class="text-sm text-gray-400">Projects Deployed</p>
+                        </div>
+                        <div class="bg-gray-900 p-4 rounded-lg text-center">
+                            <h4 class="text-2xl font-bold text-purple-400 mb-2">98%</h4>
+                            <p class="text-sm text-gray-400">Client Satisfaction</p>
+                        </div>
+                        <div class="bg-gray-900 p-4 rounded-lg text-center">
+                            <h4 class="text-2xl font-bold text-green-400 mb-2">24/7</h4>
+                            <p class="text-sm text-gray-400">AI Support</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+      }
+
+      function renderFAQs() {
+        return `
+            <div class="max-w-4xl mx-auto px-4 py-12">
+                <h2 class="text-3xl font-bold text-white mb-8 text-center">Frequently Asked Questions</h2>
+                <div class="space-y-4">
+                    ${FAQS.map(
+                      (faq, idx) => `
+                        <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
+                            <button onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-gray-700 transition-colors">
+                                <span class="font-bold text-white">${faq.q}</span>
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div class="hidden px-6 py-4 bg-gray-900/50 text-gray-300 border-t border-gray-700">
+                                ${faq.a}
+                            </div>
+                        </div>
+                    `
+                    ).join("")}
+                </div>
+            </div>
+        `;
+      }
+
+      function renderPrivacy() {
+        return `
+            <div class="max-w-4xl mx-auto px-4 py-12">
+                <h2 class="text-3xl font-bold text-white mb-8">Privacy Policy</h2>
+                <div class="bg-gray-800 p-8 rounded-xl border border-gray-700 text-gray-300 prose prose-invert max-w-none">
+                    ${PRIVACY_POLICY}
+                </div>
+            </div>
+        `;
+      }
+
+      function renderTerms() {
+        return `
+            <div class="max-w-4xl mx-auto px-4 py-12">
+                <h2 class="text-3xl font-bold text-white mb-8">Terms & Conditions</h2>
+                <div class="bg-gray-800 p-8 rounded-xl border border-gray-700 text-gray-300 prose prose-invert max-w-none">
+                    ${TERMS_CONDITIONS}
+                </div>
+            </div>
+        `;
       }
 
       function renderCheckout() {
         if (state.paymentStatus === "success")
           return `<div class="max-w-3xl mx-auto px-4 py-12 text-center"><div class="bg-green-900/30 border border-green-500 rounded-xl p-8"><h3 class="text-2xl font-bold text-white">Payment Successful!</h3><button onclick="setView('home')" class="mt-6 bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-lg font-bold">Continue</button></div></div>`;
-        return `<div class="max-w-3xl mx-auto px-4 py-12"><h2 class="text-3xl font-bold text-white mb-8">Secure Checkout</h2><div class="bg-gray-800 p-8 rounded-xl border border-gray-700"><button onclick="handlePayment()" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-lg font-bold text-lg">Pay ${formatPrice(
-          calculateTotal() * 1.18,
-          state.currency
-        )}</button></div></div>`;
+
+        const total = calculateTotal() * 1.18;
+
+        return `
+            <div class="max-w-5xl mx-auto px-4 py-12">
+                <h2 class="text-3xl font-bold text-white mb-8">Secure Checkout</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Payment Methods -->
+                    <div class="space-y-4">
+                        <h3 class="text-xl font-bold text-gray-300 mb-4">Select Payment Method</h3>
+
+                        <div onclick="setPaymentMethod('card')" class="cursor-pointer p-4 rounded-xl border ${
+                          state.paymentMethod === "card"
+                            ? "bg-blue-900/30 border-blue-500"
+                            : "bg-gray-800 border-gray-700 hover:border-gray-600"
+                        } transition-all flex items-center gap-4">
+                            <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                              state.paymentMethod === "card"
+                                ? "border-blue-500"
+                                : "border-gray-500"
+                            }">
+                                ${
+                                  state.paymentMethod === "card"
+                                    ? '<div class="w-3 h-3 bg-blue-500 rounded-full"></div>'
+                                    : ""
+                                }
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white">Credit / Debit Card</h4>
+                                <p class="text-sm text-gray-400">Visa, Mastercard, Amex (Stripe)</p>
+                            </div>
+                        </div>
+
+                        <div onclick="setPaymentMethod('upi')" class="cursor-pointer p-4 rounded-xl border ${
+                          state.paymentMethod === "upi"
+                            ? "bg-blue-900/30 border-blue-500"
+                            : "bg-gray-800 border-gray-700 hover:border-gray-600"
+                        } transition-all flex items-center gap-4">
+                            <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                              state.paymentMethod === "upi"
+                                ? "border-blue-500"
+                                : "border-gray-500"
+                            }">
+                                ${
+                                  state.paymentMethod === "upi"
+                                    ? '<div class="w-3 h-3 bg-blue-500 rounded-full"></div>'
+                                    : ""
+                                }
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white">UPI / NetBanking</h4>
+                                <p class="text-sm text-gray-400">Razorpay, PhonePe, GPay</p>
+                            </div>
+                        </div>
+
+                        <div onclick="setPaymentMethod('qr')" class="cursor-pointer p-4 rounded-xl border ${
+                          state.paymentMethod === "qr"
+                            ? "bg-blue-900/30 border-blue-500"
+                            : "bg-gray-800 border-gray-700 hover:border-gray-600"
+                        } transition-all flex items-center gap-4">
+                            <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                              state.paymentMethod === "qr"
+                                ? "border-blue-500"
+                                : "border-gray-500"
+                            }">
+                                ${
+                                  state.paymentMethod === "qr"
+                                    ? '<div class="w-3 h-3 bg-blue-500 rounded-full"></div>'
+                                    : ""
+                                }
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white">Scan QR Code</h4>
+                                <p class="text-sm text-gray-400">Direct UPI Payment</p>
+                            </div>
+                        </div>
+
+                        <div onclick="setPaymentMethod('crypto')" class="cursor-pointer p-4 rounded-xl border ${
+                          state.paymentMethod === "crypto"
+                            ? "bg-blue-900/30 border-blue-500"
+                            : "bg-gray-800 border-gray-700 hover:border-gray-600"
+                        } transition-all flex items-center gap-4">
+                            <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                              state.paymentMethod === "crypto"
+                                ? "border-blue-500"
+                                : "border-gray-500"
+                            }">
+                                ${
+                                  state.paymentMethod === "crypto"
+                                    ? '<div class="w-3 h-3 bg-blue-500 rounded-full"></div>'
+                                    : ""
+                                }
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white">Crypto Payment</h4>
+                                <p class="text-sm text-gray-400">ETH, BTC, USDT</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Details -->
+                    <div class="bg-gray-800 p-8 rounded-xl border border-gray-700 h-fit">
+                        <h3 class="text-xl font-bold text-white mb-6">Payment Details</h3>
+
+                        ${
+                          state.paymentMethod === "card"
+                            ? `
+                            <div class="space-y-4">
+                                <input type="text" placeholder="Card Number" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <input type="text" placeholder="MM/YY" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500">
+                                    <input type="text" placeholder="CVC" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500">
+                                </div>
+                            </div>
+                        `
+                            : ""
+                        }
+
+                        ${
+                          state.paymentMethod === "upi"
+                            ? `
+                            <div class="space-y-4">
+                                <input type="text" placeholder="Enter UPI ID (e.g., user@okicici)" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500">
+                                <p class="text-xs text-gray-400">A payment request will be sent to your UPI app.</p>
+                            </div>
+                        `
+                            : ""
+                        }
+
+                        ${
+                          state.paymentMethod === "qr"
+                            ? `
+                            <div class="flex flex-col items-center justify-center space-y-4 p-4 bg-white rounded-lg">
+                                <img src="assets/upi_qr.jpg" alt="UPI QR Code" class="w-48 h-48 object-contain">
+                                <p class="text-black font-bold text-sm">Scan to Pay ${formatPrice(
+                                  total,
+                                  state.currency
+                                )}</p>
+                            </div>
+                        `
+                            : ""
+                        }
+
+                        ${
+                          state.paymentMethod === "crypto"
+                            ? `
+                            <div class="space-y-4 text-center">
+                                <div class="bg-gray-900 p-4 rounded-lg break-all font-mono text-xs text-blue-400">
+                                    0x71C7656EC7ab88b098defB751B7401B5f6d8976F
+                                </div>
+                                <p class="text-xs text-gray-400">Send exactly ${
+                                  state.currency === "INR"
+                                    ? (total / 200000).toFixed(4)
+                                    : (total / 2500).toFixed(4)
+                                } ETH</p>
+                            </div>
+                        `
+                            : ""
+                        }
+
+                        <div class="mt-8 pt-6 border-t border-gray-700">
+                            <div class="flex justify-between mb-4 text-white text-xl font-bold">
+                                <span>Total to Pay</span>
+                                <span>${formatPrice(
+                                  total,
+                                  state.currency
+                                )}</span>
+                            </div>
+                            <button onclick="handlePayment()" class="w-full bg-green-600 hover:bg-green-500 text-white py-4 rounded-lg font-bold text-lg shadow-lg transition-all transform hover:scale-105">
+                                ${
+                                  state.paymentMethod === "qr"
+                                    ? "I Have Paid"
+                                    : "Pay Now"
+                                }
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
       }
 
       function renderDashboard() {
         if (!state.userProfile)
           return `<div class="max-w-4xl mx-auto px-4 py-12 text-center"><h2 class="text-2xl font-bold text-white mb-4">Login Required</h2><button onclick="openAuthModal()" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-lg font-bold">Login / Register</button></div>`;
-        return `<div class="max-w-6xl mx-auto px-4 py-12"><div class="bg-gray-800 rounded-2xl p-8 border border-gray-700"><h2 class="text-2xl font-bold text-white">Welcome, ${state.userProfile.name}</h2><p class="text-gray-400">Pro Account Active</p></div></div>`;
+
+        return `
+            <div class="max-w-7xl mx-auto px-4 py-12">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 class="text-3xl font-bold text-white">Welcome, ${state.userProfile.name}</h2>
+                        <p class="text-gray-400">Pro Account Active • <span class="text-green-400">System Operational</span></p>
+                    </div>
+                    <button onclick="setView('templates')" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-lg font-bold">New Project</button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+                    <!-- System Health Module -->
+                    <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 holographic-card">
+                        <h3 class="text-xl font-bold text-white mb-4 flex items-center"><svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> System Health</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-sm text-gray-400 mb-1"><span>AI Latency</span><span class="text-green-400">45ms</span></div>
+                                <div class="w-full bg-gray-700 rounded-full h-2"><div class="bg-green-500 h-2 rounded-full" style="width: 92%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm text-gray-400 mb-1"><span>Database Uptime</span><span class="text-green-400">99.99%</span></div>
+                                <div class="w-full bg-gray-700 rounded-full h-2"><div class="bg-blue-500 h-2 rounded-full" style="width: 99%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm text-gray-400 mb-1"><span>API Quota</span><span class="text-yellow-400">85% Used</span></div>
+                                <div class="w-full bg-gray-700 rounded-full h-2"><div class="bg-yellow-500 h-2 rounded-full" style="width: 85%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Projects -->
+                    <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl border border-gray-700 holographic-card">
+                        <h3 class="text-xl font-bold text-white mb-4">Recent Projects</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-gray-400">
+                                <thead class="text-xs uppercase bg-gray-900/50 text-gray-300">
+                                    <tr>
+                                        <th class="px-4 py-3 rounded-l-lg">Project Name</th>
+                                        <th class="px-4 py-3">Status</th>
+                                        <th class="px-4 py-3">Type</th>
+                                        <th class="px-4 py-3 rounded-r-lg">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-sm">
+                                    <tr class="border-b border-gray-700/50 hover:bg-gray-700/30 transition-colors">
+                                        <td class="px-4 py-4 font-medium text-white">E-Commerce Alpha</td>
+                                        <td class="px-4 py-4"><span class="px-2 py-1 bg-green-900/30 text-green-400 rounded text-xs">Live</span></td>
+                                        <td class="px-4 py-4">Web App</td>
+                                        <td class="px-4 py-4"><button class="text-blue-400 hover:text-white">Manage</button></td>
+                                    </tr>
+                                    <tr class="border-b border-gray-700/50 hover:bg-gray-700/30 transition-colors">
+                                        <td class="px-4 py-4 font-medium text-white">Portfolio v2</td>
+                                        <td class="px-4 py-4"><span class="px-2 py-1 bg-yellow-900/30 text-yellow-400 rounded text-xs">Building</span></td>
+                                        <td class="px-4 py-4">Website</td>
+                                        <td class="px-4 py-4"><button class="text-blue-400 hover:text-white">Edit</button></td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-700/30 transition-colors">
+                                        <td class="px-4 py-4 font-medium text-white">SaaS Dashboard</td>
+                                        <td class="px-4 py-4"><span class="px-2 py-1 bg-gray-700 text-gray-300 rounded text-xs">Draft</span></td>
+                                        <td class="px-4 py-4">Web App</td>
+                                        <td class="px-4 py-4"><button class="text-blue-400 hover:text-white">Resume</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <button onclick="setView('templates')" class="p-4 bg-gray-800 hover:bg-gray-700 rounded-xl border border-gray-700 flex flex-col items-center justify-center gap-2 transition-all hover:scale-105">
+                        <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        <span class="text-sm font-bold text-gray-300">New Project</span>
+                    </button>
+                    <button class="p-4 bg-gray-800 hover:bg-gray-700 rounded-xl border border-gray-700 flex flex-col items-center justify-center gap-2 transition-all hover:scale-105">
+                        <svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                        <span class="text-sm font-bold text-gray-300">AI Tools</span>
+                    </button>
+                    <button class="p-4 bg-gray-800 hover:bg-gray-700 rounded-xl border border-gray-700 flex flex-col items-center justify-center gap-2 transition-all hover:scale-105">
+                        <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        <span class="text-sm font-bold text-gray-300">Analytics</span>
+                    </button>
+                    <button class="p-4 bg-gray-800 hover:bg-gray-700 rounded-xl border border-gray-700 flex flex-col items-center justify-center gap-2 transition-all hover:scale-105">
+                        <svg class="w-8 h-8 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <span class="text-sm font-bold text-gray-300">Settings</span>
+                    </button>
+                </div>
+            </div>
+        `;
       }
 
       function renderFooter() {
@@ -1478,7 +2437,7 @@
                             </div>
                         </div>
                         <div><h5 class="text-white font-bold mb-4">Explore</h5><ul class="space-y-2 text-sm text-gray-400"><li><button onclick="setView('home')" class="hover:text-blue-400">Home</button></li><li><button onclick="setView('blog')" class="hover:text-blue-400">Blog</button></li><li><button onclick="setView('templates')" class="hover:text-blue-400">Templates</button></li></ul></div>
-                        <div><h5 class="text-white font-bold mb-4">Contact</h5><p class="text-gray-400 text-sm">Jaipur, Rajasthan<br>info@iahcreations.com</p></div>
+                        <div><h5 class="text-white font-bold mb-4">Contact</h5><p class="text-gray-400 text-sm">Jaipur, Rajasthan<br>theiahcreations@gmail.com</p></div>
                     </div>
                     <div class="border-t border-gray-800 pt-8 flex justify-between items-center text-xs text-gray-500">
                          <p>&copy; ${new Date().getFullYear()} IAH Creations.</p>
@@ -1514,10 +2473,17 @@
           content += renderAbout();
         } else if (state.view === "services") {
           content += renderServices();
+        } else if (state.view === "faq") {
+          content += renderFAQs();
+        } else if (state.view === "privacy") {
+          content += renderPrivacy();
+        } else if (state.view === "terms") {
+          content += renderTerms();
         }
 
         content += renderFooter();
         content += renderChatBot(); // Add Chatbot Overlay
+        content += renderPreviewModal(); // Add Preview Modal
         root.innerHTML = content;
 
         const loader = document.getElementById("loading-overlay");
