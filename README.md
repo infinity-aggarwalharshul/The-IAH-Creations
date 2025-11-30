@@ -53,7 +53,7 @@ Describe your app in natural language → AI generates production-ready code ins
 - Real-time scanning for stolen code
 - Automated threat detection
 - Instant security alerts
-  -Automatic takedown requests
+  - Automatic takedown requests
 
 ### 🛒 **Template Marketplace**
 
@@ -229,8 +229,7 @@ Every code deployment is:
 **For Business Inquiries:**
 
 - 📧 Email: [theiahcreations@gmail.com](mailto:theiahcreations@gmail.com)
-- 💼 Business Card: [View Virtual Card](https://infinity-aggarwalharshul.github.io/The-IAH-Creations-Virtual-Business-Card/)
-- 📱 UPI: `aggarwalharshul49@okicici`
+- 💼 LinkedIn: [View Professional Profile](https://linkedin.com/company/iahcreations)- 📱 UPI: `aggarwalharshul49@okicici`
 
 **Social:**
 
@@ -305,8 +304,7 @@ Secure, scalable, blockchain-protected deployments.
 
 - **License**: MIT with Commercial Addendum
 - **Copyright**: © 2025 IAH Creations
-- **Compliance**: GDPR, CCPA, IT Act 2000
-- **Blockchain**: Polygon Network
+- **Compliance**: GDPR, CCPA, IT Act 2008- **Blockchain**: Polygon Network
 
 ---
 
