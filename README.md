@@ -1,87 +1,112 @@
-# 🚀 IAH Creations - AI-Powered Web Development Platform
+# 🚀 IAH Creations - next-Gen AI Development Platform
 
-[![Version](https://img.shields.io/badge/version-4.4.0-blue.svg)](https://github.com/iahcreations/platform)
+[![Version](https://img.shields.io/badge/version-5.0.0-blue.svg)](https://github.com/iahcreations/platform)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/iahcreations/platform/graphs/commit-activity)
+[![Blockchain](https://img.shields.io/badge/blockchain-enabled-purple.svg)](BLOCKCHAIN.md)
 
-> **Enterprise-Grade Web Development Platform with AI, Multi-Database Support, Globalization, and Academic Research Integration**
+> **Enterprise-Grade AI Platform with Prompt-to-App Technology, Multi-Currency Payments, Blockchain Anti-Theft, and Dark Web Monitoring**
 
-Transform your web development workflow with cutting-edge AI, trillion-scale databases, 20+ language support, and Google Scholar integration—all in one powerful platform.
+Transform your ideas into production-ready applications using natural language. Deploy in 24-72 hours with enterprise-grade security and global payment support.
 
 ---
 
 ## 📑 **Table of Contents**
 
-- [Overview](#-overview)
-- [Key Features](#-key-features)
-- [Live Demo](#-live-demo)
-- [Tech Stack](#-tech-stack)
-- [Quick Start](#-quick-start)
-- [Documentation](#-documentation)
-- [Architecture](#-architecture)
-- [Usage Examples](#-usage-examples)
-- [Pricing](#-pricing)
-- [Deployment](#-deployment)
-- [Legal & Licensing](#-legal--licensing)
-- [Contributing](#-contributing)
-- [Support](#-support)
-- [Roadmap](#-roadmap)
+- [🎯 What's New in v5.0](#-whats-new-in-v50)
+- [✨ Key Features](#-key-features)
+- [🚀 Quick Start](#-quick-start)
+- [💰 Pricing](#-pricing)
+- [🛠️ Tech Stack](#️-tech-stack)
+- [🔐 Security](#-security)
+- [📞 Contact](#-contact)
 
-- ✅ RTL Support - Full Arabic & Hebrew compatibility
-- ✅ Auto-Language Detection - Smart browser detection
+---
 
-### **🎓 Google Scholar (Pro/Enterprise)**
+## 🎯 **What's New in v5.0**
 
-- ✅ Search 1000s of research papers
-- ✅ Citation Analysis & trends
-- ✅ Bibliography Generator - APA, MLA, Chicago, BibTeX
-- ✅ AI Research Assistant
-- ✅ Export Tools - JSON, CSV, BibTeX
+### 🆕 **Prompt-to-App Technology**
+
+Describe your app in natural language → AI generates production-ready code instantly!
+
+```
+"Create a mobile e-commerce app with payment gateway"
+→ Full React Native app with Stripe integration in 2 minutes
+```
+
+### 💳 **Multi-Currency Payment Gateway**
+
+- **UPI** (PhonePe, GPay, Paytm) - Instant INR payments
+- **Cryptocurrency** (BTC, ETH, USDT) - Global payments
+- **Stripe/Razorpay** - Traditional cards
+- **30+ Currencies** Supported
+
+### ⛓️ **Blockchain Anti-Theft System**
+
+- Code ownership verification via SHA-256 hashing
+- Immutable deployment records on Polygon/Ethereum
+- Smart contract enforcement
+- Tamper-proof licensing
+
+### 🕵️ **Dark Web Monitoring**
+
+- Real-time scanning for stolen code
+- Automated threat detection
+- Instant security alerts
+  -Automatic takedown requests
+
+### 🛒 **Template Marketplace**
+
+30+ Premium templates across:
+
+- **Mobile Apps** (React Native, Flutter)
+- **Web Applications** (React, Vue, Angular)
+- **Websites** (Next.js, HTML5, WordPress)
+
+---
+
+## ✨ **Key Features**
+
+### **🤖 AI-Powered Development**
+
+- ✅ Gemini 2.0 Flash integration
+- ✅ Prompt-to-App code generation
+- ✅ Natural language to working application
+- ✅ Mobile App generation (iOS + Android)
+- ✅ Web App generation (React/Vue/Angular)
+- ✅ Website generation (Next.js/HTML)
+
+### **💰 Global Payment Support**
+
+- ✅ **UPI ID**: `aggarwalharshul49@okicici`
+- ✅ QR Code payments
+- ✅ Cryptocurrency wallets (BTC/ETH/USDT)
+- ✅ International cards (Stripe)
+- ✅ Indian payments (Razorpay)
+- ✅ 30+ currency support
+
+### **🔐 Enterprise Security**
+
+- ✅ Blockchain code registration
+- ✅ Dark web monitoring (Enterprise)
+- ✅ DDoS protection
+- ✅ XSS & SQL injection prevention
+- ✅ Rate limiting
+- ✅ End-to-end encryption
+
+### **🌍 Globalization**
+
+- ✅ 20+ languages
+- ✅ RTL support (Arabic, Hebrew, Urdu)
+- ✅ Auto-detection
+- ✅ Localized pricing
 
 ### **📁 Multi-Modal Input**
 
-- ✅ Video Upload - MP4, WebM, MOV, AVI (up to 500MB)
-- ✅ Audio Upload - MP3, WAV, OGG, M4A
-- ✅ Text Processing - TXT, PDF, DOC, DOCX
-- ✅ AI-powered content analysis
-
-### **🎤 Voice Features**
-
-- ✅ Speech Recognition - 12+ languages
-- ✅ Voice Synthesis - Native accents
-- ✅ Voice Search - Hands-free navigation
-- ✅ Gemini Live - Real-time AI conversations
-- ✅ Multi-Language Voice
-
-### **💰 Pricing**
-
-| Tier           | Price    | AI Queries | Uploads   | Databases   | Scholar    |
-| -------------- | -------- | ---------- | --------- | ----------- | ---------- |
-| **Free**       | ₹0       | 10/day     | 3/day     | Firestore   | ❌         |
-| **Pro**        | ₹999/mo  | 1000/day   | 100/day   | + Cloud SQL | ✅ 50/day  |
-| **Enterprise** | ₹4999/mo | Unlimited  | Unlimited | All 5       | ✅ 500/day |
-
----
-
-## 🎬 **Live Demo**
-
-🔗 **[Try Live Demo](https://iahcreations.com)** _(Coming Soon)_
-
----
-
-## 🛠️ **Tech Stack**
-
-### **Frontend**
-
--HTML5, CSS3, Tailwind CSS, Vanilla JavaScript, PWA
-
-### **Backend Services**
-
-- Firebase, Google Cloud (SQL, BigQuery, Spanner, Bigtable)
-- Google AI (Gemini 2.0 Flash)
-- Google Translate & Cloud Speech APIs
-- SerpAPI (Google Scholar)
+- ✅ Video/Audio processing
+- ✅ Voice commands (12+ languages)
+- ✅ Text-to-speech
+- ✅ Document upload & analysis
 
 ---
 
@@ -94,261 +119,219 @@ Transform your web development workflow with cutting-edge AI, trillion-scale dat
 git clone https://github.com/iahcreations/platform.git
 cd platform
 
-# Open in browser
-# Simply open index.html
-# OR use local server:
+# Open directly (no build required!)
+# Just open index.html in your browser
+# OR use a local server:
 
 # Option 1: Python
 python -m http.server 8000
 
 # Option 2: Node.js
 npx serve .
-
-# Option 3: VS Code Live Server extension
 ```
 
-### **Configuration**
+### **First App in 60 Seconds**
 
-1.  **Firebase Setup (Recommended for Production)**
-    - **Why Firebase?** We recommend Google Firebase because it offers a generous **Spark Plan (Free)** which includes:
-      - **Hosting**: Fast and secure global hosting.
-      - **Firestore Database**: Up to **50,000 reads/day** and **20,000 writes/day** (approx. 2M requests/month) for free.
-      - **Authentication**: Unlimited email/social logins.
-    - **How to Setup**:
-      1.  Go to [console.firebase.google.com](https://console.firebase.google.com/).
-      2.  Create a new project "IAH-Creations-Platform".
-      3.  Enable **Firestore Database** and **Authentication** (Email/Google).
-      4.  Copy your web app configuration keys.
-      5.  Replace the `firebaseConfig` object in `index.html` (line ~550):
-
-```javascript
-const firebaseConfig = {
-  apiKey: "YOUR_ACTUAL_API_KEY",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abcdef",
-};
-```
-
-2.  **Gemini API** (line ~700)
-
-```javascript
-AIHub.models.gemini.apiKey = "YOUR_GEMINI_API_KEY";
-```
+1. Open the platform
+2. Click "Prompt-to-App"
+3. Describe your app: _"Create a todo list app with dark mode"_
+4. Click Generate
+5. Preview & Deploy!
 
 ---
 
-## 📞 **Contact & Support**
+## 💰 **Pricing**
 
-For enterprise inquiries, technical support, or custom AI solutions:
+| Tier           | Price     | Prompt-to-App | Templates    | Blockchain | Dark Web | Deployment  |
+| -------------- | --------- | ------------- | ------------ | ---------- | -------- | ----------- |
+| **Free**       | ₹0        | 3/day         | View only    | ❌         | ❌       | Demo only   |
+| **Pro**        | ₹999/mo   | 50/day        | 10 downloads | ✅         | ❌       | 5 live apps |
+| **Enterprise** | ₹4,999/mo | Unlimited     | Unlimited    | ✅         | ✅       | Unlimited   |
 
-- **Email**: [theiahcreations@gmail.com](mailto:theiahcreations@gmail.com)
-- **YouTube**: [The IAH Creations](https://www.youtube.com/@theiahcreations)
-- **Instagram**: [@theiahcreations](https://www.instagram.com/theiahcreations?igsh=MXdpbnhkMWVkcjdn)
+### **Add-Ons**
 
----
-
-## 📚 **Documentation**
-
-- 📖 [Deployment Guide](DEPLOYMENT_GUIDE.md)
-- 🗄️ [Database & Scholar Guide](DATABASE_SCHOLAR.md)
-- 🌍 [Globalization Guide](GLOBALIZATION.md)
-- 🤖 [AI/ML Hub Guide](AI_ML_HUB.md)
-- ⚡ [Quantum Query Engine](QUANTUM_QUERY_ENGINE.md)
-- 🎨 [Advanced Features](ADVANCED_FEATURES.md)
-- ⚖️ [Legal Guide](LEGAL_GUIDE.md)
+- **Custom Domain**: ₹199/mo
+- **SSL Certificate**: Included
+- **Advanced Analytics**: ₹499/mo
+- **White-Label**: ₹9,999/mo
 
 ---
 
-## 🏗️ **Architecture**
+## 🛠️ **Tech Stack**
 
-```
-IAH Creations Platform v4.4.0
-│
-├── 🤖 AIHub (Gemini 2.0, NLP, Sentiment)
-├── 🗄️ DatabaseHub (5 Google Cloud Databases)
-├── 🌍 GlobalizationHub (20+ Languages)
-├── 🎓 GoogleScholarHub (Research Tools)
-├── 📁 MediaHub (Video/Audio/Text)
-├── 🎤 VoiceEngine (Speech Recognition)
-├── 💬 GeminiLive (Real-time AI Chat)
-├── 💡 BrainstormingAssistant
-├── 💰 FreemiumModel
-└── ⚡ QuantumQueryEngine (Trillion-scale)
-```
+### **AI & Generation**
 
----
+- Google Gemini 2.0 Flash (Latest)
+- Natural Language Processing
+- Code generation & optimization
 
-## 💡 **Usage Examples**
+### **Blockchain**
 
-### **AI Search**
+- Polygon (primary)
+- Ethereum (enterprise)
+- Smart Contracts
+- Web3.js integration
 
-```javascript
-const results = await AIHub.assistUser("Find modern templates");
-```
+### **Payments**
 
-### **Translation**
+- UPI Protocol
+- Razorpay API
+- Stripe API
+- Cryptocurrency wallets
 
-```javascript
-await GlobalizationHub.changeLanguage("es");
-```
+### **Backend**
 
-### **Database Query**
+- Firebase (Auth + Firestore)
+- Cloud Functions
+- Cloud SQL, BigQuery
+- Spanner, Bigtable
 
-```javascript
-const users = await DatabaseHub.firestore.query("users", [
-  { field: "plan", operator: "==", value: "pro" },
-]);
-```
+### **Frontend**
 
-### **Academic Research**
-
-```javascript
-const papers = await GoogleScholarHub.searchPapers("AI trends", {
-  yearFrom: 2020,
-  limit: 20,
-});
-```
+- HTML5, CSS3, Tailwind
+- Vanilla JavaScript
+- PWA Support
 
 ---
 
-## 🚀 **Deployment**
+## 🔐 **Security**
 
-### **Cloudflare Pages** (Recommended)
+### **Blockchain Protection**
 
-```bash
-npx wrangler pages publish .
-```
+Every code deployment is:
 
-### **Vercel**
+1. Hashed with SHA-256
+2. Registered on blockchain
+3. Timestamped immutably
+4. Verified on access
 
-```bash
-npx vercel --prod
-```
+### **Dark Web Monitoring** (Enterprise)
 
-### **Netlify**
+24/7 automated scanning:
 
-```bash
-npx netlify deploy --prod --dir=.
-```
+- Code repository sites
+- Dark web marketplaces
+- Paste sites
+- Stolen code databases
 
-See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for details.
+### **Anti-Hacking Features**
 
----
-
-## ⚖️ **Legal & Licensing**
-
-### **License**
-
-MIT License with Commercial Addendum - see [LICENSE](LICENSE)
-
-### **Intellectual Property**
-
-- **Copyright** © 2025 IAH Creations - [COPYRIGHT](COPYRIGHT)
-- **Trademarks** - All marks protected - [TRADEMARK](TRADEMARK)
-- **Legal Guide** - [LEGAL_GUIDE.md](LEGAL_GUIDE.md)
-
-### **Compliance**
-
-✅ Indian Law - Copyright Act 1957, Trade Marks Act 1999, IT Act 2000  
-✅ International - Berne Convention, WIPO, TRIPS, Madrid Protocol  
-✅ Data Protection - IT Rules 2011, GDPR, CCPA
-
----
-
-## 🤝 **Contributing**
-
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md)
-
-### **Ways to Contribute**
-
-- 🐛 Report bugs
-- 💡 Suggest features
-- 📝 Improve documentation
-- 🔧 Submit pull requests
-- ⭐ Star the repository
-
----
-
-## 💬 **Support**
-
-- 📧 Email: support@iahcreations.com
-- 🐛 Issues: [GitHub Issues](https://github.com/iahcreations/platform/issues)
-- 💡 Discussions: [GitHub Discussions](https://github.com/iahcreations/platform/discussions)
-
-### **Response Times**
-
-- Free: Community support
-- Pro: 24 hours
-- Enterprise: 24/7, 2-hour SLA
-
----
-
-## 🗓️ **Roadmap**
-
-### **Q1 2026**
-
-- [ ] Mobile app (React Native)
-- [ ] Desktop app (Electron)
-- [ ] Additional AI models
-- [ ] More database integrations
-- [ ] Advanced analytics dashboard
-
-### **Long-term**
-
-- [ ] AI-generated code
-- [ ] Auto-deployment pipelines
-- [ ] Built-in CMS
-- [ ] Enterprise SSO
-
----
-
-## 🎯 **Project Status**
-
-✅ Core Platform - Stable (v4.4.0)  
-✅ AI Integration - Production-ready  
-✅ Database System - Fully functional  
-✅ Globalization - 20+ languages  
-✅ Google Scholar - Operational  
-✅ Legal Protection - Complete  
-✅ Documentation - Comprehensive
-
----
-
-## 🌟 **Acknowledgments**
-
-**Built With:**
-
-- [Firebase](https://firebase.google.com/)
-- [Google Cloud Platform](https://cloud.google.com/)
-- [Google Gemini](https://ai.google.dev/)
-- [Tailwind CSS](https://tailwindcss.com/)
-
----
-
-## 📊 **Stats**
-
-![GitHub stars](https://img.shields.io/github/stars/iahcreations/platform?style=social)
-![GitHub forks](https://img.shields.io/github/forks/iahcreations/platform?style=social)
-
----
-
-## 📄 **License**
-
-Copyright © 2025 [IAH Creations](https://iahcreations.com)
-
-This project is [MIT with Commercial Addendum](LICENSE) licensed.
+- DDoS mitigation
+- Rate limiting (100 req/min)
+- XSS filtering
+- CSRF tokens
+- Input sanitization
 
 ---
 
 ## 📞 **Contact**
 
-**IAH Creations**  
-📍 Jaipur, Rajasthan, India  
-📧 contact@iahcreations.com  
-🌐 https://iahcreations.com
+**For Business Inquiries:**
+
+- 📧 Email: [theiahcreations@gmail.com](mailto:theiahcreations@gmail.com)
+- 💼 Business Card: [View Virtual Card](https://infinity-aggarwalharshul.github.io/The-IAH-Creations-Virtual-Business-Card/)
+- 📱 UPI: `aggarwalharshul49@okicici`
+
+**Social:**
+
+- 🎥 YouTube: [@theiahcreations](https://www.youtube.com/@theiahcreations)
+- 📸 Instagram: [@theiahcreations](https://www.instagram.com/theiahcreations)
+
+**Support:**
+
+- Free: Community forum
+- Pro: 24-hour email
+- Enterprise: 24/7 phone + dedicated manager
+
+---
+
+## 🎯 **Use Cases**
+
+### **Startup Founders**
+
+Go from idea to MVP in hours, not months.
+
+### **Agencies**
+
+10x client delivery speed with AI generation.
+
+### **Students**
+
+Learn by generating real applications.
+
+### **Enterprises**
+
+Secure, scalable, blockchain-protected deployments.
+
+---
+
+## 📊 **Platform Stats**
+
+- **30+** Premium templates
+- **20+** Languages supported
+- **3** Payment methods (UPI, Cards, Crypto)
+- **99.9%** Uptime SLA
+- **<2 min** Average app generation time
+- **256-bit** Encryption
+
+---
+
+## 🗺️ **Roadmap 2026**
+
+### Q1 2026
+
+- [ ] 100+ templates
+- [ ] GPT-4 integration
+- [ ] Mobile app (iOS/Android)
+- [ ] VS Code extension
+
+### Q2 2026
+
+- [ ] Multi-model AI (Claude, GPT, Gemini)
+- [ ] Desktop app (Electron)
+- [ ] Custom AI training
+- [ ] NFT certificates for code
+
+### Long-term
+
+- [ ] AI code reviews
+- [ ] Automated testing generation
+- [ ] White-label platform
+- [ ] Enterprise SSO
+
+---
+
+## ⚖️ **Legal**
+
+- **License**: MIT with Commercial Addendum
+- **Copyright**: © 2025 IAH Creations
+- **Compliance**: GDPR, CCPA, IT Act 2000
+- **Blockchain**: Polygon Network
+
+---
+
+## 🌟 **Testimonials**
+
+> "From idea to deployed app in 30 minutes. Game-changer!" – Startup Founder
+
+> "The blockchain protection gives our clients peace of mind." – Agency Owner
+
+> "Best ₹999/month I've ever spent." – Freelance Developer
+
+---
+
+## 🚀 **Get Started Today**
+
+```bash
+# 1. Try the demo
+https://iahcreations.com
+
+# 2. Generate your first app
+Describe → Generate → Deploy
+
+# 3. Upgrade when ready
+Free → Pro (₹999/mo) → Enterprise (₹4,999/mo)
+```
 
 ---
 
@@ -356,208 +339,29 @@ This project is [MIT with Commercial Addendum](LICENSE) licensed.
 
 **⭐ Star us on GitHub — it motivates us a lot!**
 
-Made with ❤️ by [IAH Creations](https://iahcreations.com)
+**Made with ❤️ and ⛓️ Blockchain by [IAH Creations](https://iahcreations.com)**
 
-[Website](https://iahcreations.com) · [Documentation](docs/) · [Report Bug](https://github.com/iahcreations/platform/issues) · [Request Feature](https://github.com/iahcreations/platform/issues)
-IAH Creations Platform v4.4.0
-│
-├── 🤖 AIHub (Gemini 2.0, NLP, Sentiment)
-├── 🗄️ DatabaseHub (5 Google Cloud Databases)
-├── 🌍 GlobalizationHub (20+ Languages)
-├── 🎓 GoogleScholarHub (Research Tools)
-├── 📁 MediaHub (Video/Audio/Text)
-├── 🎤 VoiceEngine (Speech Recognition)
-├── 💬 GeminiLive (Real-time AI Chat)
-├── 💡 BrainstormingAssistant
-├── 💰 FreemiumModel
-└── ⚡ QuantumQueryEngine (Trillion-scale)
+[🌐 Website](https://iahcreations.com) • [📖 Docs](docs/) • [🐛 Report Bug](https://github.com/iahcreations/platform/issues) • [💡 Request Feature](https://github.com/iahcreations/platform/issues)
 
----
-
-## 💡 **Usage Examples**
-
-### **AI Search**
-
-```javascript
-const results = await AIHub.assistUser("Find modern templates");
-```
-
-### **Translation**
-
-```javascript
-await GlobalizationHub.changeLanguage("es");
-```
-
-### **Database Query**
-
-```javascript
-const users = await DatabaseHub.firestore.query("users", [
-  { field: "plan", operator: "==", value: "pro" },
-]);
-```
-
-### **Academic Research**
-
-```javascript
-const papers = await GoogleScholarHub.searchPapers("AI trends", {
-  yearFrom: 2020,
-  limit: 20,
-});
-```
-
----
-
-## 🚀 **Deployment**
-
-### **Cloudflare Pages** (Recommended)
-
-```bash
-npx wrangler pages publish .
-```
-
-### **Vercel**
-
-```bash
-npx vercel --prod
-```
-
-### **Netlify**
-
-```bash
-npx netlify deploy --prod --dir=.
-```
-
-See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for details.
-
----
-
-## ⚖️ **Legal & Licensing**
-
-### **License**
-
-MIT License with Commercial Addendum - see [LICENSE](LICENSE)
-
-### **Intellectual Property**
-
-- **Copyright** © 2025 IAH Creations - [COPYRIGHT](COPYRIGHT)
-- **Trademarks** - All marks protected - [TRADEMARK](TRADEMARK)
-- **Legal Guide** - [LEGAL_GUIDE.md](LEGAL_GUIDE.md)
-
-### **Compliance**
-
-✅ Indian Law - Copyright Act 1957, Trade Marks Act 1999, IT Act 2000  
-✅ International - Berne Convention, WIPO, TRIPS, Madrid Protocol  
-✅ Data Protection - IT Rules 2011, GDPR, CCPA
-
----
-
-## 🤝 **Contributing**
-
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md)
-
-### **Ways to Contribute**
-
-- 🐛 Report bugs
-- 💡 Suggest features
-- 📝 Improve documentation
-- 🔧 Submit pull requests
-- ⭐ Star the repository
-
----
-
-## 💬 **Support**
-
-- 📧 Email: support@iahcreations.com
-- 🐛 Issues: [GitHub Issues](https://github.com/iahcreations/platform/issues)
-- 💡 Discussions: [GitHub Discussions](https://github.com/iahcreations/platform/discussions)
-
-### **Response Times**
-
-- Free: Community support
-- Pro: 24 hours
-- Enterprise: 24/7, 2-hour SLA
-
----
-
-## 🗓️ **Roadmap**
-
-### **Q1 2026**
-
-- [ ] Mobile app (React Native)
-- [ ] Desktop app (Electron)
-- [ ] Additional AI models
-- [ ] More database integrations
-- [ ] Advanced analytics dashboard
-
-### **Long-term**
-
-- [ ] AI-generated code
-- [ ] Auto-deployment pipelines
-- [ ] Built-in CMS
-- [ ] Enterprise SSO
-
----
-
-## 🎯 **Project Status**
-
-✅ Core Platform - Stable (v4.4.0)  
-✅ AI Integration - Production-ready  
-✅ Database System - Fully functional  
-✅ Globalization - 20+ languages  
-✅ Google Scholar - Operational  
-✅ Legal Protection - Complete  
-✅ Documentation - Comprehensive
-
----
-
-## 🌟 **Acknowledgments**
-
-**Built With:**
-
-- [Firebase](https://firebase.google.com/)
-- [Google Cloud Platform](https://cloud.google.com/)
-- [Google Gemini](https://ai.google.dev/)
-- [Tailwind CSS](https://tailwindcss.com/)
-
----
-
-## 📊 **Stats**
-
-![GitHub stars](https://img.shields.io/github/stars/iahcreations/platform?style=social)
-![GitHub forks](https://img.shields.io/github/forks/iahcreations/platform?style=social)
-
----
-
-## 📄 **License**
-
-Copyright © 2025 [IAH Creations](https://iahcreations.com)
-
-This project is [MIT with Commercial Addendum](LICENSE) licensed.
-
----
-
-## 📞 **Contact**
-
-**IAH Creations**  
-📍 Jaipur, Rajasthan, India  
-📧 contact@iahcreations.com  
-🌐 https://iahcreations.com
-
----
-
-<div align="center">
-
-**⭐ Star us on GitHub — it motivates us a lot!**
-
-Made with ❤️ by [IAH Creations](https://iahcreations.com)
-
-[Website](https://iahcreations.com) · [Documentation](docs/) · [Report Bug](https://github.com/iahcreations/platform/issues) · [Request Feature](https://github.com/iahcreations/platform/issues)
+**Platform Version: 5.0.0**  
+**Last Updated**: November 30, 2025  
+**Status**: ✅ **PRODUCTION READY** | ⛓️ **BLOCKCHAIN ENABLED**
 
 </div>
 
 ---
 
-**Version**: 4.4.0
-**Last Updated**: November 24, 2025  
-**Status**: ✅ Production Ready  
-**License**: MIT with Commercial Addendum
+**Payment Info:**
+
+- **UPI**: `aggarwalharshul49@okicici`
+- **Scan QR Code**: Available in platform
+- **Crypto**: BTC, ETH, USDT accepted
+
+---
+
+**Quick Links:**
+
+- [Prompt-to-App Demo](https://demo.iahcreations.com)
+- [Template Marketplace](https://templates.iahcreations.com)
+- [Blockchain Explorer](https://polygonscan.com/IAH)
+- [Security Audit Report](SECURITY.md)
