@@ -259,9 +259,10 @@ Every code deployment is:
 **For Business Inquiries:**
 
 - 📧 Email: [theiahcreations@gmail.com](mailto:theiahcreations@gmail.com)
-- 💼 LinkedIn: [View Professional Profile](https://linkedin.com/company/iahcreations)- 📱 UPI: `aggarwalharshul49@okicici`
-
-**Social:**
+- � Email: [theiahcreations@gmail.com](mailto:theiahcreations@gmail.com)
+- �💼 LinkedIn: [View Professional Profile](https://linkedin.com/company/iahcreations)
+- 📱 UPI: `aggarwalharshul49@okicici`
+  **Social:**
 
 - 🎥 YouTube: [@theiahcreations](https://www.youtube.com/@theiahcreations)
 - 📸 Instagram: [@theiahcreations](https://www.instagram.com/theiahcreations)
