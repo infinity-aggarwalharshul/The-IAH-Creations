@@ -237,376 +237,376 @@
     <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
     <script type="module">
-            // ============================================
-            // FIREBASE INITIALIZATION (SECURE)
-            // ============================================
-            import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-            import {
-              getAuth,
-              signInAnonymously,
-              onAuthStateChanged,
-            } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-            import {
-              getFirestore,
-              collection,
-              addDoc,
-              serverTimestamp,
-            } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+      // ============================================
+      // FIREBASE INITIALIZATION (SECURE)
+      // ============================================
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+      import {
+        getAuth,
+        signInAnonymously,
+        onAuthStateChanged,
+      } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+      import {
+        getFirestore,
+        collection,
+        addDoc,
+        serverTimestamp,
+      } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-            // Get config from window (injected by Firebase Hosting) or localStorage
-            const finalConfig =
-              typeof __firebase_config !== "undefined"
-                ? JSON.parse(__firebase_config)
-                : JSON.parse(
-                    localStorage.getItem("firebase_config") ||
-                      '{"projectId":"iah-creations"}'
-                  );
+      // Get config from window (injected by Firebase Hosting) or localStorage
+      const finalConfig =
+        typeof __firebase_config !== "undefined"
+          ? JSON.parse(__firebase_config)
+          : JSON.parse(
+              localStorage.getItem("firebase_config") ||
+                '{"projectId":"iah-creations"}'
+            );
 
-            const appId =
-              typeof __app_id !== "undefined" ? __app_id : "iah-creations";
+      const appId =
+        typeof __app_id !== "undefined" ? __app_id : "iah-creations";
 
-            let app,
-              auth,
-              db,
-              isFirebaseReady = false;
+      let app,
+        auth,
+        db,
+        isFirebaseReady = false;
 
-            try {
-              if (!finalConfig.apiKey) throw new Error("No Firebase API key");
+      try {
+        if (!finalConfig.apiKey) throw new Error("No Firebase API key");
 
-              app = initializeApp(finalConfig);
-              auth = getAuth(app);
-              db = getFirestore(app);
-              isFirebaseReady = true;
+        app = initializeApp(finalConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+        isFirebaseReady = true;
 
-              console.log(
-                "%c✅ Firebase initialized",
-                "color: green; font-weight: bold"
-              );
-              console.log("%c🔒 Using secure artifacts path", "color: blue");
-            } catch (e) {
-              console.warn(
-                "%c⚠️ Running in DEMO MODE (Offline)",
-                "color: orange; font-weight: bold"
-              );
+        console.log(
+          "%c✅ Firebase initialized",
+          "color: green; font-weight: bold"
+        );
+        console.log("%c🔒 Using secure artifacts path", "color: blue");
+      } catch (e) {
+        console.warn(
+          "%c⚠️ Running in DEMO MODE (Offline)",
+          "color: orange; font-weight: bold"
+        );
 
-              // Mock Firebase for demo
-              app = {};
-              auth = {
-                currentUser: null,
-                onAuthStateChanged: (cb) => {
-                  setTimeout(() => cb(null), 500);
-                  return () => {};
-                },
-                signInAnonymously: async () => ({
-                  user: { uid: "demo_user", isAnonymous: true },
-                }),
-              };
-              db = {
-                collection: () => ({}),
-                addDoc: async (col, data) => {
-                  console.log("📝 Demo Firestore Write:", data);
-                  return { id: "demo_doc_" + Date.now() };
-                },
-              };
-            }
+        // Mock Firebase for demo
+        app = {};
+        auth = {
+          currentUser: null,
+          onAuthStateChanged: (cb) => {
+            setTimeout(() => cb(null), 500);
+            return () => {};
+          },
+          signInAnonymously: async () => ({
+            user: { uid: "demo_user", isAnonymous: true },
+          }),
+        };
+        db = {
+          collection: () => ({}),
+          addDoc: async (col, data) => {
+            console.log("📝 Demo Firestore Write:", data);
+            return { id: "demo_doc_" + Date.now() };
+          },
+        };
+      }
 
-            window.db = db;
-            window.auth = auth;
+      window.db = db;
+      window.auth = auth;
 
-            // Secure collection path helper
-            const getCollectionPath = (collectionName) =>
-              `artifacts/${appId}/public/data/${collectionName}`;
-            window.getCollectionPath = getCollectionPath;
+      // Secure collection path helper
+      const getCollectionPath = (collectionName) =>
+        `artifacts/${appId}/public/data/${collectionName}`;
+      window.getCollectionPath = getCollectionPath;
 
-            // ============================================
-            // CONSTANTS
-            // ============================================
-            const APP_VERSION = "5.0.0"; // Updated to v5.0
-            const BUSINESS_CARD_URL =
-              "https://infinity-aggarwalharshul.github.io/The-IAH-Creations-Virtual-Business-Card/";
-            const UPI_ID = "aggarwalharshul49@okicici";
-            const UPI_QR_CODE = "assets/upi_qr.jpg";
+      // ============================================
+      // CONSTANTS
+      // ============================================
+      const APP_VERSION = "5.0.0"; // Updated to v5.0
+      const BUSINESS_CARD_URL =
+        "https://infinity-aggarwalharshul.github.io/The-IAH-Creations-Virtual-Business-Card/";
+      const UPI_ID = "aggarwalharshul49@okicici";
+      const UPI_QR_CODE = "assets/upi_qr.jpg";
 
-            // ============================================
-            // TEMPLATE MARKETPLACE DATA
-            // ============================================
-            const TEMPLATES = {
-              mobileApps: [
-                {
-                  id: "m1",
-                  name: "E-Commerce Mobile Pro",
-                  category: "Mobile App",
-                  subcategory: "E-Commerce",
-                  tech: "React Native",
-                  price: { INR: 24999, USD: 299, crypto: "0.005 BTC" },
-                  features: [
-                    "Payment Gateway",
-                    "Push Notifications",
-                    "AR Product View",
-                    "Order Tracking",
-                  ],
-                  image:
-                    "https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?w=800",
-                  demo: "https://demo.app",
-                  rating: 4.8,
-                  downloads: 1247,
-                },
-                {
-                  id: "m2",
-                  name: "Social Connect",
-                  category: "Mobile App",
-                  subcategory: "Social Media",
-                  tech: "Flutter",
-                  price: { INR: 19999, USD: 249, crypto: "0.004 BTC" },
-                  features: [
-                    "Real-time Chat",
-                    "Stories",
-                    "Video Calls",
-                    "AI Moderation",
-                  ],
-                  image:
-                    "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800",
-                  demo: "https://demo.app",
-                },
-                {
-                  id: "m3",
-                  name: "Health Tracker Pro",
-                  category: "Mobile App",
-                  subcategory: "Healthcare",
-                  tech: "React Native",
-                  price: { INR: 29999, USD: 349, crypto: "0.006 BTC" },
-                  features: [
-                    "Fitness Tracking",
-                    "AI Health Assistant",
-                    "Telemedicine",
-                    "Blockchain Records",
-                  ],
-                  image:
-                    "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800",
-                },
-              ],
-              webApps: [
-                {
-                  id: "w1",
-                  name: "SaaS Dashboard Pro",
-                  category: "Web App",
-                  subcategory: "SaaS",
-                  tech: "React + TypeScript",
-                  price: { INR: 34999, USD: 399, crypto: "0.007 BTC" },
-                  features: [
-                    "Analytics Dashboard",
-                    "Multi-tenant",
-                    "Billing Integration",
-                    "AI Insights",
-                  ],
-                  image:
-                    "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800",
-                },
-                {
-                  id: "w2",
-                  name: "CRM Enterprise",
-                  category: "Web App",
-                  subcategory: "Business",
-                  tech: "Vue + Node.js",
-                  price: { INR: 44999, USD: 499, crypto: "0.009 BTC" },
-                  features: [
-                    "Lead Management",
-                    "Email Automation",
-                    "AI Predictions",
-                    "Mobile App",
-                  ],
-                  image:
-                    "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800",
-                },
-                {
-                  id: "w3",
-                  name: "Project Manager AI",
-                  category: "Web App",
-                  subcategory: "Productivity",
-                  tech: "Angular + Firebase",
-                  price: { INR: 39999, USD: 449, crypto: "0.008 BTC" },
-                  features: [
-                    "Gantt Charts",
-                    "AI Task Allocation",
-                    "Time Tracking",
-                    "Team Chat",
-                  ],
-                  image:
-                    "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800",
-                },
-              ],
-              websites: [
-                {
-                  id: "s1",
-                  name: "Business Corporate",
-                  category: "Website",
-                  subcategory: "Business",
-                  tech: "HTML5 + Tailwind",
-                  price: { INR: 4999, USD: 59, crypto: "0.001 BTC" },
-                  features: [
-                    "Responsive Design",
-                    "SEO Optimized",
-                    "Contact Forms",
-                    "Blog Integration",
-                  ],
-                  image:
-                    "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800",
-                },
-                {
-                  id: "s2",
-                  name: "Portfolio Creative",
-                  category: "Website",
-                  subcategory: "Portfolio",
-                  tech: "Next.js",
-                  price: { INR: 9999, USD: 119, crypto: "0.002 BTC" },
-                  features: [
-                    "Animations",
-                    "Dark Mode",
-                    "CMS Integration",
-                    "Fast Loading",
-                  ],
-                  image:
-                    "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=800",
-                },
-                {
-                  id: "s3",
-                  name: "E-Commerce Store",
-                  category: "Website",
-                  subcategory: "E-Commerce",
-                  tech: "WordPress + WooCommerce",
-                  price: { INR: 14999, USD: 179, crypto: "0.003 BTC" },
-                  features: [
-                    "Product Management",
-                    "Payment Gateway",
-                    "Inventory System",
-                    "Reviews",
-                  ],
-                  image:
-                    "https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?w=800",
-                },
-              ],
-            };
+      // ============================================
+      // TEMPLATE MARKETPLACE DATA
+      // ============================================
+      const TEMPLATES = {
+        mobileApps: [
+          {
+            id: "m1",
+            name: "E-Commerce Mobile Pro",
+            category: "Mobile App",
+            subcategory: "E-Commerce",
+            tech: "React Native",
+            price: { INR: 24999, USD: 299, crypto: "0.005 BTC" },
+            features: [
+              "Payment Gateway",
+              "Push Notifications",
+              "AR Product View",
+              "Order Tracking",
+            ],
+            image:
+              "https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?w=800",
+            demo: "https://demo.app",
+            rating: 4.8,
+            downloads: 1247,
+          },
+          {
+            id: "m2",
+            name: "Social Connect",
+            category: "Mobile App",
+            subcategory: "Social Media",
+            tech: "Flutter",
+            price: { INR: 19999, USD: 249, crypto: "0.004 BTC" },
+            features: [
+              "Real-time Chat",
+              "Stories",
+              "Video Calls",
+              "AI Moderation",
+            ],
+            image:
+              "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800",
+            demo: "https://demo.app",
+          },
+          {
+            id: "m3",
+            name: "Health Tracker Pro",
+            category: "Mobile App",
+            subcategory: "Healthcare",
+            tech: "React Native",
+            price: { INR: 29999, USD: 349, crypto: "0.006 BTC" },
+            features: [
+              "Fitness Tracking",
+              "AI Health Assistant",
+              "Telemedicine",
+              "Blockchain Records",
+            ],
+            image:
+              "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800",
+          },
+        ],
+        webApps: [
+          {
+            id: "w1",
+            name: "SaaS Dashboard Pro",
+            category: "Web App",
+            subcategory: "SaaS",
+            tech: "React + TypeScript",
+            price: { INR: 34999, USD: 399, crypto: "0.007 BTC" },
+            features: [
+              "Analytics Dashboard",
+              "Multi-tenant",
+              "Billing Integration",
+              "AI Insights",
+            ],
+            image:
+              "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800",
+          },
+          {
+            id: "w2",
+            name: "CRM Enterprise",
+            category: "Web App",
+            subcategory: "Business",
+            tech: "Vue + Node.js",
+            price: { INR: 44999, USD: 499, crypto: "0.009 BTC" },
+            features: [
+              "Lead Management",
+              "Email Automation",
+              "AI Predictions",
+              "Mobile App",
+            ],
+            image:
+              "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800",
+          },
+          {
+            id: "w3",
+            name: "Project Manager AI",
+            category: "Web App",
+            subcategory: "Productivity",
+            tech: "Angular + Firebase",
+            price: { INR: 39999, USD: 449, crypto: "0.008 BTC" },
+            features: [
+              "Gantt Charts",
+              "AI Task Allocation",
+              "Time Tracking",
+              "Team Chat",
+            ],
+            image:
+              "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800",
+          },
+        ],
+        websites: [
+          {
+            id: "s1",
+            name: "Business Corporate",
+            category: "Website",
+            subcategory: "Business",
+            tech: "HTML5 + Tailwind",
+            price: { INR: 4999, USD: 59, crypto: "0.001 BTC" },
+            features: [
+              "Responsive Design",
+              "SEO Optimized",
+              "Contact Forms",
+              "Blog Integration",
+            ],
+            image:
+              "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800",
+          },
+          {
+            id: "s2",
+            name: "Portfolio Creative",
+            category: "Website",
+            subcategory: "Portfolio",
+            tech: "Next.js",
+            price: { INR: 9999, USD: 119, crypto: "0.002 BTC" },
+            features: [
+              "Animations",
+              "Dark Mode",
+              "CMS Integration",
+              "Fast Loading",
+            ],
+            image:
+              "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=800",
+          },
+          {
+            id: "s3",
+            name: "E-Commerce Store",
+            category: "Website",
+            subcategory: "E-Commerce",
+            tech: "WordPress + WooCommerce",
+            price: { INR: 14999, USD: 179, crypto: "0.003 BTC" },
+            features: [
+              "Product Management",
+              "Payment Gateway",
+              "Inventory System",
+              "Reviews",
+            ],
+            image:
+              "https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?w=800",
+          },
+        ],
+      };
 
-            // ============================================
-            // STATE MANAGEMENT (EXPANDED)
-            // ============================================
-            const state = {
-              view: "home",
-              language: "en",
-              currency: "INR",
-              cart: [],
-              userProfile: null,
-              chatOpen: false,
-              menuOpen: false, // Hamburger menu state
-              isVoiceRecording: false,
-              voiceTranscript: "",
+      // ============================================
+      // STATE MANAGEMENT (EXPANDED)
+      // ============================================
+      const state = {
+        view: "home",
+        language: "en",
+        currency: "INR",
+        cart: [],
+        userProfile: null,
+        chatOpen: false,
+        menuOpen: false, // Hamburger menu state
+        isVoiceRecording: false,
+        voiceTranscript: "",
 
-              // New state properties
-              selectedProjectType: null, // 'mobile', 'web', 'website'
-              selectedCategory: null,
-              selectedTech: null,
-              promptToAppMode: false,
-              generatedCode: null,
-              userTier: "free", // 'free', 'pro', 'enterprise'
-              usageStats: {
-                promptsToday: 0,
-                deploymentsMonth: 0,
-                downloadsMonth: 0,
-              },
-              paymentMethod: "upi",
-              activeTemplate: null,
+        // New state properties
+        selectedProjectType: null, // 'mobile', 'web', 'website'
+        selectedCategory: null,
+        selectedTech: null,
+        promptToAppMode: false,
+        generatedCode: null,
+        userTier: "free", // 'free', 'pro', 'enterprise'
+        usageStats: {
+          promptsToday: 0,
+          deploymentsMonth: 0,
+          downloadsMonth: 0,
+        },
+        paymentMethod: "upi",
+        activeTemplate: null,
 
-              messages: [
-                {
-                  role: "bot",
-                  text: `👋 Hello! I'm your AI Assistant from The IAH Creations, powered by Gemini 2.0 Flash.\\n\\nI can help you with:\\n• **Prompt-to-App**: Describe your app, I'll generate code!\\n• Template recommendations (Mobile/Web/Website)\\n• Pricing \\u0026 payment options\\n• Deployment assistance\\n\\n💼 Virtual Business Card: ${BUSINESS_CARD_URL}\\n\\nWhat would you like to create today?`,
-                },
-              ],
-            };
+        messages: [
+          {
+            role: "bot",
+            text: `👋 Hello! I'm your AI Assistant from The IAH Creations, powered by Gemini 2.0 Flash.\\n\\nI can help you with:\\n• **Prompt-to-App**: Describe your app, I'll generate code!\\n• Template recommendations (Mobile/Web/Website)\\n• Pricing \\u0026 payment options\\n• Deployment assistance\\n\\n💼 Virtual Business Card: ${BUSINESS_CARD_URL}\\n\\nWhat would you like to create today?`,
+          },
+        ],
+      };
 
-            // ============================================
-            // FREEMIUM MODEL (ENHANCED)
-            // ============================================
-            const FreemiumModel = {
-              tiers: {
-                free: {
-                  promptsPerDay: 3,
-                  templates: "view-only",
-                  deployments: 0,
-                  blockchain: false,
-                  support: "community",
-                },
-                pro: {
-                  promptsPerDay: 50,
-                  templates: 10,
-                  deployments: 5,
-                  blockchain: true,
-                  support: "24hr",
-                },
-                enterprise: {
-                  promptsPerDay: -1, // unlimited
-                  templates: -1,
-                  deployments: -1,
-                  blockchain: true,
-                  darkWebMonitoring: true,
-                  support: "24/7-sla",
-                },
-              },
+      // ============================================
+      // FREEMIUM MODEL (ENHANCED)
+      // ============================================
+      const FreemiumModel = {
+        tiers: {
+          free: {
+            promptsPerDay: 3,
+            templates: "view-only",
+            deployments: 0,
+            blockchain: false,
+            support: "community",
+          },
+          pro: {
+            promptsPerDay: 50,
+            templates: 10,
+            deployments: 5,
+            blockchain: true,
+            support: "24hr",
+          },
+          enterprise: {
+            promptsPerDay: -1, // unlimited
+            templates: -1,
+            deployments: -1,
+            blockchain: true,
+            darkWebMonitoring: true,
+            support: "24/7-sla",
+          },
+        },
 
-              checkAccess(feature) {
-                const tier = state.userTier;
-                const limits = this.tiers[tier];
+        checkAccess(feature) {
+          const tier = state.userTier;
+          const limits = this.tiers[tier];
 
-                switch (feature) {
-                  case "promptToApp":
-                    if (limits.promptsPerDay === -1) return true;
-                    return state.usageStats.promptsToday < limits.promptsPerDay;
-                  case "templateDownload":
-                    return limits.templates !== "view-only";
-                  case "deployment":
-                    if (limits.deployments === -1) return true;
-                    return state.usageStats.deploymentsMonth < limits.deployments;
-                  case "blockchain":
-                    return limits.blockchain || false;
-                  case "darkWeb":
-                    return limits.darkWebMonitoring || false;
-                  default:
-                    return tier === "pro" || tier === "enterprise";
-                }
-              },
+          switch (feature) {
+            case "promptToApp":
+              if (limits.promptsPerDay === -1) return true;
+              return state.usageStats.promptsToday < limits.promptsPerDay;
+            case "templateDownload":
+              return limits.templates !== "view-only";
+            case "deployment":
+              if (limits.deployments === -1) return true;
+              return state.usageStats.deploymentsMonth < limits.deployments;
+            case "blockchain":
+              return limits.blockchain || false;
+            case "darkWeb":
+              return limits.darkWebMonitoring || false;
+            default:
+              return tier === "pro" || tier === "enterprise";
+          }
+        },
 
-              showUpgradeModal() {
-                showToast("⭐ Upgrade to Pro for unlimited access!", "error");
-                // In real implementation, show modal
-              },
-            };
+        showUpgradeModal() {
+          showToast("⭐ Upgrade to Pro for unlimited access!", "error");
+          // In real implementation, show modal
+        },
+      };
 
-            // ============================================
-            // AI HUB - Gemini 2.0 Integration
-            // ============================================
-            const AIHub = {
-              apiKey:
-                localStorage.getItem("gemini_api_key") ||
-                "AIzaSyBIfuYCXGyGGWCpsTvFG7er5Y1jKoWqWMo",
-              model: "gemini-2.0-flash-latest",
-              apiEndpoint: "https://generativelanguage.googleapis.com/v1beta/models/",
-              projectId: "projects/559759620416",
+      // ============================================
+      // AI HUB - Gemini 2.0 Integration
+      // ============================================
+      const AIHub = {
+        apiKey:
+          localStorage.getItem("gemini_api_key") ||
+          "AIzaSyBIfuYCXGyGGWCpsTvFG7er5Y1jKoWqWMo",
+        model: "gemini-2.0-flash-latest",
+        apiEndpoint: "https://generativelanguage.googleapis.com/v1beta/models/",
+        projectId: "projects/559759620416",
 
-              setApiKey(key) {
-                this.apiKey = key;
-                localStorage.setItem("gemini_api_key", key);
-                console.log("%c✅ AI API key configured", "color: green");
-              },
+        setApiKey(key) {
+          this.apiKey = key;
+          localStorage.setItem("gemini_api_key", key);
+          console.log("%c✅ AI API key configured", "color: green");
+        },
 
-              async generate(prompt, context = "") {
-                if (!this.apiKey) {
-                  return "🔑 Please configure your Gemini API key to use the AI chatbot.";
-                }
+        async generate(prompt, context = "") {
+          if (!this.apiKey) {
+            return "🔑 Please configure your Gemini API key to use the AI chatbot.";
+          }
 
-                try {
-                  console.log(`🤖 AIHub (${this.model}): Generating response...`);
+          try {
+            console.log(`🤖 AIHub (${this.model}): Generating response...`);
 
-                  const systemContext = `You are an AI assistant for IAH Creations, a cutting-edge web development company.
+            const systemContext = `You are an AI assistant for IAH Creations, a cutting-edge web development company.
 
       Our Platform (v${APP_VERSION}):
       - Enterprise-Grade Web Development
@@ -630,253 +630,253 @@
 
       Be helpful, professional, and guide users toward our services when appropriate.`;
 
-                  const fullPrompt = context
-                    ? `${systemContext}\n\nContext: ${context}\n\nUser: ${prompt}`
-                    : `${systemContext}\n\nUser: ${prompt}`;
+            const fullPrompt = context
+              ? `${systemContext}\n\nContext: ${context}\n\nUser: ${prompt}`
+              : `${systemContext}\n\nUser: ${prompt}`;
 
-                  const response = await fetch(
-                    `${this.apiEndpoint}${this.model}:generateContent?key=${this.apiKey}`,
-                    {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({
-                        contents: [{ parts: [{ text: fullPrompt }] }],
-                        generationConfig: {
-                          temperature: 0.7,
-                          topK: 40,
-                          topP: 0.95,
-                          maxOutputTokens: 1024,
-                        },
-                      }),
-                    }
-                  );
+            const response = await fetch(
+              `${this.apiEndpoint}${this.model}:generateContent?key=${this.apiKey}`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  contents: [{ parts: [{ text: fullPrompt }] }],
+                  generationConfig: {
+                    temperature: 0.7,
+                    topK: 40,
+                    topP: 0.95,
+                    maxOutputTokens: 1024,
+                  },
+                }),
+              }
+            );
 
-                  if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error?.message || "API request failed");
-                  }
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.error?.message || "API request failed");
+            }
 
-                  const data = await response.json();
-                  const generatedText =
-                    data.candidates?.[0]?.content?.parts?.[0]?.text ||
-                    "No response generated";
+            const data = await response.json();
+            const generatedText =
+              data.candidates?.[0]?.content?.parts?.[0]?.text ||
+              "No response generated";
 
-                  console.log("%c✅ AI Response generated", "color: green");
-                  return generatedText;
-                } catch (error) {
-                  console.error("[AI] Error:", error);
-                  return `❌ Error: ${error.message}. Please check your API key.`;
-                }
-              },
+            console.log("%c✅ AI Response generated", "color: green");
+            return generatedText;
+          } catch (error) {
+            console.error("[AI] Error:", error);
+            return `❌ Error: ${error.message}. Please check your API key.`;
+          }
+        },
+      };
+
+      // ============================================
+      // GLOBALIZATION HUB - RTL Support
+      // ============================================
+      const GlobalizationHub = {
+        rtlLanguages: ["ar", "he", "fa", "ur"],
+
+        changeLanguage(lang) {
+          state.language = lang;
+
+          const isRTL = this.rtlLanguages.includes(lang);
+          document.documentElement.setAttribute("dir", isRTL ? "rtl" : "ltr");
+
+          if (isRTL) {
+            console.log(`%c🌐 RTL mode activated for ${lang}`, "color: purple");
+          }
+
+          render();
+        },
+      };
+
+      // ============================================
+      // VOICE ENGINE - Web Speech API
+      // ============================================
+      const VoiceEngine = {
+        recognition: null,
+        isListening: false,
+
+        init() {
+          const SpeechRecognition =
+            window.SpeechRecognition || window.webkitSpeechRecognition;
+          if (SpeechRecognition) {
+            this.recognition = new SpeechRecognition();
+            this.recognition.continuous = false;
+            this.recognition.interimResults = true;
+            this.recognition.lang = "en-US";
+            console.log("%c🎤 Voice recognition initialized", "color: purple");
+          } else {
+            console.warn("⚠️ Speech recognition not supported");
+          }
+        },
+
+        speak(text) {
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.rate = 1.0;
+          utterance.pitch = 1.0;
+          window.speechSynthesis.speak(utterance);
+        },
+
+        listen(onResult, onError) {
+          if (!this.recognition) this.init();
+          if (!this.recognition) {
+            if (onError) onError("Speech recognition not supported");
+            return;
+          }
+
+          if (this.isListening) {
+            this.stopListening();
+            return;
+          }
+
+          this.isListening = true;
+          console.log("🎤 Listening...");
+
+          this.recognition.onresult = (event) => {
+            const transcript = Array.from(event.results)
+              .map((result) => result[0].transcript)
+              .join("");
+            if (onResult) onResult(transcript, event.results[0].isFinal);
+          };
+
+          this.recognition.onerror = (event) => {
+            console.error("[Voice] Error:", event.error);
+            this.isListening = false;
+            if (onError) onError(event.error);
+          };
+
+          this.recognition.onend = () => {
+            this.isListening = false;
+            console.log("🎤 Stopped listening");
+          };
+
+          try {
+            this.recognition.start();
+          } catch (e) {
+            console.error("[Voice] Failed to start:", e);
+            this.isListening = false;
+            if (onError) onError(e.message);
+          }
+        },
+
+        stopListening() {
+          if (this.recognition && this.isListening) {
+            this.recognition.stop();
+            this.isListening = false;
+          }
+        },
+      };
+
+      // ============================================
+      // PAYMENT HUB - Multi-Currency Support
+      // ============================================
+      const PaymentHub = {
+        upi: {
+          id: UPI_ID,
+          qrCode: UPI_QR_CODE,
+          generateLink(amount, note = "IAH Creations Payment") {
+            return `upi://pay?pa=${
+              this.id
+            }&pn=IAH Creations&am=${amount}&cu=INR&tn=${encodeURIComponent(
+              note
+            )}`;
+          },
+        },
+
+        razorpay: {
+          enabled: false,
+          key: "", // Add Razorpay key here
+          async processPayment(amount, currency = "INR") {
+            console.log("💳 Razorpay payment:", amount, currency);
+            // Integration code here
+            showToast("Razorpay integration pending", "error");
+          },
+        },
+
+        stripe: {
+          enabled: false,
+          key: "", // Add Stripe key here
+          async processPayment(amount, currency = "USD") {
+            console.log("💳 Stripe payment:", amount, currency);
+            showToast("Stripe integration pending", "error");
+          },
+        },
+
+        crypto: {
+          wallets: {
+            BTC: "bc1q...", // Add Bitcoin wallet
+            ETH: "0x...", // Add Ethereum wallet
+            USDT: "TRC20:...", // Add USDT wallet
+          },
+          async generatePaymentAddress(coin, amount) {
+            console.log(`₿ Crypto payment: ${amount} ${coin}`);
+            return {
+              address: this.wallets[coin],
+              amount: amount,
+              qr: `crypto:${coin}:${this.wallets[coin]}?amount=${amount}`,
             };
+          },
+        },
 
-            // ============================================
-            // GLOBALIZATION HUB - RTL Support
-            // ============================================
-            const GlobalizationHub = {
-              rtlLanguages: ["ar", "he", "fa", "ur"],
+        async processPayment(templateId, method = "upi") {
+          const template = this.findTemplate(templateId);
+          if (!template) return false;
 
-              changeLanguage(lang) {
-                state.language = lang;
+          const amount = template.price[state.currency];
 
-                const isRTL = this.rtlLanguages.includes(lang);
-                document.documentElement.setAttribute("dir", isRTL ? "rtl" : "ltr");
+          switch (method) {
+            case "upi":
+              const link = this.upi.generateLink(
+                amount,
+                `Purchase: ${template.name}`
+              );
+              window.open(link, "_blank");
+              showToast("📱 Opening UPI payment...");
+              break;
+            case "razorpay":
+              await this.razorpay.processPayment(amount, state.currency);
+              break;
+            case "stripe":
+              await this.stripe.processPayment(amount, state.currency);
+              break;
+            case "crypto":
+              const payment = await this.crypto.generatePaymentAddress(
+                "BTC",
+                template.price.crypto
+              );
+              showToast(`₿ Send ${payment.amount} to wallet`);
+              break;
+          }
+        },
 
-                if (isRTL) {
-                  console.log(`%c🌐 RTL mode activated for ${lang}`, "color: purple");
-                }
+        findTemplate(id) {
+          const all = [
+            ...TEMPLATES.mobileApps,
+            ...TEMPLATES.webApps,
+            ...TEMPLATES.websites,
+          ];
+          return all.find((t) => t.id === id);
+        },
+      };
 
-                render();
-              },
-            };
+      // ============================================
+      // PROMPT-TO-APP HUB - AI Code Generation
+      // ============================================
+      const PromptToAppHub = {
+        async generateApp(description, type = "website") {
+          // Check access
+          if (!FreemiumModel.checkAccess("promptToApp")) {
+            FreemiumModel.showUpgradeModal();
+            return null;
+          }
 
-            // ============================================
-            // VOICE ENGINE - Web Speech API
-            // ============================================
-            const VoiceEngine = {
-              recognition: null,
-              isListening: false,
+          state.usageStats.promptsToday++;
 
-              init() {
-                const SpeechRecognition =
-                  window.SpeechRecognition || window.webkitSpeechRecognition;
-                if (SpeechRecognition) {
-                  this.recognition = new SpeechRecognition();
-                  this.recognition.continuous = false;
-                  this.recognition.interimResults = true;
-                  this.recognition.lang = "en-US";
-                  console.log("%c🎤 Voice recognition initialized", "color: purple");
-                } else {
-                  console.warn("⚠️ Speech recognition not supported");
-                }
-              },
+          try {
+            console.log(`🚀 Generating ${type} from prompt...`);
 
-              speak(text) {
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.rate = 1.0;
-                utterance.pitch = 1.0;
-                window.speechSynthesis.speak(utterance);
-              },
-
-              listen(onResult, onError) {
-                if (!this.recognition) this.init();
-                if (!this.recognition) {
-                  if (onError) onError("Speech recognition not supported");
-                  return;
-                }
-
-                if (this.isListening) {
-                  this.stopListening();
-                  return;
-                }
-
-                this.isListening = true;
-                console.log("🎤 Listening...");
-
-                this.recognition.onresult = (event) => {
-                  const transcript = Array.from(event.results)
-                    .map((result) => result[0].transcript)
-                    .join("");
-                  if (onResult) onResult(transcript, event.results[0].isFinal);
-                };
-
-                this.recognition.onerror = (event) => {
-                  console.error("[Voice] Error:", event.error);
-                  this.isListening = false;
-                  if (onError) onError(event.error);
-                };
-
-                this.recognition.onend = () => {
-                  this.isListening = false;
-                  console.log("🎤 Stopped listening");
-                };
-
-                try {
-                  this.recognition.start();
-                } catch (e) {
-                  console.error("[Voice] Failed to start:", e);
-                  this.isListening = false;
-                  if (onError) onError(e.message);
-                }
-              },
-
-              stopListening() {
-                if (this.recognition && this.isListening) {
-                  this.recognition.stop();
-                  this.isListening = false;
-                }
-              },
-            };
-
-            // ============================================
-            // PAYMENT HUB - Multi-Currency Support
-            // ============================================
-            const PaymentHub = {
-              upi: {
-                id: UPI_ID,
-                qrCode: UPI_QR_CODE,
-                generateLink(amount, note = "IAH Creations Payment") {
-                  return `upi://pay?pa=${
-                    this.id
-                  }&pn=IAH Creations&am=${amount}&cu=INR&tn=${encodeURIComponent(
-                    note
-                  )}`;
-                },
-              },
-
-              razorpay: {
-                enabled: false,
-                key: "", // Add Razorpay key here
-                async processPayment(amount, currency = "INR") {
-                  console.log("💳 Razorpay payment:", amount, currency);
-                  // Integration code here
-                  showToast("Razorpay integration pending", "error");
-                },
-              },
-
-              stripe: {
-                enabled: false,
-                key: "", // Add Stripe key here
-                async processPayment(amount, currency = "USD") {
-                  console.log("💳 Stripe payment:", amount, currency);
-                  showToast("Stripe integration pending", "error");
-                },
-              },
-
-              crypto: {
-                wallets: {
-                  BTC: "bc1q...", // Add Bitcoin wallet
-                  ETH: "0x...", // Add Ethereum wallet
-                  USDT: "TRC20:...", // Add USDT wallet
-                },
-                async generatePaymentAddress(coin, amount) {
-                  console.log(`₿ Crypto payment: ${amount} ${coin}`);
-                  return {
-                    address: this.wallets[coin],
-                    amount: amount,
-                    qr: `crypto:${coin}:${this.wallets[coin]}?amount=${amount}`,
-                  };
-                },
-              },
-
-              async processPayment(templateId, method = "upi") {
-                const template = this.findTemplate(templateId);
-                if (!template) return false;
-
-                const amount = template.price[state.currency];
-
-                switch (method) {
-                  case "upi":
-                    const link = this.upi.generateLink(
-                      amount,
-                      `Purchase: ${template.name}`
-                    );
-                    window.open(link, "_blank");
-                    showToast("📱 Opening UPI payment...");
-                    break;
-                  case "razorpay":
-                    await this.razorpay.processPayment(amount, state.currency);
-                    break;
-                  case "stripe":
-                    await this.stripe.processPayment(amount, state.currency);
-                    break;
-                  case "crypto":
-                    const payment = await this.crypto.generatePaymentAddress(
-                      "BTC",
-                      template.price.crypto
-                    );
-                    showToast(`₿ Send ${payment.amount} to wallet`);
-                    break;
-                }
-              },
-
-              findTemplate(id) {
-                const all = [
-                  ...TEMPLATES.mobileApps,
-                  ...TEMPLATES.webApps,
-                  ...TEMPLATES.websites,
-                ];
-                return all.find((t) => t.id === id);
-              },
-            };
-
-            // ============================================
-            // PROMPT-TO-APP HUB - AI Code Generation
-            // ============================================
-            const PromptToAppHub = {
-              async generateApp(description, type = "website") {
-                // Check access
-                if (!FreemiumModel.checkAccess("promptToApp")) {
-                  FreemiumModel.showUpgradeModal();
-                  return null;
-                }
-
-                state.usageStats.promptsToday++;
-
-                try {
-                  console.log(`🚀 Generating ${type} from prompt...`);
-
-                  const systemPrompt = `You are an expert code generator for IAH Creations.
+            const systemPrompt = `You are an expert code generator for IAH Creations.
       Generate production-ready, clean, and well-documented code based on the user's description.
 
       Type: ${type}
@@ -891,336 +891,336 @@
 
       Generate ONLY the code, no explanations.`;
 
-                  const response = await AIHub.generate(description, systemPrompt);
+            const response = await AIHub.generate(description, systemPrompt);
 
-                  state.generatedCode = {
-                    type: type,
-                    description: description,
-                    code: response,
-                    timestamp: new Date().toISOString(),
-                  };
-
-                  showToast("✅ Code generated successfully!");
-                  return response;
-                } catch (error) {
-                  console.error("[PromptToApp] Error:", error);
-                  showToast("❌ Generation failed", "error");
-                  return null;
-                }
-              },
-
-              async deployCode(code, platform = "firebase") {
-                if (!FreemiumModel.checkAccess("deployment")) {
-                  FreemiumModel.showUpgradeModal();
-                  return false;
-                }
-
-                state.usageStats.deploymentsMonth++;
-
-                console.log(`🚀 Deploying to ${platform}...`);
-                showToast(`🚀 Deployment to ${platform} initiated!`);
-
-                // In production, integrate with Firebase Hosting, Vercel, etc.
-                return true;
-              },
+            state.generatedCode = {
+              type: type,
+              description: description,
+              code: response,
+              timestamp: new Date().toISOString(),
             };
 
-            // ============================================
-            // BLOCKCHAIN HUB - Anti-Theft Protection
-            // ============================================
-            const BlockchainHub = {
-              enabled: false, // Enable when blockchain is configured
-              chain: "polygon", // polygon, ethereum, bsc
+            showToast("✅ Code generated successfully!");
+            return response;
+          } catch (error) {
+            console.error("[PromptToApp] Error:", error);
+            showToast("❌ Generation failed", "error");
+            return null;
+          }
+        },
 
-              async hashCode(code) {
-                const encoder = new TextEncoder();
-                const data = encoder.encode(code);
-                const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-                const hashArray = Array.from(new Uint8Array(hashBuffer));
-                return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-              },
+        async deployCode(code, platform = "firebase") {
+          if (!FreemiumModel.checkAccess("deployment")) {
+            FreemiumModel.showUpgradeModal();
+            return false;
+          }
 
-              async registerOwnership(code, userId) {
-                if (!FreemiumModel.checkAccess("blockchain")) {
-                  console.log("⛓️ Blockchain protection requires Pro/Enterprise");
-                  return false;
-                }
+          state.usageStats.deploymentsMonth++;
 
-                try {
-                  const hash = await this.hashCode(code);
-                  console.log(`⛓️ Registering code ownership: ${hash}`);
+          console.log(`🚀 Deploying to ${platform}...`);
+          showToast(`🚀 Deployment to ${platform} initiated!`);
 
-                  // In production: Store on blockchain
-                  const certificate = {
-                    hash: hash,
-                    owner: userId,
-                    timestamp: Date.now(),
-                    chain: this.chain,
-                  };
+          // In production, integrate with Firebase Hosting, Vercel, etc.
+          return true;
+        },
+      };
 
-                  showToast("⛓️ Code registered on blockchain!");
-                  return certificate;
-                } catch (error) {
-                  console.error("[Blockchain] Error:", error);
-                  return false;
-                }
-              },
+      // ============================================
+      // BLOCKCHAIN HUB - Anti-Theft Protection
+      // ============================================
+      const BlockchainHub = {
+        enabled: false, // Enable when blockchain is configured
+        chain: "polygon", // polygon, ethereum, bsc
 
-              async verifyOwnership(code, userId) {
-                const hash = await this.hashCode(code);
-                console.log(`⛓️ Verifying ownership for hash: ${hash}`);
-                // In production: Check blockchain records
-                return true;
-              },
+        async hashCode(code) {
+          const encoder = new TextEncoder();
+          const data = encoder.encode(code);
+          const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+          const hashArray = Array.from(new Uint8Array(hashBuffer));
+          return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+        },
+
+        async registerOwnership(code, userId) {
+          if (!FreemiumModel.checkAccess("blockchain")) {
+            console.log("⛓️ Blockchain protection requires Pro/Enterprise");
+            return false;
+          }
+
+          try {
+            const hash = await this.hashCode(code);
+            console.log(`⛓️ Registering code ownership: ${hash}`);
+
+            // In production: Store on blockchain
+            const certificate = {
+              hash: hash,
+              owner: userId,
+              timestamp: Date.now(),
+              chain: this.chain,
             };
 
-            // ============================================
-            // SECURITY HUB - Dark Web & Advanced Protection
-            // ============================================
-            const SecurityHub = {
-              darkWebMonitoring: {
-                enabled: false,
+            showToast("⛓️ Code registered on blockchain!");
+            return certificate;
+          } catch (error) {
+            console.error("[Blockchain] Error:", error);
+            return false;
+          }
+        },
 
-                async scanForTheft(codeHash) {
-                  if (!FreemiumModel.checkAccess("darkWeb")) {
-                    console.log("🕵️ Dark web monitoring requires Enterprise plan");
-                    return null;
-                  }
+        async verifyOwnership(code, userId) {
+          const hash = await this.hashCode(code);
+          console.log(`⛓️ Verifying ownership for hash: ${hash}`);
+          // In production: Check blockchain records
+          return true;
+        },
+      };
 
-                  console.log("🕵️ Scanning dark web for stolen code...");
+      // ============================================
+      // SECURITY HUB - Dark Web & Advanced Protection
+      // ============================================
+      const SecurityHub = {
+        darkWebMonitoring: {
+          enabled: false,
 
-                  // In production: Integrate with threat intelligence APIs
-                  const results = {
-                    found: false,
-                    locations: [],
-                    timestamp: Date.now(),
-                  };
-
-                  return results;
-                },
-
-                startMonitoring(codeHash) {
-                  console.log(
-                    `🕵️ Started continuous monitoring for: ${codeHash.substring(
-                      0,
-                      16
-                    )}...`
-                  );
-                  // Set up periodic scans
-                },
-              },
-
-              ddosProtection: {
-                requestCounts: new Map(),
-                limit: 100,
-                window: 60000, // 1 minute
-
-                checkRate(ip) {
-                  const now = Date.now();
-                  const record = this.requestCounts.get(ip) || {
-                    count: 0,
-                    resetTime: now + this.window,
-                  };
-
-                  if (now > record.resetTime) {
-                    record.count = 1;
-                    record.resetTime = now + this.window;
-                  } else {
-                    record.count++;
-                  }
-
-                  this.requestCounts.set(ip, record);
-                  return record.count < this.limit;
-                },
-              },
-
-              sanitizeInput(input) {
-                // XSS prevention
-                return input
-                  .replace(/</g, "&lt;")
-                  .replace(/>/g, "&gt;")
-                  .replace(/"/g, "&quot;")
-                  .replace(/'/g, "&#x27;")
-                  .replace(/\//g, "&#x2F;");
-              },
-            };
-
-            // ============================================
-            // AUTO-UPDATE HUB - Silent Background Updates
-            // ============================================
-            const AutoUpdateHub = {
-              currentVersion: APP_VERSION,
-              updateCheckInterval: 86400000, // 24 hours in milliseconds
-              updateURL:
-                "https://api.github.com/repos/iahcreations/platform/releases/latest",
-
-              init() {
-                const lastCheck = localStorage.getItem("last_update_check");
-                const now = Date.now();
-
-                // Check if 24 hours have passed since last check
-                if (
-                  !lastCheck ||
-                  now - parseInt(lastCheck) > this.updateCheckInterval
-                ) {
-                  this.checkForUpdates();
-                }
-              },
-
-              async checkForUpdates() {
-                try {
-                  // Silent check - no user notification
-                  console.log(
-                    "%c🔄 Checking for updates...",
-                    "color: gray; font-size: 10px"
-                  );
-
-                  localStorage.setItem("last_update_check", Date.now().toString());
-
-                  // In production, this would fetch from actual update server
-                  // For now, just log that check was performed
-                  console.log(
-                    "%c✓ Update check complete",
-                    "color: gray; font-size: 10px"
-                  );
-
-                  // If update available, cache it silently
-                  // Apply on next page load
-                } catch (error) {
-                  // Silent failure - don't notify user
-                  console.log(
-                    "%c⚠ Update check failed silently",
-                    "color: gray; font-size: 10px"
-                  );
-                }
-              },
-
-              applyUpdate() {
-                // Apply cached update if available
-                const cachedUpdate = localStorage.getItem("cached_update");
-                if (cachedUpdate) {
-                  // Apply update silently
-                  localStorage.removeItem("cached_update");
-                }
-              },
-            };
-
-            // ============================================
-            // UTILITY FUNCTIONS
-            // ============================================
-            function showToast(message, type = "success") {
-              const container = document.getElementById("toast-container");
-              const toast = document.createElement("div");
-              toast.className = `px-6 py-3 rounded-lg shadow-lg text-white animate-fade-in ${
-                type === "success" ? "bg-green-600" : "bg-red-600"
-              }`;
-              toast.textContent = message;
-              container.appendChild(toast);
-              setTimeout(() => toast.remove(), 3000);
+          async scanForTheft(codeHash) {
+            if (!FreemiumModel.checkAccess("darkWeb")) {
+              console.log("🕵️ Dark web monitoring requires Enterprise plan");
+              return null;
             }
 
-            window.setView = function (view) {
-              state.view = view;
-              state.menuOpen = false; // Close menu when navigating
-              window.scrollTo(0, 0);
-              render();
+            console.log("🕵️ Scanning dark web for stolen code...");
+
+            // In production: Integrate with threat intelligence APIs
+            const results = {
+              found: false,
+              locations: [],
+              timestamp: Date.now(),
             };
 
-            window.toggleMenu = function () {
-              state.menuOpen = !state.menuOpen;
-              render();
+            return results;
+          },
+
+          startMonitoring(codeHash) {
+            console.log(
+              `🕵️ Started continuous monitoring for: ${codeHash.substring(
+                0,
+                16
+              )}...`
+            );
+            // Set up periodic scans
+          },
+        },
+
+        ddosProtection: {
+          requestCounts: new Map(),
+          limit: 100,
+          window: 60000, // 1 minute
+
+          checkRate(ip) {
+            const now = Date.now();
+            const record = this.requestCounts.get(ip) || {
+              count: 0,
+              resetTime: now + this.window,
             };
 
-            window.toggleChat = function () {
-              state.chatOpen = !state.chatOpen;
+            if (now > record.resetTime) {
+              record.count = 1;
+              record.resetTime = now + this.window;
+            } else {
+              record.count++;
+            }
+
+            this.requestCounts.set(ip, record);
+            return record.count < this.limit;
+          },
+        },
+
+        sanitizeInput(input) {
+          // XSS prevention
+          return input
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#x27;")
+            .replace(/\//g, "&#x2F;");
+        },
+      };
+
+      // ============================================
+      // AUTO-UPDATE HUB - Silent Background Updates
+      // ============================================
+      const AutoUpdateHub = {
+        currentVersion: APP_VERSION,
+        updateCheckInterval: 86400000, // 24 hours in milliseconds
+        updateURL:
+          "https://api.github.com/repos/iahcreations/platform/releases/latest",
+
+        init() {
+          const lastCheck = localStorage.getItem("last_update_check");
+          const now = Date.now();
+
+          // Check if 24 hours have passed since last check
+          if (
+            !lastCheck ||
+            now - parseInt(lastCheck) > this.updateCheckInterval
+          ) {
+            this.checkForUpdates();
+          }
+        },
+
+        async checkForUpdates() {
+          try {
+            // Silent check - no user notification
+            console.log(
+              "%c🔄 Checking for updates...",
+              "color: gray; font-size: 10px"
+            );
+
+            localStorage.setItem("last_update_check", Date.now().toString());
+
+            // In production, this would fetch from actual update server
+            // For now, just log that check was performed
+            console.log(
+              "%c✓ Update check complete",
+              "color: gray; font-size: 10px"
+            );
+
+            // If update available, cache it silently
+            // Apply on next page load
+          } catch (error) {
+            // Silent failure - don't notify user
+            console.log(
+              "%c⚠ Update check failed silently",
+              "color: gray; font-size: 10px"
+            );
+          }
+        },
+
+        applyUpdate() {
+          // Apply cached update if available
+          const cachedUpdate = localStorage.getItem("cached_update");
+          if (cachedUpdate) {
+            // Apply update silently
+            localStorage.removeItem("cached_update");
+          }
+        },
+      };
+
+      // ============================================
+      // UTILITY FUNCTIONS
+      // ============================================
+      function showToast(message, type = "success") {
+        const container = document.getElementById("toast-container");
+        const toast = document.createElement("div");
+        toast.className = `px-6 py-3 rounded-lg shadow-lg text-white animate-fade-in ${
+          type === "success" ? "bg-green-600" : "bg-red-600"
+        }`;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+      }
+
+      window.setView = function (view) {
+        state.view = view;
+        state.menuOpen = false; // Close menu when navigating
+        window.scrollTo(0, 0);
+        render();
+      };
+
+      window.toggleMenu = function () {
+        state.menuOpen = !state.menuOpen;
+        render();
+      };
+
+      window.toggleChat = function () {
+        state.chatOpen = !state.chatOpen;
+        render();
+        if (state.chatOpen) {
+          setTimeout(() => {
+            const chatContainer = document.getElementById("chat-messages");
+            if (chatContainer)
+              chatContainer.scrollTop = chatContainer.scrollHeight;
+          }, 100);
+        }
+      };
+
+      window.handleChatSubmit = async function (e) {
+        e.preventDefault();
+        const input = document.getElementById("chat-input");
+        const text = input.value.trim();
+        if (!text) return;
+
+        state.messages.push({ role: "user", text });
+        input.value = "";
+        render();
+
+        setTimeout(() => {
+          const chatContainer = document.getElementById("chat-messages");
+          if (chatContainer)
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }, 50);
+
+        try {
+          const response = await AIHub.generate(text);
+          state.messages.push({ role: "bot", text: response });
+          render();
+          setTimeout(() => {
+            const chatContainer = document.getElementById("chat-messages");
+            if (chatContainer)
+              chatContainer.scrollTop = chatContainer.scrollHeight;
+          }, 50);
+        } catch (err) {
+          state.messages.push({
+            role: "bot",
+            text: "I'm having trouble connecting. Please try again.",
+          });
+          render();
+        }
+      };
+
+      window.startVoiceInput = function () {
+        state.isVoiceRecording = !state.isVoiceRecording;
+
+        if (state.isVoiceRecording) {
+          VoiceEngine.listen(
+            (transcript, isFinal) => {
+              state.voiceTranscript = transcript;
               render();
-              if (state.chatOpen) {
-                setTimeout(() => {
-                  const chatContainer = document.getElementById("chat-messages");
-                  if (chatContainer)
-                    chatContainer.scrollTop = chatContainer.scrollHeight;
-                }, 100);
+
+              if (isFinal) {
+                const input = document.getElementById("chat-input");
+                if (input) {
+                  input.value = transcript;
+                  state.isVoiceRecording = false;
+                  state.voiceTranscript = "";
+                  render();
+                }
               }
-            };
-
-            window.handleChatSubmit = async function (e) {
-              e.preventDefault();
-              const input = document.getElementById("chat-input");
-              const text = input.value.trim();
-              if (!text) return;
-
-              state.messages.push({ role: "user", text });
-              input.value = "";
+            },
+            (error) => {
+              console.error("Voice error:", error);
+              state.isVoiceRecording = false;
+              state.voiceTranscript = "";
+              showToast("Voice input error: " + error, "error");
               render();
+            }
+          );
+        } else {
+          VoiceEngine.stopListening();
+          state.voiceTranscript = "";
+          render();
+        }
+      };
 
-              setTimeout(() => {
-                const chatContainer = document.getElementById("chat-messages");
-                if (chatContainer)
-                  chatContainer.scrollTop = chatContainer.scrollHeight;
-              }, 50);
+      window.speakMessage = function (text) {
+        VoiceEngine.speak(text);
+        showToast("🔊 Speaking...");
+      };
 
-              try {
-                const response = await AIHub.generate(text);
-                state.messages.push({ role: "bot", text: response });
-                render();
-                setTimeout(() => {
-                  const chatContainer = document.getElementById("chat-messages");
-                  if (chatContainer)
-                    chatContainer.scrollTop = chatContainer.scrollHeight;
-                }, 50);
-              } catch (err) {
-                state.messages.push({
-                  role: "bot",
-                  text: "I'm having trouble connecting. Please try again.",
-                });
-                render();
-              }
-            };
-
-            window.startVoiceInput = function () {
-              state.isVoiceRecording = !state.isVoiceRecording;
-
-              if (state.isVoiceRecording) {
-                VoiceEngine.listen(
-                  (transcript, isFinal) => {
-                    state.voiceTranscript = transcript;
-                    render();
-
-                    if (isFinal) {
-                      const input = document.getElementById("chat-input");
-                      if (input) {
-                        input.value = transcript;
-                        state.isVoiceRecording = false;
-                        state.voiceTranscript = "";
-                        render();
-                      }
-                    }
-                  },
-                  (error) => {
-                    console.error("Voice error:", error);
-                    state.isVoiceRecording = false;
-                    state.voiceTranscript = "";
-                    showToast("Voice input error: " + error, "error");
-                    render();
-                  }
-                );
-              } else {
-                VoiceEngine.stopListening();
-                state.voiceTranscript = "";
-                render();
-              }
-            };
-
-            window.speakMessage = function (text) {
-              VoiceEngine.speak(text);
-              showToast("🔊 Speaking...");
-            };
-
-            // ============================================
-            // RENDER FUNCTIONS
-            // ============================================
-            function renderNavbar() {
-              return `
+      // ============================================
+      // RENDER FUNCTIONS
+      // ============================================
+      function renderNavbar() {
+        return `
                       <nav class="bg-gray-900 border-b border-gray-800 sticky top-0 z-30 backdrop-blur-md bg-opacity-90">
                           <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
                               <div class="flex items-center cursor-pointer" onclick="setView('home')">
@@ -1272,10 +1272,10 @@
                           </div>
                       </nav>
                   `;
-            }
+      }
 
-            function renderHero() {
-              return `
+      function renderHero() {
+        return `
                       <div class="relative bg-gradient-to-br from-gray-900 via-blue-900/20 to-purple-900/20 overflow-hidden">
                           <div class="max-w-7xl mx-auto px-4 pt-20 pb-24 text-center">
                               <div class="inline-block mb-4 px-3 py-1 rounded-full bg-gray-800 border border-gray-700 text-xs">
@@ -1302,61 +1302,61 @@
                           </div>
                       </div>
                   `;
-            }
+      }
 
-            function renderFeatures() {
-              const features = [
-                {
-                  icon: "🤖",
-                  title: "Gemini 2.0 AI Integration",
-                  description:
-                    "Real-time AI chatbot powered by Google's latest Gemini 2.0 Flash model with context-aware responses.",
-                },
-                {
-                  icon: "🔒",
-                  title: "Firebase Security",
-                  description:
-                    "Enterprise-grade security with artifacts path structure and secure authentication.",
-                },
-                {
-                  icon: "🗄️",
-                  title: "Multi-Database Support",
-                  description:
-                    "Firebase, Cloud SQL, BigQuery, Spanner, and Bigtable integration for trillion-scale data.",
-                },
-                {
-                  icon: "🌍",
-                  title: "20+ Languages with RTL",
-                  description:
-                    "Full globalization support including Arabic and Hebrew with automatic RTL layout.",
-                },
-                {
-                  icon: "🎤",
-                  title: "Voice Recognition & Synthesis",
-                  description:
-                    "Web Speech API integration for voice commands and text-to-speech in 12+ languages.",
-                },
-                {
-                  icon: "🎓",
-                  title: "Google Scholar Integration",
-                  description:
-                    "Search academic papers, analyze citations, and generate bibliographies (Pro/Enterprise).",
-                },
-                {
-                  icon: "📁",
-                  title: "Multi-Modal Input",
-                  description:
-                    "Upload and process video, audio, images, and documents with AI analysis.",
-                },
-                {
-                  icon: "⚡",
-                  title: "Quantum Query Engine",
-                  description:
-                    "Trillion-scale data processing with quantum-inspired algorithms for instant retrieval.",
-                },
-              ];
+      function renderFeatures() {
+        const features = [
+          {
+            icon: "🤖",
+            title: "Gemini 2.0 AI Integration",
+            description:
+              "Real-time AI chatbot powered by Google's latest Gemini 2.0 Flash model with context-aware responses.",
+          },
+          {
+            icon: "🔒",
+            title: "Firebase Security",
+            description:
+              "Enterprise-grade security with artifacts path structure and secure authentication.",
+          },
+          {
+            icon: "🗄️",
+            title: "Multi-Database Support",
+            description:
+              "Firebase, Cloud SQL, BigQuery, Spanner, and Bigtable integration for trillion-scale data.",
+          },
+          {
+            icon: "🌍",
+            title: "20+ Languages with RTL",
+            description:
+              "Full globalization support including Arabic and Hebrew with automatic RTL layout.",
+          },
+          {
+            icon: "🎤",
+            title: "Voice Recognition & Synthesis",
+            description:
+              "Web Speech API integration for voice commands and text-to-speech in 12+ languages.",
+          },
+          {
+            icon: "🎓",
+            title: "Google Scholar Integration",
+            description:
+              "Search academic papers, analyze citations, and generate bibliographies (Pro/Enterprise).",
+          },
+          {
+            icon: "📁",
+            title: "Multi-Modal Input",
+            description:
+              "Upload and process video, audio, images, and documents with AI analysis.",
+          },
+          {
+            icon: "⚡",
+            title: "Quantum Query Engine",
+            description:
+              "Trillion-scale data processing with quantum-inspired algorithms for instant retrieval.",
+          },
+        ];
 
-              return `
+        return `
                       <div class="max-w-7xl mx-auto px-4 py-16">
                           <div class="text-center mb-12">
                               <h2 class="text-4xl font-bold text-white mb-4 professional-text">Platform Features</h2>
@@ -1377,58 +1377,58 @@
                           </div>
                       </div>
                   `;
-            }
+      }
 
-            function renderPricing() {
-              const tiers = [
-                {
-                  name: "Free",
-                  price: "₹0",
-                  period: "forever",
-                  features: [
-                    "10 AI queries/day",
-                    "3 file uploads/day",
-                    "Firestore database",
-                    "Basic templates",
-                    "Community support",
-                  ],
-                  highlight: false,
-                },
-                {
-                  name: "Pro",
-                  price: "₹999",
-                  period: "/month",
-                  features: [
-                    "1,000 AI queries/day",
-                    "100 file uploads/day",
-                    "Cloud SQL + Firestore",
-                    "Premium templates",
-                    "Google Scholar (50/day)",
-                    "Priority support",
-                    "Voice features",
-                  ],
-                  highlight: true,
-                  badge: "Most Popular",
-                },
-                {
-                  name: "Enterprise",
-                  price: "₹4,999",
-                  period: "/month",
-                  features: [
-                    "Unlimited AI queries",
-                    "Unlimited uploads",
-                    "All 5 databases",
-                    "Google Scholar (500/day)",
-                    "24/7 dedicated support",
-                    "Custom AI training",
-                    "White-label options",
-                    "SLA guarantee",
-                  ],
-                  highlight: false,
-                },
-              ];
+      function renderPricing() {
+        const tiers = [
+          {
+            name: "Free",
+            price: "₹0",
+            period: "forever",
+            features: [
+              "10 AI queries/day",
+              "3 file uploads/day",
+              "Firestore database",
+              "Basic templates",
+              "Community support",
+            ],
+            highlight: false,
+          },
+          {
+            name: "Pro",
+            price: "₹999",
+            period: "/month",
+            features: [
+              "1,000 AI queries/day",
+              "100 file uploads/day",
+              "Cloud SQL + Firestore",
+              "Premium templates",
+              "Google Scholar (50/day)",
+              "Priority support",
+              "Voice features",
+            ],
+            highlight: true,
+            badge: "Most Popular",
+          },
+          {
+            name: "Enterprise",
+            price: "₹4,999",
+            period: "/month",
+            features: [
+              "Unlimited AI queries",
+              "Unlimited uploads",
+              "All 5 databases",
+              "Google Scholar (500/day)",
+              "24/7 dedicated support",
+              "Custom AI training",
+              "White-label options",
+              "SLA guarantee",
+            ],
+            highlight: false,
+          },
+        ];
 
-              return `
+        return `
                       <div class="max-w-7xl mx-auto px-4 py-16">
                           <div class="text-center mb-12">
                               <h2 class="text-4xl font-bold text-white mb-4 neon-text">Pricing Plans</h2>
@@ -1485,19 +1485,19 @@
                           </div>
                       </div>
                   `;
-            }
+      }
 
-            // ============================================
-            // TEMPLATE MARKETPLACE
-            // ============================================
-            function renderTemplates() {
-              const allTemplates = [
-                ...TEMPLATES.mobileApps,
-                ...TEMPLATES.webApps,
-                ...TEMPLATES.websites,
-              ];
+      // ============================================
+      // TEMPLATE MARKETPLACE
+      // ============================================
+      function renderTemplates() {
+        const allTemplates = [
+          ...TEMPLATES.mobileApps,
+          ...TEMPLATES.webApps,
+          ...TEMPLATES.websites,
+        ];
 
-              return `
+        return `
                 <div class="max-w-7xl mx-auto px-4 py-16">
                   <div class="text-center mb-12">
                     <h2 class="text-4xl font-bold text-white mb-4 neon-text">Template Marketplace</h2>
@@ -1514,16 +1514,18 @@
                         }" class="w-full h-48 object-cover" />
                         <div class="p-6">
                           <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xl font-bold text-white">${t.name}</h3>
+                            <h3 class="text-xl font-bold text-white">${
+                              t.name
+                            }</h3>
                             ${
                               t.rating
                                 ? `<span class="text-yellow-400">⭐ ${t.rating}</span>`
                                 : ""
                             }
                           </div>
-                          <p class="text-sm text-gray-400 mb-3">${t.subcategory} • ${
-                          t.tech
-                        }</p>
+                          <p class="text-sm text-gray-400 mb-3">${
+                            t.subcategory
+                          } • ${t.tech}</p>
                           <ul class="space-y-1 mb-4">
                             ${t.features
                               .slice(0, 3)
@@ -1557,13 +1559,13 @@
                   </div>
                 </div>
               `;
-            }
+      }
 
-            // ============================================
-            // PROMPT-TO-APP BUILDER
-            // ============================================
-            function renderBuilder() {
-              return `
+      // ============================================
+      // PROMPT-TO-APP BUILDER
+      // ============================================
+      function renderBuilder() {
+        return `
                 <div class="max-w-4xl mx-auto px-4 py-16">
                   <div class="text-center mb-12">
                     <h2 class="text-4xl font-bold text-white mb-4 neon-text">AI App Builder</h2>
@@ -1653,10 +1655,10 @@
                   </div>
                 </div>
               `;
-            }
+      }
 
-            function renderContact() {
-              return `
+      function renderContact() {
+        return `
                       <div class="max-w-4xl mx-auto px-4 py-16">
                           <div class="text-center mb-12">
                               <h2 class="text-4xl font-bold text-white mb-4 neon-text">Contact Us</h2>
@@ -1709,38 +1711,38 @@
                           </div>
                       </div>
                   `;
-            }
+      }
 
-            window.handleContactSubmit = async function (e) {
-              e.preventDefault();
-              const form = e.target;
-              const name = form.querySelector('input[type="text"]').value;
-              const email = form.querySelector('input[type="email"]').value;
-              const message = form.querySelector("textarea").value;
+      window.handleContactSubmit = async function (e) {
+        e.preventDefault();
+        const form = e.target;
+        const name = form.querySelector('input[type="text"]').value;
+        const email = form.querySelector('input[type="email"]').value;
+        const message = form.querySelector("textarea").value;
 
-              try {
-                if (db && isFirebaseReady) {
-                  await addDoc(
-                    collection(db, getCollectionPath("contact_requests")),
-                    {
-                      name,
-                      email,
-                      message,
-                      timestamp: serverTimestamp(),
-                      status: "new",
-                    }
-                  );
-                }
-                showToast("✅ Message sent successfully!");
-                form.reset();
-              } catch (error) {
-                console.error("Error:", error);
-                showToast("❌ Error sending message", "error");
+        try {
+          if (db && isFirebaseReady) {
+            await addDoc(
+              collection(db, getCollectionPath("contact_requests")),
+              {
+                name,
+                email,
+                message,
+                timestamp: serverTimestamp(),
+                status: "new",
               }
-            };
+            );
+          }
+          showToast("✅ Message sent successfully!");
+          form.reset();
+        } catch (error) {
+          console.error("Error:", error);
+          showToast("❌ Error sending message", "error");
+        }
+      };
 
-            function renderChatBot() {
-              return `
+      function renderChatBot() {
+        return `
                       <div class="fixed bottom-4 right-4 z-50 flex flex-col items-end">
                           ${
                             state.chatOpen
@@ -1794,7 +1796,8 @@
                                           ? `
                                           <div class="text-center py-2 mb-2 bg-red-900/30 border border-red-500 rounded text-red-400 text-sm">
                                               🎤 Listening... ${
-                                                state.voiceTranscript || "Speak now"
+                                                state.voiceTranscript ||
+                                                "Speak now"
                                               }
                                           </div>
                                       `
@@ -1831,81 +1834,81 @@
                           </button>
                       </div>
                   `;
-            }
+      }
 
-            // ============================================
-            // INTERACTIVE HANDLERS
-            // ============================================
-            window.selectProjectType = function (type) {
-              state.selectedProjectType = type;
-              render();
-            };
+      // ============================================
+      // INTERACTIVE HANDLERS
+      // ============================================
+      window.selectProjectType = function (type) {
+        state.selectedProjectType = type;
+        render();
+      };
 
-            window.handlePromptSubmit = async function (e) {
-              e.preventDefault();
-              const description = document.getElementById("app-description").value;
-              const type = state.selectedProjectType || "website";
+      window.handlePromptSubmit = async function (e) {
+        e.preventDefault();
+        const description = document.getElementById("app-description").value;
+        const type = state.selectedProjectType || "website";
 
-              if (!description) {
-                showToast("Please describe your app first", "error");
-                return;
-              }
+        if (!description) {
+          showToast("Please describe your app first", "error");
+          return;
+        }
 
-              const button = e.target.querySelector("button");
-              const originalText = button.innerHTML;
-              button.innerHTML = `<div class="spinner border-white mr-2"></div> Generating...`;
-              button.disabled = true;
+        const button = e.target.querySelector("button");
+        const originalText = button.innerHTML;
+        button.innerHTML = `<div class="spinner border-white mr-2"></div> Generating...`;
+        button.disabled = true;
 
-              await PromptToAppHub.generateApp(description, type);
+        await PromptToAppHub.generateApp(description, type);
 
-              button.innerHTML = originalText;
-              button.disabled = false;
-              render();
-            };
+        button.innerHTML = originalText;
+        button.disabled = false;
+        render();
+      };
 
-            window.deployCode = async function () {
-              if (state.generatedCode) {
-                await PromptToAppHub.deployCode(state.generatedCode.code);
-              }
-            };
+      window.deployCode = async function () {
+        if (state.generatedCode) {
+          await PromptToAppHub.deployCode(state.generatedCode.code);
+        }
+      };
 
-            window.buyTemplate = function (id) {
-              const template = PaymentHub.findTemplate(id);
-              if (template) {
-                state.activeTemplate = template;
-                render(); // Re-render to show modal
-              }
-            };
+      window.buyTemplate = function (id) {
+        const template = PaymentHub.findTemplate(id);
+        if (template) {
+          state.activeTemplate = template;
+          render(); // Re-render to show modal
+        }
+      };
 
-            window.closePaymentModal = function () {
-              state.activeTemplate = null;
-              render();
-            };
+      window.closePaymentModal = function () {
+        state.activeTemplate = null;
+        render();
+      };
 
-            window.processPayment = async function (method) {
-              if (state.activeTemplate) {
-                await PaymentHub.processPayment(state.activeTemplate.id, method);
-                // In a real app, we'd wait for confirmation.
-                // For demo, we'll close modal after a delay if it was a direct action
-                if (method === "upi") {
-                  setTimeout(() => {
-                    closePaymentModal();
-                    showToast("Payment link opened! Check your UPI app.");
-                  }, 2000);
-                }
-              }
-            };
+      window.processPayment = async function (method) {
+        if (state.activeTemplate) {
+          await PaymentHub.processPayment(state.activeTemplate.id, method);
+          // In a real app, we'd wait for confirmation.
+          // For demo, we'll close modal after a delay if it was a direct action
+          if (method === "upi") {
+            setTimeout(() => {
+              closePaymentModal();
+              showToast("Payment link opened! Check your UPI app.");
+            }, 2000);
+          }
+        }
+      };
 
-            // ============================================
-            // PAYMENT MODAL
-            // ============================================
-            function renderPaymentModal() {
-              if (!state.activeTemplate) return "";
+      // ============================================
+      // PAYMENT MODAL
+      // ============================================
+      function renderPaymentModal() {
+        if (!state.activeTemplate) return "";
 
-              const t = state.activeTemplate;
-              const price = t.price[state.currency];
+        const t = state.activeTemplate;
+        const price = t.price[state.currency];
 
-              return `
+        return `
                 <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
                   <div class="bg-gray-900 border border-blue-500 rounded-2xl max-w-md w-full overflow-hidden shadow-2xl relative">
                     <button onclick="closePaymentModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
@@ -1920,23 +1923,23 @@
                         <span class="text-4xl font-bold text-white">${state.currency} ${price}</span>
                       </div>
 
-                      \u003cdiv class="space-y-3"\u003e
-                        \u003cbutton onclick="processPayment('upi')" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white p-4 rounded-xl flex items-center justify-between group transition-all"\u003e
-                          \u003cdiv class="flex items-center gap-3"\u003e
-                            \u003cspan class="text-2xl"\u003e📱\u003c/span\u003e
-                            \u003cdiv class="text-left"\u003e
-                              \u003cdiv class="font-bold"\u003ePay via UPI\u003c/div\u003e
-                              \u003cdiv class="text-xs text-blue-200"\u003ePhonePe, GPay, Paytm\u003c/div\u003e
-                            \u003c/div\u003e
-                          \u003c/div\u003e
-                          \u003csvg class="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"\u003e\u003cpath stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"\u003e\u003c/path\u003e\u003c/svg\u003e
-                        \u003c/button\u003e
+                      <div class="space-y-3">
+                        <button onclick="processPayment('upi')" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white p-4 rounded-xl flex items-center justify-between group transition-all">
+                          <div class="flex items-center gap-3">
+                            <span class="text-2xl">📱</span>
+                            <div class="text-left">
+                              <div class="font-bold">Pay via UPI</div>
+                              <div class="text-xs text-blue-200">PhonePe, GPay, Paytm</div>
+                            </div>
+                          </div>
+                          <svg class="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </button>
 
-                        \u003cdiv class="bg-gray-800 p-4 rounded-xl border border-gray-700"\u003e
-                          \u003cp class="text-center text-sm text-gray-400 mb-3"\u003eScan QR Code to Pay\u003c/p\u003e
-                          \u003cimg src="assets/upi_qr.jpg" alt="UPI QR Code" class="w-48 h-48 mx-auto rounded-lg border-2 border-blue-500" /\u003e
-                          \u003cp class="text-center text-xs text-gray-400 mt-3"\u003eUPI ID: ${UPI_ID}\u003c/p\u003e
-                        \u003c/div\u003e
+                        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700">
+                          <p class="text-center text-sm text-gray-400 mb-3">Scan QR Code to Pay</p>
+                          <img src="assets/upi_qr.jpg" alt="UPI QR Code" class="w-48 h-48 mx-auto rounded-lg border-2 border-blue-500" />
+                          <p class="text-center text-xs text-gray-400 mt-3">UPI ID: ${UPI_ID}</p>
+                        </div>
 
                         <button onclick="processPayment('crypto')" class="w-full bg-gray-800 hover:bg-gray-700 border border-gray-700 text-white p-4 rounded-xl flex items-center justify-between group transition-all">
                           <div class="flex items-center gap-3">
@@ -1971,10 +1974,10 @@
                   </div>
                 </div>
               `;
-            }
+      }
 
-            function renderFooter() {
-              return `
+      function renderFooter() {
+        return `
                       <footer class="bg-gray-900 border-t border-gray-800 py-8">
                           <div class="max-w-7xl mx-auto px-4 text-center">
                               <p class="text-gray-400 mb-2">© 2025 The IAH Creations. All rights reserved.</p>
@@ -1995,272 +1998,302 @@
                           </div>
                       </footer>
                   `;
-            }
+      }
 
-            // ============================================
-            // HAMBURGER MENU
-            // ============================================
-            function renderHamburgerMenu() {
-              return `
-                \u003cdiv class="hamburger-overlay ${state.menuOpen ? 'open' : ''}" onclick="toggleMenu()"\u003e\u003c/div\u003e
-                \u003cdiv class="hamburger-menu ${state.menuOpen ? 'open' : ''}"\u003e
-                  \u003cdiv class="p-6 border-b border-gray-800 flex justify-between items-center"\u003e
-                    \u003ch2 class="text-xl font-bold text-white"\u003eMenu\u003c/h2\u003e
-                    \u003cbutton onclick="toggleMenu()" class="text-gray-400 hover:text-white"\u003e✕\u003c/button\u003e
-                  \u003c/div\u003e
-                  \u003cnav class="p-6 space-y-2"\u003e
-                    \u003cbutton onclick="setView('home')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors"\u003eHome\u003c/button\u003e
-                    \u003cbutton onclick="setView('features')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors"\u003eFeatures\u003c/button\u003e
-                    \u003cbutton onclick="setView('templates')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors"\u003eTemplates\u003c/button\u003e
-                    \u003cbutton onclick="setView('builder')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors"\u003eAI Builder\u003c/button\u003e
-                    \u003cbutton onclick="setView('pricing')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors"\u003ePricing\u003c/button\u003e
-                    \u003cbutton onclick="setView('about')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors"\u003eAbout Us\u003c/button\u003e
-                    \u003cbutton onclick="setView('faqs')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors"\u003eFAQs\u003c/button\u003e
-                    \u003cbutton onclick="setView('privacy')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors"\u003ePrivacy Policy\u003c/button\u003e
-                    \u003cbutton onclick="setView('terms')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors"\u003eTerms \u0026 Conditions\u003c/button\u003e
-                    \u003cbutton onclick="setView('contact')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors"\u003eContact\u003c/button\u003e
-                  \u003c/nav\u003e
-                \u003c/div\u003e
+      // ============================================
+      // HAMBURGER MENU
+      // ============================================
+      function renderHamburgerMenu() {
+        return `
+                <div class="hamburger-overlay ${
+                  state.menuOpen ? "open" : ""
+                }" onclick="toggleMenu()"></div>
+                <div class="hamburger-menu ${state.menuOpen ? "open" : ""}">
+                  <div class="p-6 border-b border-gray-800 flex justify-between items-center">
+                    <h2 class="text-xl font-bold text-white">Menu</h2>
+                    <button onclick="toggleMenu()" class="text-gray-400 hover:text-white">✕</button>
+                  </div>
+                  <nav class="p-6 space-y-2">
+                    <button onclick="setView('home')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors">Home</button>
+                    <button onclick="setView('features')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors">Features</button>
+                    <button onclick="setView('templates')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors">Templates</button>
+                    <button onclick="setView('builder')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors">AI Builder</button>
+                    <button onclick="setView('pricing')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors">Pricing</button>
+                    <button onclick="setView('about')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors">About Us</button>
+                    <button onclick="setView('faqs')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors">FAQs</button>
+                    <button onclick="setView('privacy')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors">Privacy Policy</button>
+                    <button onclick="setView('terms')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors">Terms & Conditions</button>
+                    <button onclick="setView('contact')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors">Contact</button>
+                  </nav>
+                </div>
               `;
-            }
+      }
 
-            // ============================================
-            // LEGAL PAGES
-            // ============================================
-            function renderAboutUs() {
-              return `
-                \u003cdiv class="max-w-4xl mx-auto px-4 py-16"\u003e
-                  \u003ch2 class="text-4xl font-bold text-white mb-8 professional-text text-center"\u003eAbout The IAH Creations\u003c/h2\u003e
-                  \u003cdiv class="holographic-card p-8 rounded-xl space-y-6"\u003e
-                    \u003csection\u003e
-                      \u003ch3 class="text-2xl font-bold text-white mb-4"\u003eOur Mission\u003c/h3\u003e
-                      \u003cp class="text-gray-300 leading-relaxed"\u003eAt The IAH Creations, we're revolutionizing web development by combining cutting-edge AI technology with enterprise-grade infrastructure. Our mission is to make professional web development accessible to everyone, from startups to large enterprises.\u003c/p\u003e
-                    \u003c/section\u003e
-                    \u003csection\u003e
-                      \u003ch3 class="text-2xl font-bold text-white mb-4"\u003eOur Technology\u003c/h3\u003e
-                      \u003cul class="space-y-2 text-gray-300"\u003e
-                        \u003cli\u003e✓ Powered by Google Gemini 2.0 Flash AI\u003c/li\u003e
-                        \u003cli\u003e✓ Multi-database support (Firebase, Cloud SQL, BigQuery, Spanner, Bigtable)\u003c/li\u003e
-                        \u003cli\u003e✓ 20+ language support with RTL capabilities\u003c/li\u003e
-                        \u003cli\u003e✓ Voice recognition and synthesis\u003c/li\u003e
-                        \u003cli\u003e✓ Blockchain-based code protection\u003c/li\u003e
-                      \u003c/ul\u003e
-                    \u003c/section\u003e
-                    \u003csection\u003e
-                      \u003ch3 class="text-2xl font-bold text-white mb-4"\u003eWhy Choose Us\u003c/h3\u003e
-                      \u003cp class="text-gray-300 leading-relaxed"\u003eWe deliver production-ready websites in 24-72 hours with enterprise-grade security, scalability, and performance. Our platform combines the power of AI with human expertise to create exceptional digital experiences.\u003c/p\u003e
-                    \u003c/section\u003e
-                    \u003csection\u003e
-                      \u003ch3 class="text-2xl font-bold text-white mb-4"\u003eContact Information\u003c/h3\u003e
-                      \u003cp class="text-gray-300"\u003eEmail: \u003ca href="mailto:theiahcreations@gmail.com" class="text-blue-400 hover:text-blue-300"\u003etheiahcreations@gmail.com\u003c/a\u003e\u003c/p\u003e
-                      \u003cp class="text-gray-300"\u003eLocation: Jaipur, Rajasthan, India\u003c/p\u003e
-                    \u003c/section\u003e
-                  \u003c/div\u003e
-                \u003c/div\u003e
+      // ============================================
+      // LEGAL PAGES
+      // ============================================
+      function renderAboutUs() {
+        return `
+                <div class="max-w-4xl mx-auto px-4 py-16">
+                  <h2 class="text-4xl font-bold text-white mb-8 professional-text text-center">About The IAH Creations</h2>
+                  <div class="holographic-card p-8 rounded-xl space-y-6">
+                    <section>
+                      <h3 class="text-2xl font-bold text-white mb-4">Our Mission</h3>
+                      <p class="text-gray-300 leading-relaxed">At The IAH Creations, we're revolutionizing web development by combining cutting-edge AI technology with enterprise-grade infrastructure. Our mission is to make professional web development accessible to everyone, from startups to large enterprises.</p>
+                    </section>
+                    <section>
+                      <h3 class="text-2xl font-bold text-white mb-4">Our Technology</h3>
+                      <ul class="space-y-2 text-gray-300">
+                        <li>✓ Powered by Google Gemini 2.0 Flash AI</li>
+                        <li>✓ Multi-database support (Firebase, Cloud SQL, BigQuery, Spanner, Bigtable)</li>
+                        <li>✓ 20+ language support with RTL capabilities</li>
+                        <li>✓ Voice recognition and synthesis</li>
+                        <li>✓ Blockchain-based code protection</li>
+                      </ul>
+                    </section>
+                    <section>
+                      <h3 class="text-2xl font-bold text-white mb-4">Why Choose Us</h3>
+                      <p class="text-gray-300 leading-relaxed">We deliver production-ready websites in 24-72 hours with enterprise-grade security, scalability, and performance. Our platform combines the power of AI with human expertise to create exceptional digital experiences.</p>
+                    </section>
+                    <section>
+                      <h3 class="text-2xl font-bold text-white mb-4">Contact Information</h3>
+                      <p class="text-gray-300">Email: <a href="mailto:theiahcreations@gmail.com" class="text-blue-400 hover:text-blue-300">theiahcreations@gmail.com</a></p>
+                      <p class="text-gray-300">Location: Jaipur, Rajasthan, India</p>
+                    </section>
+                  </div>
+                </div>
               `;
-            }
+      }
 
-            function renderPrivacyPolicy() {
-              return `
-                \u003cdiv class="max-w-4xl mx-auto px-4 py-16"\u003e
-                  \u003ch2 class="text-4xl font-bold text-white mb-8 professional-text text-center"\u003ePrivacy Policy\u003c/h2\u003e
-                  \u003cdiv class="holographic-card p-8 rounded-xl space-y-6 text-gray-300"\u003e
-                    \u003cp class="text-sm text-gray-400"\u003eEffective Date: December 8, 2025\u003c/p\u003e
-                    \u003csection\u003e
-                      \u003ch3 class="text-xl font-bold text-white mb-3"\u003e1. Information We Collect\u003c/h3\u003e
-                      \u003cp\u003eWe collect information you provide directly, including name, email, and project requirements. We also collect usage data through Firebase Analytics.\u003c/p\u003e
-                    \u003c/section\u003e
-                    \u003csection\u003e
-                      \u003ch3 class="text-xl font-bold text-white mb-3"\u003e2. How We Use Your Information\u003c/h3\u003e
-                      \u003cul class="list-disc list-inside space-y-1"\u003e
-                        \u003cli\u003eTo provide and improve our services\u003c/li\u003e
-                        \u003cli\u003eTo communicate with you about your projects\u003c/li\u003e
-                        \u003cli\u003eTo analyze platform usage and performance\u003c/li\u003e
-                        \u003cli\u003eTo ensure security and prevent fraud\u003c/li\u003e
-                      \u003c/ul\u003e
-                    \u003c/section\u003e
-                    \u003csection\u003e
-                      \u003ch3 class="text-xl font-bold text-white mb-3"\u003e3. Third-Party Services\u003c/h3\u003e
-                      \u003cp\u003eWe use Google Firebase for authentication and data storage, and Google Gemini AI for code generation. These services have their own privacy policies.\u003c/p\u003e
-                    \u003c/section\u003e
-                    \u003csection\u003e
-                      \u003ch3 class="text-xl font-bold text-white mb-3"\u003e4. Data Security\u003c/h3\u003e
-                      \u003cp\u003eWe implement industry-standard security measures including encryption, secure authentication, and regular security audits.\u003c/p\u003e
-                    \u003c/section\u003e
-                    \u003csection\u003e
-                      \u003ch3 class="text-xl font-bold text-white mb-3"\u003e5. Your Rights\u003c/h3\u003e
-                      \u003cp\u003eYou have the right to access, correct, or delete your personal data. Contact us at theiahcreations@gmail.com for requests.\u003c/p\u003e
-                    \u003c/section\u003e
-                    \u003csection\u003e
-                      \u003ch3 class="text-xl font-bold text-white mb-3"\u003e6. GDPR Compliance\u003c/h3\u003e
-                      \u003cp\u003eWe comply with GDPR requirements for EU users, including data portability and the right to be forgotten.\u003c/p\u003e
-                    \u003c/section\u003e
-                  \u003c/div\u003e
-                \u003c/div\u003e
+      function renderPrivacyPolicy() {
+        return `
+                <div class="max-w-4xl mx-auto px-4 py-16">
+                  <h2 class="text-4xl font-bold text-white mb-8 professional-text text-center">Privacy Policy</h2>
+                  <div class="holographic-card p-8 rounded-xl space-y-6 text-gray-300">
+                    <p class="text-sm text-gray-400">Effective Date: December 8, 2025</p>
+                    <section>
+                      <h3 class="text-xl font-bold text-white mb-3">1. Information We Collect</h3>
+                      <p>We collect information you provide directly, including name, email, and project requirements. We also collect usage data through Firebase Analytics.</p>
+                    </section>
+                    <section>
+                      <h3 class="text-xl font-bold text-white mb-3">2. How We Use Your Information</h3>
+                      <ul class="list-disc list-inside space-y-1">
+                        <li>To provide and improve our services</li>
+                        <li>To communicate with you about your projects</li>
+                        <li>To analyze platform usage and performance</li>
+                        <li>To ensure security and prevent fraud</li>
+                      </ul>
+                    </section>
+                    <section>
+                      <h3 class="text-xl font-bold text-white mb-3">3. Third-Party Services</h3>
+                      <p>We use Google Firebase for authentication and data storage, and Google Gemini AI for code generation. These services have their own privacy policies.</p>
+                    </section>
+                    <section>
+                      <h3 class="text-xl font-bold text-white mb-3">4. Data Security</h3>
+                      <p>We implement industry-standard security measures including encryption, secure authentication, and regular security audits.</p>
+                    </section>
+                    <section>
+                      <h3 class="text-xl font-bold text-white mb-3">5. Your Rights</h3>
+                      <p>You have the right to access, correct, or delete your personal data. Contact us at theiahcreations@gmail.com for requests.</p>
+                    </section>
+                    <section>
+                      <h3 class="text-xl font-bold text-white mb-3">6. GDPR Compliance</h3>
+                      <p>We comply with GDPR requirements for EU users, including data portability and the right to be forgotten.</p>
+                    </section>
+                  </div>
+                </div>
               `;
-            }
+      }
 
-            function renderFAQs() {
-              const faqs = [
-                { q: "What is The IAH Creations?", a: "The IAH Creations is an AI-powered web development platform that helps you create production-ready websites in 24-72 hours using cutting-edge technology." },
-                { q: "How does the AI Builder work?", a: "Simply describe your app in plain English, select the type (mobile/web/website), and our Gemini 2.0 AI generates production-ready code instantly." },
-                { q: "What payment methods do you accept?", a: "We accept UPI (PhonePe, GPay, Paytm), cryptocurrency (BTC, ETH, USDT), and credit/debit cards through Stripe (coming soon)." },
-                { q: "How long does deployment take?", a: "Most projects are deployed within 24-72 hours, depending on complexity and your chosen plan." },
-                { q: "What's included in each pricing tier?", a: "Free: 3 AI prompts/day, view-only templates. Pro: 50 prompts/day, 10 template downloads, blockchain protection. Enterprise: Unlimited everything plus dark web monitoring." },
-                { q: "How do I get support?", a: "Free users get community support, Pro users get 24-hour email support, and Enterprise users get 24/7 phone support with a dedicated manager." },
-                { q: "Is my data secure?", a: "Yes! We use enterprise-grade security including 256-bit encryption, Firebase authentication, and optional blockchain protection for your code." },
-                { q: "Can I cancel my subscription?", a: "Yes, you can cancel anytime. Pro and Enterprise subscriptions are month-to-month with no long-term commitment." }
-              ];
+      function renderFAQs() {
+        const faqs = [
+          {
+            q: "What is The IAH Creations?",
+            a: "The IAH Creations is an AI-powered web development platform that helps you create production-ready websites in 24-72 hours using cutting-edge technology.",
+          },
+          {
+            q: "How does the AI Builder work?",
+            a: "Simply describe your app in plain English, select the type (mobile/web/website), and our Gemini 2.0 AI generates production-ready code instantly.",
+          },
+          {
+            q: "What payment methods do you accept?",
+            a: "We accept UPI (PhonePe, GPay, Paytm), cryptocurrency (BTC, ETH, USDT), and credit/debit cards through Stripe (coming soon).",
+          },
+          {
+            q: "How long does deployment take?",
+            a: "Most projects are deployed within 24-72 hours, depending on complexity and your chosen plan.",
+          },
+          {
+            q: "What's included in each pricing tier?",
+            a: "Free: 3 AI prompts/day, view-only templates. Pro: 50 prompts/day, 10 template downloads, blockchain protection. Enterprise: Unlimited everything plus dark web monitoring.",
+          },
+          {
+            q: "How do I get support?",
+            a: "Free users get community support, Pro users get 24-hour email support, and Enterprise users get 24/7 phone support with a dedicated manager.",
+          },
+          {
+            q: "Is my data secure?",
+            a: "Yes! We use enterprise-grade security including 256-bit encryption, Firebase authentication, and optional blockchain protection for your code.",
+          },
+          {
+            q: "Can I cancel my subscription?",
+            a: "Yes, you can cancel anytime. Pro and Enterprise subscriptions are month-to-month with no long-term commitment.",
+          },
+        ];
 
-              return `
-                \u003cdiv class="max-w-4xl mx-auto px-4 py-16"\u003e
-                  \u003ch2 class="text-4xl font-bold text-white mb-8 professional-text text-center"\u003eFrequently Asked Questions\u003c/h2\u003e
-                  \u003cdiv class="space-y-4"\u003e
-                    ${faqs.map(faq =\u003e `
-                      \u003cdiv class="holographic-card p-6 rounded-xl"\u003e
-                        \u003ch3 class="text-lg font-bold text-white mb-2"\u003e${faq.q}\u003c/h3\u003e
-                        \u003cp class="text-gray-300"\u003e${faq.a}\u003c/p\u003e
-                      \u003c/div\u003e
-                    `).join('')}
-                  \u003c/div\u003e
-                \u003c/div\u003e
+        return `
+                <div class="max-w-4xl mx-auto px-4 py-16">
+                  <h2 class="text-4xl font-bold text-white mb-8 professional-text text-center">Frequently Asked Questions</h2>
+                  <div class="space-y-4">
+                    ${faqs
+                      .map(
+                        (faq) => `
+                      <div class="holographic-card p-6 rounded-xl">
+                        <h3 class="text-lg font-bold text-white mb-2">${faq.q}</h3>
+                        <p class="text-gray-300">${faq.a}</p>
+                      </div>
+                    `
+                      )
+                      .join("")}
+                  </div>
+                </div>
               `;
-            }
+      }
 
-            function renderTerms() {
-              return `
-                \u003cdiv class="max-w-4xl mx-auto px-4 py-16"\u003e
-                  \u003ch2 class="text-4xl font-bold text-white mb-8 professional-text text-center"\u003eTerms \u0026 Conditions\u003c/h2\u003e
-                  \u003cdiv class="holographic-card p-8 rounded-xl space-y-6 text-gray-300"\u003e
-                    \u003cp class="text-sm text-gray-400"\u003eEffective Date: December 8, 2025\u003c/p\u003e
-                    \u003csection\u003e
-                      \u003ch3 class="text-xl font-bold text-white mb-3"\u003e1. Acceptance of Terms\u003c/h3\u003e
-                      \u003cp\u003eBy accessing and using The IAH Creations platform, you accept and agree to be bound by these Terms and Conditions.\u003c/p\u003e
-                    \u003c/section\u003e
-                    \u003csection\u003e
-                      \u003ch3 class="text-xl font-bold text-white mb-3"\u003e2. Service Description\u003c/h3\u003e
-                      \u003cp\u003eThe IAH Creations provides AI-powered web development services, templates, and deployment solutions. Services are provided "as is" with continuous improvements.\u003c/p\u003e
-                    \u003c/section\u003e
-                    \u003csection\u003e
-                      \u003ch3 class="text-xl font-bold text-white mb-3"\u003e3. User Responsibilities\u003c/h3\u003e
-                      \u003cul class="list-disc list-inside space-y-1"\u003e
-                        \u003cli\u003eProvide accurate information\u003c/li\u003e
-                        \u003cli\u003eUse services lawfully and ethically\u003c/li\u003e
-                        \u003cli\u003eMaintain account security\u003c/li\u003e
-                        \u003cli\u003eComply with applicable laws\u003c/li\u003e
-                      \u003c/ul\u003e
-                    \u003c/section\u003e
-                    \u003csection\u003e
-                      \u003ch3 class="text-xl font-bold text-white mb-3"\u003e4. Intellectual Property\u003c/h3\u003e
-                      \u003cp\u003eCode generated through our platform belongs to you. Our platform, AI models, and templates remain our intellectual property.\u003c/p\u003e
-                    \u003c/section\u003e
-                    \u003csection\u003e
-                      \u003ch3 class="text-xl font-bold text-white mb-3"\u003e5. Payment Terms\u003c/h3\u003e
-                      \u003cp\u003eSubscriptions are billed monthly. Refunds are provided within 7 days of purchase if no services have been used.\u003c/p\u003e
-                    \u003c/section\u003e
-                    \u003csection\u003e
-                      \u003ch3 class="text-xl font-bold text-white mb-3"\u003e6. Limitation of Liability\u003c/h3\u003e
-                      \u003cp\u003eThe IAH Creations is not liable for indirect, incidental, or consequential damages arising from platform use.\u003c/p\u003e
-                    \u003c/section\u003e
-                    \u003csection\u003e
-                      \u003ch3 class="text-xl font-bold text-white mb-3"\u003e7. Governing Law\u003c/h3\u003e
-                      \u003cp\u003eThese terms are governed by the laws of India. Disputes will be resolved in Jaipur, Rajasthan courts.\u003c/p\u003e
-                    \u003c/section\u003e
-                    \u003csection\u003e
-                      \u003ch3 class="text-xl font-bold text-white mb-3"\u003e8. Contact\u003c/h3\u003e
-                      \u003cp\u003eFor questions about these terms, contact us at theiahcreations@gmail.com\u003c/p\u003e
-                    \u003c/section\u003e
-                  \u003c/div\u003e
-                \u003c/div\u003e
+      function renderTerms() {
+        return `
+                <div class="max-w-4xl mx-auto px-4 py-16">
+                  <h2 class="text-4xl font-bold text-white mb-8 professional-text text-center">Terms & Conditions</h2>
+                  <div class="holographic-card p-8 rounded-xl space-y-6 text-gray-300">
+                    <p class="text-sm text-gray-400">Effective Date: December 8, 2025</p>
+                    <section>
+                      <h3 class="text-xl font-bold text-white mb-3">1. Acceptance of Terms</h3>
+                      <p>By accessing and using The IAH Creations platform, you accept and agree to be bound by these Terms and Conditions.</p>
+                    </section>
+                    <section>
+                      <h3 class="text-xl font-bold text-white mb-3">2. Service Description</h3>
+                      <p>The IAH Creations provides AI-powered web development services, templates, and deployment solutions. Services are provided "as is" with continuous improvements.</p>
+                    </section>
+                    <section>
+                      <h3 class="text-xl font-bold text-white mb-3">3. User Responsibilities</h3>
+                      <ul class="list-disc list-inside space-y-1">
+                        <li>Provide accurate information</li>
+                        <li>Use services lawfully and ethically</li>
+                        <li>Maintain account security</li>
+                        <li>Comply with applicable laws</li>
+                      </ul>
+                    </section>
+                    <section>
+                      <h3 class="text-xl font-bold text-white mb-3">4. Intellectual Property</h3>
+                      <p>Code generated through our platform belongs to you. Our platform, AI models, and templates remain our intellectual property.</p>
+                    </section>
+                    <section>
+                      <h3 class="text-xl font-bold text-white mb-3">5. Payment Terms</h3>
+                      <p>Subscriptions are billed monthly. Refunds are provided within 7 days of purchase if no services have been used.</p>
+                    </section>
+                    <section>
+                      <h3 class="text-xl font-bold text-white mb-3">6. Limitation of Liability</h3>
+                      <p>The IAH Creations is not liable for indirect, incidental, or consequential damages arising from platform use.</p>
+                    </section>
+                    <section>
+                      <h3 class="text-xl font-bold text-white mb-3">7. Governing Law</h3>
+                      <p>These terms are governed by the laws of India. Disputes will be resolved in Jaipur, Rajasthan courts.</p>
+                    </section>
+                    <section>
+                      <h3 class="text-xl font-bold text-white mb-3">8. Contact</h3>
+                      <p>For questions about these terms, contact us at theiahcreations@gmail.com</p>
+                    </section>
+                  </div>
+                </div>
               `;
-            }
+      }
 
-            // ============================================
-            // MAIN RENDER FUNCTION
-            // ============================================
-            function render() {
-              let content = renderNavbar();
+      // ============================================
+      // MAIN RENDER FUNCTION
+      // ============================================
+      function render() {
+        let content = renderNavbar();
 
-              switch (state.view) {
-                case "home":
-                  content += renderHero();
-                  content += renderFeatures();
-                  break;
-                case "features":
-                  content += renderFeatures();
-                  break;
-                case "templates":
-                  content += renderTemplates();
-                  break;
-                case "builder":
-                  content += renderBuilder();
-                  break;
-                case "pricing":
-                  content += renderPricing();
-                  break;
-                case "about":
-                  content += renderAboutUs();
-                  break;
-                case "privacy":
-                  content += renderPrivacyPolicy();
-                  break;
-                case "faqs":
-                  content += renderFAQs();
-                  break;
-                case "terms":
-                  content += renderTerms();
-                  break;
-                case "contact":
-                  content += renderContact();
-                  break;
-                default:
-                  content += renderHero();
-              }
+        switch (state.view) {
+          case "home":
+            content += renderHero();
+            content += renderFeatures();
+            break;
+          case "features":
+            content += renderFeatures();
+            break;
+          case "templates":
+            content += renderTemplates();
+            break;
+          case "builder":
+            content += renderBuilder();
+            break;
+          case "pricing":
+            content += renderPricing();
+            break;
+          case "about":
+            content += renderAboutUs();
+            break;
+          case "privacy":
+            content += renderPrivacyPolicy();
+            break;
+          case "faqs":
+            content += renderFAQs();
+            break;
+          case "terms":
+            content += renderTerms();
+            break;
+          case "contact":
+            content += renderContact();
+            break;
+          default:
+            content += renderHero();
+        }
 
-              content += renderFooter();
-              content += renderChatBot();
-              content += renderPaymentModal();
-              content += renderHamburgerMenu();
+        content += renderFooter();
+        content += renderChatBot();
+        content += renderPaymentModal();
+        content += renderHamburgerMenu();
 
-              document.getElementById("root").innerHTML = content;
-            }
+        document.getElementById("root").innerHTML = content;
+      }
 
-            // ============================================
-            // INITIALIZATION
-            // ============================================
-            console.log(
-              `%c🚀 The IAH Creations Platform v${APP_VERSION}`,
-              "color: #3b82f6; font-size: 20px; font-weight: bold"
-            );
-            console.log("%c✅ All systems operational", "color: green");
-            console.log(
-              `%c🤖 Gemini AI: ${AIHub.apiKey ? "Configured" : "Not configured"}`,
-              AIHub.apiKey ? "color: green" : "color: orange"
-            );
-            console.log(
-              `%c🔒 Firebase: ${isFirebaseReady ? "Connected" : "Demo mode"}`,
-              isFirebaseReady ? "color: green" : "color: orange"
-            );
+      // ============================================
+      // INITIALIZATION
+      // ============================================
+      console.log(
+        `%c🚀 The IAH Creations Platform v${APP_VERSION}`,
+        "color: #3b82f6; font-size: 20px; font-weight: bold"
+      );
+      console.log("%c✅ All systems operational", "color: green");
+      console.log(
+        `%c🤖 Gemini AI: ${AIHub.apiKey ? "Configured" : "Not configured"}`,
+        AIHub.apiKey ? "color: green" : "color: orange"
+      );
+      console.log(
+        `%c🔒 Firebase: ${isFirebaseReady ? "Connected" : "Demo mode"}`,
+        isFirebaseReady ? "color: green" : "color: orange"
+      );
 
-            // Initialize auto-update feature (silent)
-            AutoUpdateHub.init();
+      // Initialize auto-update feature (silent)
+      AutoUpdateHub.init();
 
-            // Initial render
-            render();
+      // Initial render
+      render();
 
-            // Firebase auth listener
-            if (auth && typeof auth.onAuthStateChanged === "function") {
-              auth.onAuthStateChanged((user) => {
-                state.userProfile = user;
-                if (user) {
-                  console.log("%c👤 User authenticated:", "color: green", user.uid);
-                }
-              });
+      // Firebase auth listener
+      if (auth && typeof auth.onAuthStateChanged === "function") {
+        auth.onAuthStateChanged((user) => {
+          state.userProfile = user;
+          if (user) {
+            console.log("%c👤 User authenticated:", "color: green", user.uid);
+          }
+        });
 
-              if (!auth.currentUser) {
-                signInAnonymously(auth).catch((e) => console.warn("Auth error:", e));
-              }
-            }
+        if (!auth.currentUser) {
+          signInAnonymously(auth).catch((e) => console.warn("Auth error:", e));
+        }
+      }
     </script>
   </body>
 </html>
