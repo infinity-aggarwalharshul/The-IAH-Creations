@@ -6,7 +6,7 @@
 
     <!-- SEO Meta Tags -->
     <title>
-      IAH Creations - AI-Powered Web Development | Deploy in 24-72 Hours
+      The IAH Creations - AI-Powered Web Development | Deploy in 24-72 Hours
     </title>
     <meta
       name="description"
@@ -16,7 +16,7 @@
       name="keywords"
       content="AI web development, custom websites, web templates, Firebase, Gemini AI, RTL support, voice recognition, academic research"
     />
-    <meta name="author" content="IAH Creations" />
+    <meta name="author" content="The IAH Creations" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://iahcreations.com" />
 
@@ -25,7 +25,7 @@
     <meta property="og:url" content="https://iahcreations.com" />
     <meta
       property="og:title"
-      content="IAH Creations - AI-Powered Web Development Platform"
+      content="The IAH Creations - AI-Powered Web Development Platform"
     />
     <meta
       property="og:description"
@@ -40,7 +40,7 @@
     <meta property="twitter:card" content="summary_large_image" />
     <meta
       property="twitter:title"
-      content="IAH Creations - AI-Powered Platform"
+      content="The IAH Creations - AI-Powered Platform"
     />
     <meta
       property="twitter:description"
@@ -70,7 +70,7 @@
       {
         "@context": "https://schema.org",
         "@type": "WebSite",
-        "name": "IAH Creations",
+        "name": "The IAH Creations",
         "url": "https://iahcreations.com",
         "description": "Enterprise-Grade Web Development Platform"
       }
@@ -123,24 +123,43 @@
         animation: fadeIn 0.3s ease-out;
       }
 
-      /* Holographic Card Effect */
+      @keyframes slideIn {
+        from {
+          transform: translateX(100%);
+        }
+        to {
+          transform: translateX(0);
+        }
+      }
+
+      /* Professional Card Effect - Glass Morphism */
       .holographic-card {
-        background: rgba(17, 24, 39, 0.7);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(59, 130, 246, 0.3);
-        transition: all 0.3s;
+        background: rgba(17, 24, 39, 0.8);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       .holographic-card:hover {
-        border-color: rgba(59, 130, 246, 0.8);
-        box-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
-        transform: translateY(-2px);
+        border-color: rgba(59, 130, 246, 0.4);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04),
+          0 0 0 1px rgba(59, 130, 246, 0.1);
+        transform: translateY(-4px);
       }
 
-      /* Neon Text */
-      .neon-text {
-        text-shadow: 0 0 10px rgba(59, 130, 246, 0.8),
-          0 0 20px rgba(147, 51, 234, 0.8);
+      /* Professional Text - Subtle Shadow Instead of Neon */
+      .professional-text {
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Gradient Text */
+      .gradient-text {
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
 
       /* Loading Spinner */
@@ -158,6 +177,57 @@
           transform: rotate(360deg);
         }
       }
+
+      /* Hamburger Menu Styles */
+      .hamburger-menu {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 300px;
+        height: 100vh;
+        background: rgba(17, 24, 39, 0.98);
+        backdrop-filter: blur(20px);
+        box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+        transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1000;
+        overflow-y: auto;
+      }
+
+      .hamburger-menu.open {
+        right: 0;
+      }
+
+      .hamburger-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(2px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        z-index: 999;
+      }
+
+      .hamburger-overlay.open {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      /* Button Hover Effects */
+      .btn-primary {
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary:hover {
+        box-shadow: 0 10px 15px rgba(59, 130, 246, 0.4);
+        transform: translateY(-2px);
+      }
+
+      .btn-primary:active {
+        transform: translateY(0);
+      }
     </style>
   </head>
   <body
@@ -167,1750 +237,2030 @@
     <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
     <script type="module">
-      // ============================================
-      // FIREBASE INITIALIZATION (SECURE)
-      // ============================================
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-      import {
-        getAuth,
-        signInAnonymously,
-        onAuthStateChanged,
-      } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-      import {
-        getFirestore,
-        collection,
-        addDoc,
-        serverTimestamp,
-      } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+            // ============================================
+            // FIREBASE INITIALIZATION (SECURE)
+            // ============================================
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+            import {
+              getAuth,
+              signInAnonymously,
+              onAuthStateChanged,
+            } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+            import {
+              getFirestore,
+              collection,
+              addDoc,
+              serverTimestamp,
+            } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-      // Get config from window (injected by Firebase Hosting) or localStorage
-      const finalConfig =
-        typeof __firebase_config !== "undefined"
-          ? JSON.parse(__firebase_config)
-          : JSON.parse(
-              localStorage.getItem("firebase_config") ||
-                '{"projectId":"iah-creations"}'
-            );
+            // Get config from window (injected by Firebase Hosting) or localStorage
+            const finalConfig =
+              typeof __firebase_config !== "undefined"
+                ? JSON.parse(__firebase_config)
+                : JSON.parse(
+                    localStorage.getItem("firebase_config") ||
+                      '{"projectId":"iah-creations"}'
+                  );
 
-      const appId =
-        typeof __app_id !== "undefined" ? __app_id : "iah-creations";
+            const appId =
+              typeof __app_id !== "undefined" ? __app_id : "iah-creations";
 
-      let app,
-        auth,
-        db,
-        isFirebaseReady = false;
+            let app,
+              auth,
+              db,
+              isFirebaseReady = false;
 
-      try {
-        if (!finalConfig.apiKey) throw new Error("No Firebase API key");
+            try {
+              if (!finalConfig.apiKey) throw new Error("No Firebase API key");
 
-        app = initializeApp(finalConfig);
-        auth = getAuth(app);
-        db = getFirestore(app);
-        isFirebaseReady = true;
+              app = initializeApp(finalConfig);
+              auth = getAuth(app);
+              db = getFirestore(app);
+              isFirebaseReady = true;
 
-        console.log(
-          "%c✅ Firebase initialized",
-          "color: green; font-weight: bold"
-        );
-        console.log("%c🔒 Using secure artifacts path", "color: blue");
-      } catch (e) {
-        console.warn(
-          "%c⚠️ Running in DEMO MODE (Offline)",
-          "color: orange; font-weight: bold"
-        );
+              console.log(
+                "%c✅ Firebase initialized",
+                "color: green; font-weight: bold"
+              );
+              console.log("%c🔒 Using secure artifacts path", "color: blue");
+            } catch (e) {
+              console.warn(
+                "%c⚠️ Running in DEMO MODE (Offline)",
+                "color: orange; font-weight: bold"
+              );
 
-        // Mock Firebase for demo
-        app = {};
-        auth = {
-          currentUser: null,
-          onAuthStateChanged: (cb) => {
-            setTimeout(() => cb(null), 500);
-            return () => {};
-          },
-          signInAnonymously: async () => ({
-            user: { uid: "demo_user", isAnonymous: true },
-          }),
-        };
-        db = {
-          collection: () => ({}),
-          addDoc: async (col, data) => {
-            console.log("📝 Demo Firestore Write:", data);
-            return { id: "demo_doc_" + Date.now() };
-          },
-        };
-      }
-
-      window.db = db;
-      window.auth = auth;
-
-      // Secure collection path helper
-      const getCollectionPath = (collectionName) =>
-        `artifacts/${appId}/public/data/${collectionName}`;
-      window.getCollectionPath = getCollectionPath;
-
-      // ============================================
-      // CONSTANTS
-      // ============================================
-      const APP_VERSION = "5.0.0"; // Updated to v5.0
-      const BUSINESS_CARD_URL =
-        "https://infinity-aggarwalharshul.github.io/The-IAH-Creations-Virtual-Business-Card/";
-      const UPI_ID = "aggarwalharshul49@okicici";
-      const UPI_QR_CODE = "assets/upi_qr.jpg";
-
-      // ============================================
-      // TEMPLATE MARKETPLACE DATA
-      // ============================================
-      const TEMPLATES = {
-        mobileApps: [
-          {
-            id: "m1",
-            name: "E-Commerce Mobile Pro",
-            category: "Mobile App",
-            subcategory: "E-Commerce",
-            tech: "React Native",
-            price: { INR: 24999, USD: 299, crypto: "0.005 BTC" },
-            features: [
-              "Payment Gateway",
-              "Push Notifications",
-              "AR Product View",
-              "Order Tracking",
-            ],
-            image:
-              "https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?w=800",
-            demo: "https://demo.app",
-            rating: 4.8,
-            downloads: 1247,
-          },
-          {
-            id: "m2",
-            name: "Social Connect",
-            category: "Mobile App",
-            subcategory: "Social Media",
-            tech: "Flutter",
-            price: { INR: 19999, USD: 249, crypto: "0.004 BTC" },
-            features: [
-              "Real-time Chat",
-              "Stories",
-              "Video Calls",
-              "AI Moderation",
-            ],
-            image:
-              "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800",
-            demo: "https://demo.app",
-          },
-          {
-            id: "m3",
-            name: "Health Tracker Pro",
-            category: "Mobile App",
-            subcategory: "Healthcare",
-            tech: "React Native",
-            price: { INR: 29999, USD: 349, crypto: "0.006 BTC" },
-            features: [
-              "Fitness Tracking",
-              "AI Health Assistant",
-              "Telemedicine",
-              "Blockchain Records",
-            ],
-            image:
-              "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800",
-          },
-        ],
-        webApps: [
-          {
-            id: "w1",
-            name: "SaaS Dashboard Pro",
-            category: "Web App",
-            subcategory: "SaaS",
-            tech: "React + TypeScript",
-            price: { INR: 34999, USD: 399, crypto: "0.007 BTC" },
-            features: [
-              "Analytics Dashboard",
-              "Multi-tenant",
-              "Billing Integration",
-              "AI Insights",
-            ],
-            image:
-              "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800",
-          },
-          {
-            id: "w2",
-            name: "CRM Enterprise",
-            category: "Web App",
-            subcategory: "Business",
-            tech: "Vue + Node.js",
-            price: { INR: 44999, USD: 499, crypto: "0.009 BTC" },
-            features: [
-              "Lead Management",
-              "Email Automation",
-              "AI Predictions",
-              "Mobile App",
-            ],
-            image:
-              "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800",
-          },
-          {
-            id: "w3",
-            name: "Project Manager AI",
-            category: "Web App",
-            subcategory: "Productivity",
-            tech: "Angular + Firebase",
-            price: { INR: 39999, USD: 449, crypto: "0.008 BTC" },
-            features: [
-              "Gantt Charts",
-              "AI Task Allocation",
-              "Time Tracking",
-              "Team Chat",
-            ],
-            image:
-              "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800",
-          },
-        ],
-        websites: [
-          {
-            id: "s1",
-            name: "Business Corporate",
-            category: "Website",
-            subcategory: "Business",
-            tech: "HTML5 + Tailwind",
-            price: { INR: 4999, USD: 59, crypto: "0.001 BTC" },
-            features: [
-              "Responsive Design",
-              "SEO Optimized",
-              "Contact Forms",
-              "Blog Integration",
-            ],
-            image:
-              "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800",
-          },
-          {
-            id: "s2",
-            name: "Portfolio Creative",
-            category: "Website",
-            subcategory: "Portfolio",
-            tech: "Next.js",
-            price: { INR: 9999, USD: 119, crypto: "0.002 BTC" },
-            features: [
-              "Animations",
-              "Dark Mode",
-              "CMS Integration",
-              "Fast Loading",
-            ],
-            image:
-              "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=800",
-          },
-          {
-            id: "s3",
-            name: "E-Commerce Store",
-            category: "Website",
-            subcategory: "E-Commerce",
-            tech: "WordPress + WooCommerce",
-            price: { INR: 14999, USD: 179, crypto: "0.003 BTC" },
-            features: [
-              "Product Management",
-              "Payment Gateway",
-              "Inventory System",
-              "Reviews",
-            ],
-            image:
-              "https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?w=800",
-          },
-        ],
-      };
-
-      // ============================================
-      // STATE MANAGEMENT (EXPANDED)
-      // ============================================
-      const state = {
-        view: "home",
-        language: "en",
-        currency: "INR",
-        cart: [],
-        userProfile: null,
-        chatOpen: false,
-        isVoiceRecording: false,
-        voiceTranscript: "",
-
-        // New state properties
-        selectedProjectType: null, // 'mobile', 'web', 'website'
-        selectedCategory: null,
-        selectedTech: null,
-        promptToAppMode: false,
-        generatedCode: null,
-        userTier: "free", // 'free', 'pro', 'enterprise'
-        usageStats: {
-          promptsToday: 0,
-          deploymentsMonth: 0,
-          downloadsMonth: 0,
-        },
-        paymentMethod: "upi",
-        activeTemplate: null,
-
-        messages: [
-          {
-            role: "bot",
-            text: `👋 Hello! I'm your IAH AI Assistant powered by Gemini 2.0 Flash.\n\nI can help you with:\n• **Prompt-to-App**: Describe your app, I'll generate code!\n• Template recommendations (Mobile/Web/Website)\n• Pricing & payment options\n• Deployment assistance\n\n💼 Virtual Business Card: ${BUSINESS_CARD_URL}\n\nWhat would you like to create today?`,
-          },
-        ],
-      };
-
-      // ============================================
-      // FREEMIUM MODEL (ENHANCED)
-      // ============================================
-      const FreemiumModel = {
-        tiers: {
-          free: {
-            promptsPerDay: 3,
-            templates: "view-only",
-            deployments: 0,
-            blockchain: false,
-            support: "community",
-          },
-          pro: {
-            promptsPerDay: 50,
-            templates: 10,
-            deployments: 5,
-            blockchain: true,
-            support: "24hr",
-          },
-          enterprise: {
-            promptsPerDay: -1, // unlimited
-            templates: -1,
-            deployments: -1,
-            blockchain: true,
-            darkWebMonitoring: true,
-            support: "24/7-sla",
-          },
-        },
-
-        checkAccess(feature) {
-          const tier = state.userTier;
-          const limits = this.tiers[tier];
-
-          switch (feature) {
-            case "promptToApp":
-              if (limits.promptsPerDay === -1) return true;
-              return state.usageStats.promptsToday < limits.promptsPerDay;
-            case "templateDownload":
-              return limits.templates !== "view-only";
-            case "deployment":
-              if (limits.deployments === -1) return true;
-              return state.usageStats.deploymentsMonth < limits.deployments;
-            case "blockchain":
-              return limits.blockchain || false;
-            case "darkWeb":
-              return limits.darkWebMonitoring || false;
-            default:
-              return tier === "pro" || tier === "enterprise";
-          }
-        },
-
-        showUpgradeModal() {
-          showToast("⭐ Upgrade to Pro for unlimited access!", "error");
-          // In real implementation, show modal
-        },
-      };
-
-      // ============================================
-      // AI HUB - Gemini 2.0 Integration
-      // ============================================
-      const AIHub = {
-        apiKey:
-          localStorage.getItem("gemini_api_key") ||
-          "AIzaSyBIfuYCXGyGGWCpsTvFG7er5Y1jKoWqWMo",
-        model: "gemini-2.0-flash-latest",
-        apiEndpoint: "https://generativelanguage.googleapis.com/v1beta/models/",
-        projectId: "projects/559759620416",
-
-        setApiKey(key) {
-          this.apiKey = key;
-          localStorage.setItem("gemini_api_key", key);
-          console.log("%c✅ AI API key configured", "color: green");
-        },
-
-        async generate(prompt, context = "") {
-          if (!this.apiKey) {
-            return "🔑 Please configure your Gemini API key to use the AI chatbot.";
-          }
-
-          try {
-            console.log(`🤖 AIHub (${this.model}): Generating response...`);
-
-            const systemContext = `You are an AI assistant for IAH Creations, a cutting-edge web development company.
-
-Our Platform (v${APP_VERSION}):
-- Enterprise-Grade Web Development
-- AI-Powered (Gemini 2.0 Flash)
-- Multi-Database Support (Firebase, Cloud SQL, BigQuery, Spanner, Bigtable)
-- 20+ Language Support with RTL
-- Voice Recognition & Synthesis
-- Google Scholar Integration
-- Custom Web Development starting at ₹4,999
-
-Our Services:
-- AI-powered website templates
-- Mobile app development
-- Prompt-to-app technology
-- Blockchain integration
-- Real-time AI chatbots
-
-Virtual Business Card: ${BUSINESS_CARD_URL}
-Contact: theiahcreations@gmail.com
-Location: Jaipur, Rajasthan, India
-
-Be helpful, professional, and guide users toward our services when appropriate.`;
-
-            const fullPrompt = context
-              ? `${systemContext}\n\nContext: ${context}\n\nUser: ${prompt}`
-              : `${systemContext}\n\nUser: ${prompt}`;
-
-            const response = await fetch(
-              `${this.apiEndpoint}${this.model}:generateContent?key=${this.apiKey}`,
-              {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  contents: [{ parts: [{ text: fullPrompt }] }],
-                  generationConfig: {
-                    temperature: 0.7,
-                    topK: 40,
-                    topP: 0.95,
-                    maxOutputTokens: 1024,
-                  },
+              // Mock Firebase for demo
+              app = {};
+              auth = {
+                currentUser: null,
+                onAuthStateChanged: (cb) => {
+                  setTimeout(() => cb(null), 500);
+                  return () => {};
+                },
+                signInAnonymously: async () => ({
+                  user: { uid: "demo_user", isAnonymous: true },
                 }),
-              }
-            );
-
-            if (!response.ok) {
-              const errorData = await response.json();
-              throw new Error(errorData.error?.message || "API request failed");
+              };
+              db = {
+                collection: () => ({}),
+                addDoc: async (col, data) => {
+                  console.log("📝 Demo Firestore Write:", data);
+                  return { id: "demo_doc_" + Date.now() };
+                },
+              };
             }
 
-            const data = await response.json();
-            const generatedText =
-              data.candidates?.[0]?.content?.parts?.[0]?.text ||
-              "No response generated";
+            window.db = db;
+            window.auth = auth;
 
-            console.log("%c✅ AI Response generated", "color: green");
-            return generatedText;
-          } catch (error) {
-            console.error("[AI] Error:", error);
-            return `❌ Error: ${error.message}. Please check your API key.`;
-          }
-        },
-      };
+            // Secure collection path helper
+            const getCollectionPath = (collectionName) =>
+              `artifacts/${appId}/public/data/${collectionName}`;
+            window.getCollectionPath = getCollectionPath;
 
-      // ============================================
-      // GLOBALIZATION HUB - RTL Support
-      // ============================================
-      const GlobalizationHub = {
-        rtlLanguages: ["ar", "he", "fa", "ur"],
+            // ============================================
+            // CONSTANTS
+            // ============================================
+            const APP_VERSION = "5.0.0"; // Updated to v5.0
+            const BUSINESS_CARD_URL =
+              "https://infinity-aggarwalharshul.github.io/The-IAH-Creations-Virtual-Business-Card/";
+            const UPI_ID = "aggarwalharshul49@okicici";
+            const UPI_QR_CODE = "assets/upi_qr.jpg";
 
-        changeLanguage(lang) {
-          state.language = lang;
-
-          const isRTL = this.rtlLanguages.includes(lang);
-          document.documentElement.setAttribute("dir", isRTL ? "rtl" : "ltr");
-
-          if (isRTL) {
-            console.log(`%c🌐 RTL mode activated for ${lang}`, "color: purple");
-          }
-
-          render();
-        },
-      };
-
-      // ============================================
-      // VOICE ENGINE - Web Speech API
-      // ============================================
-      const VoiceEngine = {
-        recognition: null,
-        isListening: false,
-
-        init() {
-          const SpeechRecognition =
-            window.SpeechRecognition || window.webkitSpeechRecognition;
-          if (SpeechRecognition) {
-            this.recognition = new SpeechRecognition();
-            this.recognition.continuous = false;
-            this.recognition.interimResults = true;
-            this.recognition.lang = "en-US";
-            console.log("%c🎤 Voice recognition initialized", "color: purple");
-          } else {
-            console.warn("⚠️ Speech recognition not supported");
-          }
-        },
-
-        speak(text) {
-          const utterance = new SpeechSynthesisUtterance(text);
-          utterance.rate = 1.0;
-          utterance.pitch = 1.0;
-          window.speechSynthesis.speak(utterance);
-        },
-
-        listen(onResult, onError) {
-          if (!this.recognition) this.init();
-          if (!this.recognition) {
-            if (onError) onError("Speech recognition not supported");
-            return;
-          }
-
-          if (this.isListening) {
-            this.stopListening();
-            return;
-          }
-
-          this.isListening = true;
-          console.log("🎤 Listening...");
-
-          this.recognition.onresult = (event) => {
-            const transcript = Array.from(event.results)
-              .map((result) => result[0].transcript)
-              .join("");
-            if (onResult) onResult(transcript, event.results[0].isFinal);
-          };
-
-          this.recognition.onerror = (event) => {
-            console.error("[Voice] Error:", event.error);
-            this.isListening = false;
-            if (onError) onError(event.error);
-          };
-
-          this.recognition.onend = () => {
-            this.isListening = false;
-            console.log("🎤 Stopped listening");
-          };
-
-          try {
-            this.recognition.start();
-          } catch (e) {
-            console.error("[Voice] Failed to start:", e);
-            this.isListening = false;
-            if (onError) onError(e.message);
-          }
-        },
-
-        stopListening() {
-          if (this.recognition && this.isListening) {
-            this.recognition.stop();
-            this.isListening = false;
-          }
-        },
-      };
-
-      // ============================================
-      // PAYMENT HUB - Multi-Currency Support
-      // ============================================
-      const PaymentHub = {
-        upi: {
-          id: UPI_ID,
-          qrCode: UPI_QR_CODE,
-          generateLink(amount, note = "IAH Creations Payment") {
-            return `upi://pay?pa=${
-              this.id
-            }&pn=IAH Creations&am=${amount}&cu=INR&tn=${encodeURIComponent(
-              note
-            )}`;
-          },
-        },
-
-        razorpay: {
-          enabled: false,
-          key: "", // Add Razorpay key here
-          async processPayment(amount, currency = "INR") {
-            console.log("💳 Razorpay payment:", amount, currency);
-            // Integration code here
-            showToast("Razorpay integration pending", "error");
-          },
-        },
-
-        stripe: {
-          enabled: false,
-          key: "", // Add Stripe key here
-          async processPayment(amount, currency = "USD") {
-            console.log("💳 Stripe payment:", amount, currency);
-            showToast("Stripe integration pending", "error");
-          },
-        },
-
-        crypto: {
-          wallets: {
-            BTC: "bc1q...", // Add Bitcoin wallet
-            ETH: "0x...", // Add Ethereum wallet
-            USDT: "TRC20:...", // Add USDT wallet
-          },
-          async generatePaymentAddress(coin, amount) {
-            console.log(`₿ Crypto payment: ${amount} ${coin}`);
-            return {
-              address: this.wallets[coin],
-              amount: amount,
-              qr: `crypto:${coin}:${this.wallets[coin]}?amount=${amount}`,
-            };
-          },
-        },
-
-        async processPayment(templateId, method = "upi") {
-          const template = this.findTemplate(templateId);
-          if (!template) return false;
-
-          const amount = template.price[state.currency];
-
-          switch (method) {
-            case "upi":
-              const link = this.upi.generateLink(
-                amount,
-                `Purchase: ${template.name}`
-              );
-              window.open(link, "_blank");
-              showToast("📱 Opening UPI payment...");
-              break;
-            case "razorpay":
-              await this.razorpay.processPayment(amount, state.currency);
-              break;
-            case "stripe":
-              await this.stripe.processPayment(amount, state.currency);
-              break;
-            case "crypto":
-              const payment = await this.crypto.generatePaymentAddress(
-                "BTC",
-                template.price.crypto
-              );
-              showToast(`₿ Send ${payment.amount} to wallet`);
-              break;
-          }
-        },
-
-        findTemplate(id) {
-          const all = [
-            ...TEMPLATES.mobileApps,
-            ...TEMPLATES.webApps,
-            ...TEMPLATES.websites,
-          ];
-          return all.find((t) => t.id === id);
-        },
-      };
-
-      // ============================================
-      // PROMPT-TO-APP HUB - AI Code Generation
-      // ============================================
-      const PromptToAppHub = {
-        async generateApp(description, type = "website") {
-          // Check access
-          if (!FreemiumModel.checkAccess("promptToApp")) {
-            FreemiumModel.showUpgradeModal();
-            return null;
-          }
-
-          state.usageStats.promptsToday++;
-
-          try {
-            console.log(`🚀 Generating ${type} from prompt...`);
-
-            const systemPrompt = `You are an expert code generator for IAH Creations.
-Generate production-ready, clean, and well-documented code based on the user's description.
-
-Type: ${type}
-Description: ${description}
-
-Requirements:
-- Use modern best practices
-- Include responsive design
-- Add comments
-- Optimize for performance
-- Include error handling
-
-Generate ONLY the code, no explanations.`;
-
-            const response = await AIHub.generate(description, systemPrompt);
-
-            state.generatedCode = {
-              type: type,
-              description: description,
-              code: response,
-              timestamp: new Date().toISOString(),
+            // ============================================
+            // TEMPLATE MARKETPLACE DATA
+            // ============================================
+            const TEMPLATES = {
+              mobileApps: [
+                {
+                  id: "m1",
+                  name: "E-Commerce Mobile Pro",
+                  category: "Mobile App",
+                  subcategory: "E-Commerce",
+                  tech: "React Native",
+                  price: { INR: 24999, USD: 299, crypto: "0.005 BTC" },
+                  features: [
+                    "Payment Gateway",
+                    "Push Notifications",
+                    "AR Product View",
+                    "Order Tracking",
+                  ],
+                  image:
+                    "https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?w=800",
+                  demo: "https://demo.app",
+                  rating: 4.8,
+                  downloads: 1247,
+                },
+                {
+                  id: "m2",
+                  name: "Social Connect",
+                  category: "Mobile App",
+                  subcategory: "Social Media",
+                  tech: "Flutter",
+                  price: { INR: 19999, USD: 249, crypto: "0.004 BTC" },
+                  features: [
+                    "Real-time Chat",
+                    "Stories",
+                    "Video Calls",
+                    "AI Moderation",
+                  ],
+                  image:
+                    "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800",
+                  demo: "https://demo.app",
+                },
+                {
+                  id: "m3",
+                  name: "Health Tracker Pro",
+                  category: "Mobile App",
+                  subcategory: "Healthcare",
+                  tech: "React Native",
+                  price: { INR: 29999, USD: 349, crypto: "0.006 BTC" },
+                  features: [
+                    "Fitness Tracking",
+                    "AI Health Assistant",
+                    "Telemedicine",
+                    "Blockchain Records",
+                  ],
+                  image:
+                    "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800",
+                },
+              ],
+              webApps: [
+                {
+                  id: "w1",
+                  name: "SaaS Dashboard Pro",
+                  category: "Web App",
+                  subcategory: "SaaS",
+                  tech: "React + TypeScript",
+                  price: { INR: 34999, USD: 399, crypto: "0.007 BTC" },
+                  features: [
+                    "Analytics Dashboard",
+                    "Multi-tenant",
+                    "Billing Integration",
+                    "AI Insights",
+                  ],
+                  image:
+                    "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800",
+                },
+                {
+                  id: "w2",
+                  name: "CRM Enterprise",
+                  category: "Web App",
+                  subcategory: "Business",
+                  tech: "Vue + Node.js",
+                  price: { INR: 44999, USD: 499, crypto: "0.009 BTC" },
+                  features: [
+                    "Lead Management",
+                    "Email Automation",
+                    "AI Predictions",
+                    "Mobile App",
+                  ],
+                  image:
+                    "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800",
+                },
+                {
+                  id: "w3",
+                  name: "Project Manager AI",
+                  category: "Web App",
+                  subcategory: "Productivity",
+                  tech: "Angular + Firebase",
+                  price: { INR: 39999, USD: 449, crypto: "0.008 BTC" },
+                  features: [
+                    "Gantt Charts",
+                    "AI Task Allocation",
+                    "Time Tracking",
+                    "Team Chat",
+                  ],
+                  image:
+                    "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800",
+                },
+              ],
+              websites: [
+                {
+                  id: "s1",
+                  name: "Business Corporate",
+                  category: "Website",
+                  subcategory: "Business",
+                  tech: "HTML5 + Tailwind",
+                  price: { INR: 4999, USD: 59, crypto: "0.001 BTC" },
+                  features: [
+                    "Responsive Design",
+                    "SEO Optimized",
+                    "Contact Forms",
+                    "Blog Integration",
+                  ],
+                  image:
+                    "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800",
+                },
+                {
+                  id: "s2",
+                  name: "Portfolio Creative",
+                  category: "Website",
+                  subcategory: "Portfolio",
+                  tech: "Next.js",
+                  price: { INR: 9999, USD: 119, crypto: "0.002 BTC" },
+                  features: [
+                    "Animations",
+                    "Dark Mode",
+                    "CMS Integration",
+                    "Fast Loading",
+                  ],
+                  image:
+                    "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=800",
+                },
+                {
+                  id: "s3",
+                  name: "E-Commerce Store",
+                  category: "Website",
+                  subcategory: "E-Commerce",
+                  tech: "WordPress + WooCommerce",
+                  price: { INR: 14999, USD: 179, crypto: "0.003 BTC" },
+                  features: [
+                    "Product Management",
+                    "Payment Gateway",
+                    "Inventory System",
+                    "Reviews",
+                  ],
+                  image:
+                    "https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?w=800",
+                },
+              ],
             };
 
-            showToast("✅ Code generated successfully!");
-            return response;
-          } catch (error) {
-            console.error("[PromptToApp] Error:", error);
-            showToast("❌ Generation failed", "error");
-            return null;
-          }
-        },
+            // ============================================
+            // STATE MANAGEMENT (EXPANDED)
+            // ============================================
+            const state = {
+              view: "home",
+              language: "en",
+              currency: "INR",
+              cart: [],
+              userProfile: null,
+              chatOpen: false,
+              menuOpen: false, // Hamburger menu state
+              isVoiceRecording: false,
+              voiceTranscript: "",
 
-        async deployCode(code, platform = "firebase") {
-          if (!FreemiumModel.checkAccess("deployment")) {
-            FreemiumModel.showUpgradeModal();
-            return false;
-          }
+              // New state properties
+              selectedProjectType: null, // 'mobile', 'web', 'website'
+              selectedCategory: null,
+              selectedTech: null,
+              promptToAppMode: false,
+              generatedCode: null,
+              userTier: "free", // 'free', 'pro', 'enterprise'
+              usageStats: {
+                promptsToday: 0,
+                deploymentsMonth: 0,
+                downloadsMonth: 0,
+              },
+              paymentMethod: "upi",
+              activeTemplate: null,
 
-          state.usageStats.deploymentsMonth++;
-
-          console.log(`🚀 Deploying to ${platform}...`);
-          showToast(`🚀 Deployment to ${platform} initiated!`);
-
-          // In production, integrate with Firebase Hosting, Vercel, etc.
-          return true;
-        },
-      };
-
-      // ============================================
-      // BLOCKCHAIN HUB - Anti-Theft Protection
-      // ============================================
-      const BlockchainHub = {
-        enabled: false, // Enable when blockchain is configured
-        chain: "polygon", // polygon, ethereum, bsc
-
-        async hashCode(code) {
-          const encoder = new TextEncoder();
-          const data = encoder.encode(code);
-          const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-          const hashArray = Array.from(new Uint8Array(hashBuffer));
-          return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-        },
-
-        async registerOwnership(code, userId) {
-          if (!FreemiumModel.checkAccess("blockchain")) {
-            console.log("⛓️ Blockchain protection requires Pro/Enterprise");
-            return false;
-          }
-
-          try {
-            const hash = await this.hashCode(code);
-            console.log(`⛓️ Registering code ownership: ${hash}`);
-
-            // In production: Store on blockchain
-            const certificate = {
-              hash: hash,
-              owner: userId,
-              timestamp: Date.now(),
-              chain: this.chain,
+              messages: [
+                {
+                  role: "bot",
+                  text: `👋 Hello! I'm your AI Assistant from The IAH Creations, powered by Gemini 2.0 Flash.\\n\\nI can help you with:\\n• **Prompt-to-App**: Describe your app, I'll generate code!\\n• Template recommendations (Mobile/Web/Website)\\n• Pricing \\u0026 payment options\\n• Deployment assistance\\n\\n💼 Virtual Business Card: ${BUSINESS_CARD_URL}\\n\\nWhat would you like to create today?`,
+                },
+              ],
             };
 
-            showToast("⛓️ Code registered on blockchain!");
-            return certificate;
-          } catch (error) {
-            console.error("[Blockchain] Error:", error);
-            return false;
-          }
-        },
+            // ============================================
+            // FREEMIUM MODEL (ENHANCED)
+            // ============================================
+            const FreemiumModel = {
+              tiers: {
+                free: {
+                  promptsPerDay: 3,
+                  templates: "view-only",
+                  deployments: 0,
+                  blockchain: false,
+                  support: "community",
+                },
+                pro: {
+                  promptsPerDay: 50,
+                  templates: 10,
+                  deployments: 5,
+                  blockchain: true,
+                  support: "24hr",
+                },
+                enterprise: {
+                  promptsPerDay: -1, // unlimited
+                  templates: -1,
+                  deployments: -1,
+                  blockchain: true,
+                  darkWebMonitoring: true,
+                  support: "24/7-sla",
+                },
+              },
 
-        async verifyOwnership(code, userId) {
-          const hash = await this.hashCode(code);
-          console.log(`⛓️ Verifying ownership for hash: ${hash}`);
-          // In production: Check blockchain records
-          return true;
-        },
-      };
+              checkAccess(feature) {
+                const tier = state.userTier;
+                const limits = this.tiers[tier];
 
-      // ============================================
-      // SECURITY HUB - Dark Web & Advanced Protection
-      // ============================================
-      const SecurityHub = {
-        darkWebMonitoring: {
-          enabled: false,
-
-          async scanForTheft(codeHash) {
-            if (!FreemiumModel.checkAccess("darkWeb")) {
-              console.log("🕵️ Dark web monitoring requires Enterprise plan");
-              return null;
-            }
-
-            console.log("🕵️ Scanning dark web for stolen code...");
-
-            // In production: Integrate with threat intelligence APIs
-            const results = {
-              found: false,
-              locations: [],
-              timestamp: Date.now(),
-            };
-
-            return results;
-          },
-
-          startMonitoring(codeHash) {
-            console.log(
-              `🕵️ Started continuous monitoring for: ${codeHash.substring(
-                0,
-                16
-              )}...`
-            );
-            // Set up periodic scans
-          },
-        },
-
-        ddosProtection: {
-          requestCounts: new Map(),
-          limit: 100,
-          window: 60000, // 1 minute
-
-          checkRate(ip) {
-            const now = Date.now();
-            const record = this.requestCounts.get(ip) || {
-              count: 0,
-              resetTime: now + this.window,
-            };
-
-            if (now > record.resetTime) {
-              record.count = 1;
-              record.resetTime = now + this.window;
-            } else {
-              record.count++;
-            }
-
-            this.requestCounts.set(ip, record);
-            return record.count < this.limit;
-          },
-        },
-
-        sanitizeInput(input) {
-          // XSS prevention
-          return input
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#x27;")
-            .replace(/\//g, "&#x2F;");
-        },
-      };
-
-      // ============================================
-      // UTILITY FUNCTIONS
-      // ============================================
-      function showToast(message, type = "success") {
-        const container = document.getElementById("toast-container");
-        const toast = document.createElement("div");
-        toast.className = `px-6 py-3 rounded-lg shadow-lg text-white animate-fade-in ${
-          type === "success" ? "bg-green-600" : "bg-red-600"
-        }`;
-        toast.textContent = message;
-        container.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
-      }
-
-      window.setView = function (view) {
-        state.view = view;
-        window.scrollTo(0, 0);
-        render();
-      };
-
-      window.toggleChat = function () {
-        state.chatOpen = !state.chatOpen;
-        render();
-        if (state.chatOpen) {
-          setTimeout(() => {
-            const chatContainer = document.getElementById("chat-messages");
-            if (chatContainer)
-              chatContainer.scrollTop = chatContainer.scrollHeight;
-          }, 100);
-        }
-      };
-
-      window.handleChatSubmit = async function (e) {
-        e.preventDefault();
-        const input = document.getElementById("chat-input");
-        const text = input.value.trim();
-        if (!text) return;
-
-        state.messages.push({ role: "user", text });
-        input.value = "";
-        render();
-
-        setTimeout(() => {
-          const chatContainer = document.getElementById("chat-messages");
-          if (chatContainer)
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }, 50);
-
-        try {
-          const response = await AIHub.generate(text);
-          state.messages.push({ role: "bot", text: response });
-          render();
-          setTimeout(() => {
-            const chatContainer = document.getElementById("chat-messages");
-            if (chatContainer)
-              chatContainer.scrollTop = chatContainer.scrollHeight;
-          }, 50);
-        } catch (err) {
-          state.messages.push({
-            role: "bot",
-            text: "I'm having trouble connecting. Please try again.",
-          });
-          render();
-        }
-      };
-
-      window.startVoiceInput = function () {
-        state.isVoiceRecording = !state.isVoiceRecording;
-
-        if (state.isVoiceRecording) {
-          VoiceEngine.listen(
-            (transcript, isFinal) => {
-              state.voiceTranscript = transcript;
-              render();
-
-              if (isFinal) {
-                const input = document.getElementById("chat-input");
-                if (input) {
-                  input.value = transcript;
-                  state.isVoiceRecording = false;
-                  state.voiceTranscript = "";
-                  render();
+                switch (feature) {
+                  case "promptToApp":
+                    if (limits.promptsPerDay === -1) return true;
+                    return state.usageStats.promptsToday < limits.promptsPerDay;
+                  case "templateDownload":
+                    return limits.templates !== "view-only";
+                  case "deployment":
+                    if (limits.deployments === -1) return true;
+                    return state.usageStats.deploymentsMonth < limits.deployments;
+                  case "blockchain":
+                    return limits.blockchain || false;
+                  case "darkWeb":
+                    return limits.darkWebMonitoring || false;
+                  default:
+                    return tier === "pro" || tier === "enterprise";
                 }
-              }
-            },
-            (error) => {
-              console.error("Voice error:", error);
-              state.isVoiceRecording = false;
-              state.voiceTranscript = "";
-              showToast("Voice input error: " + error, "error");
-              render();
+              },
+
+              showUpgradeModal() {
+                showToast("⭐ Upgrade to Pro for unlimited access!", "error");
+                // In real implementation, show modal
+              },
+            };
+
+            // ============================================
+            // AI HUB - Gemini 2.0 Integration
+            // ============================================
+            const AIHub = {
+              apiKey:
+                localStorage.getItem("gemini_api_key") ||
+                "AIzaSyBIfuYCXGyGGWCpsTvFG7er5Y1jKoWqWMo",
+              model: "gemini-2.0-flash-latest",
+              apiEndpoint: "https://generativelanguage.googleapis.com/v1beta/models/",
+              projectId: "projects/559759620416",
+
+              setApiKey(key) {
+                this.apiKey = key;
+                localStorage.setItem("gemini_api_key", key);
+                console.log("%c✅ AI API key configured", "color: green");
+              },
+
+              async generate(prompt, context = "") {
+                if (!this.apiKey) {
+                  return "🔑 Please configure your Gemini API key to use the AI chatbot.";
+                }
+
+                try {
+                  console.log(`🤖 AIHub (${this.model}): Generating response...`);
+
+                  const systemContext = `You are an AI assistant for IAH Creations, a cutting-edge web development company.
+
+      Our Platform (v${APP_VERSION}):
+      - Enterprise-Grade Web Development
+      - AI-Powered (Gemini 2.0 Flash)
+      - Multi-Database Support (Firebase, Cloud SQL, BigQuery, Spanner, Bigtable)
+      - 20+ Language Support with RTL
+      - Voice Recognition & Synthesis
+      - Google Scholar Integration
+      - Custom Web Development starting at ₹4,999
+
+      Our Services:
+      - AI-powered website templates
+      - Mobile app development
+      - Prompt-to-app technology
+      - Blockchain integration
+      - Real-time AI chatbots
+
+      Virtual Business Card: ${BUSINESS_CARD_URL}
+      Contact: theiahcreations@gmail.com
+      Location: Jaipur, Rajasthan, India
+
+      Be helpful, professional, and guide users toward our services when appropriate.`;
+
+                  const fullPrompt = context
+                    ? `${systemContext}\n\nContext: ${context}\n\nUser: ${prompt}`
+                    : `${systemContext}\n\nUser: ${prompt}`;
+
+                  const response = await fetch(
+                    `${this.apiEndpoint}${this.model}:generateContent?key=${this.apiKey}`,
+                    {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        contents: [{ parts: [{ text: fullPrompt }] }],
+                        generationConfig: {
+                          temperature: 0.7,
+                          topK: 40,
+                          topP: 0.95,
+                          maxOutputTokens: 1024,
+                        },
+                      }),
+                    }
+                  );
+
+                  if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error?.message || "API request failed");
+                  }
+
+                  const data = await response.json();
+                  const generatedText =
+                    data.candidates?.[0]?.content?.parts?.[0]?.text ||
+                    "No response generated";
+
+                  console.log("%c✅ AI Response generated", "color: green");
+                  return generatedText;
+                } catch (error) {
+                  console.error("[AI] Error:", error);
+                  return `❌ Error: ${error.message}. Please check your API key.`;
+                }
+              },
+            };
+
+            // ============================================
+            // GLOBALIZATION HUB - RTL Support
+            // ============================================
+            const GlobalizationHub = {
+              rtlLanguages: ["ar", "he", "fa", "ur"],
+
+              changeLanguage(lang) {
+                state.language = lang;
+
+                const isRTL = this.rtlLanguages.includes(lang);
+                document.documentElement.setAttribute("dir", isRTL ? "rtl" : "ltr");
+
+                if (isRTL) {
+                  console.log(`%c🌐 RTL mode activated for ${lang}`, "color: purple");
+                }
+
+                render();
+              },
+            };
+
+            // ============================================
+            // VOICE ENGINE - Web Speech API
+            // ============================================
+            const VoiceEngine = {
+              recognition: null,
+              isListening: false,
+
+              init() {
+                const SpeechRecognition =
+                  window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (SpeechRecognition) {
+                  this.recognition = new SpeechRecognition();
+                  this.recognition.continuous = false;
+                  this.recognition.interimResults = true;
+                  this.recognition.lang = "en-US";
+                  console.log("%c🎤 Voice recognition initialized", "color: purple");
+                } else {
+                  console.warn("⚠️ Speech recognition not supported");
+                }
+              },
+
+              speak(text) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
+                window.speechSynthesis.speak(utterance);
+              },
+
+              listen(onResult, onError) {
+                if (!this.recognition) this.init();
+                if (!this.recognition) {
+                  if (onError) onError("Speech recognition not supported");
+                  return;
+                }
+
+                if (this.isListening) {
+                  this.stopListening();
+                  return;
+                }
+
+                this.isListening = true;
+                console.log("🎤 Listening...");
+
+                this.recognition.onresult = (event) => {
+                  const transcript = Array.from(event.results)
+                    .map((result) => result[0].transcript)
+                    .join("");
+                  if (onResult) onResult(transcript, event.results[0].isFinal);
+                };
+
+                this.recognition.onerror = (event) => {
+                  console.error("[Voice] Error:", event.error);
+                  this.isListening = false;
+                  if (onError) onError(event.error);
+                };
+
+                this.recognition.onend = () => {
+                  this.isListening = false;
+                  console.log("🎤 Stopped listening");
+                };
+
+                try {
+                  this.recognition.start();
+                } catch (e) {
+                  console.error("[Voice] Failed to start:", e);
+                  this.isListening = false;
+                  if (onError) onError(e.message);
+                }
+              },
+
+              stopListening() {
+                if (this.recognition && this.isListening) {
+                  this.recognition.stop();
+                  this.isListening = false;
+                }
+              },
+            };
+
+            // ============================================
+            // PAYMENT HUB - Multi-Currency Support
+            // ============================================
+            const PaymentHub = {
+              upi: {
+                id: UPI_ID,
+                qrCode: UPI_QR_CODE,
+                generateLink(amount, note = "IAH Creations Payment") {
+                  return `upi://pay?pa=${
+                    this.id
+                  }&pn=IAH Creations&am=${amount}&cu=INR&tn=${encodeURIComponent(
+                    note
+                  )}`;
+                },
+              },
+
+              razorpay: {
+                enabled: false,
+                key: "", // Add Razorpay key here
+                async processPayment(amount, currency = "INR") {
+                  console.log("💳 Razorpay payment:", amount, currency);
+                  // Integration code here
+                  showToast("Razorpay integration pending", "error");
+                },
+              },
+
+              stripe: {
+                enabled: false,
+                key: "", // Add Stripe key here
+                async processPayment(amount, currency = "USD") {
+                  console.log("💳 Stripe payment:", amount, currency);
+                  showToast("Stripe integration pending", "error");
+                },
+              },
+
+              crypto: {
+                wallets: {
+                  BTC: "bc1q...", // Add Bitcoin wallet
+                  ETH: "0x...", // Add Ethereum wallet
+                  USDT: "TRC20:...", // Add USDT wallet
+                },
+                async generatePaymentAddress(coin, amount) {
+                  console.log(`₿ Crypto payment: ${amount} ${coin}`);
+                  return {
+                    address: this.wallets[coin],
+                    amount: amount,
+                    qr: `crypto:${coin}:${this.wallets[coin]}?amount=${amount}`,
+                  };
+                },
+              },
+
+              async processPayment(templateId, method = "upi") {
+                const template = this.findTemplate(templateId);
+                if (!template) return false;
+
+                const amount = template.price[state.currency];
+
+                switch (method) {
+                  case "upi":
+                    const link = this.upi.generateLink(
+                      amount,
+                      `Purchase: ${template.name}`
+                    );
+                    window.open(link, "_blank");
+                    showToast("📱 Opening UPI payment...");
+                    break;
+                  case "razorpay":
+                    await this.razorpay.processPayment(amount, state.currency);
+                    break;
+                  case "stripe":
+                    await this.stripe.processPayment(amount, state.currency);
+                    break;
+                  case "crypto":
+                    const payment = await this.crypto.generatePaymentAddress(
+                      "BTC",
+                      template.price.crypto
+                    );
+                    showToast(`₿ Send ${payment.amount} to wallet`);
+                    break;
+                }
+              },
+
+              findTemplate(id) {
+                const all = [
+                  ...TEMPLATES.mobileApps,
+                  ...TEMPLATES.webApps,
+                  ...TEMPLATES.websites,
+                ];
+                return all.find((t) => t.id === id);
+              },
+            };
+
+            // ============================================
+            // PROMPT-TO-APP HUB - AI Code Generation
+            // ============================================
+            const PromptToAppHub = {
+              async generateApp(description, type = "website") {
+                // Check access
+                if (!FreemiumModel.checkAccess("promptToApp")) {
+                  FreemiumModel.showUpgradeModal();
+                  return null;
+                }
+
+                state.usageStats.promptsToday++;
+
+                try {
+                  console.log(`🚀 Generating ${type} from prompt...`);
+
+                  const systemPrompt = `You are an expert code generator for IAH Creations.
+      Generate production-ready, clean, and well-documented code based on the user's description.
+
+      Type: ${type}
+      Description: ${description}
+
+      Requirements:
+      - Use modern best practices
+      - Include responsive design
+      - Add comments
+      - Optimize for performance
+      - Include error handling
+
+      Generate ONLY the code, no explanations.`;
+
+                  const response = await AIHub.generate(description, systemPrompt);
+
+                  state.generatedCode = {
+                    type: type,
+                    description: description,
+                    code: response,
+                    timestamp: new Date().toISOString(),
+                  };
+
+                  showToast("✅ Code generated successfully!");
+                  return response;
+                } catch (error) {
+                  console.error("[PromptToApp] Error:", error);
+                  showToast("❌ Generation failed", "error");
+                  return null;
+                }
+              },
+
+              async deployCode(code, platform = "firebase") {
+                if (!FreemiumModel.checkAccess("deployment")) {
+                  FreemiumModel.showUpgradeModal();
+                  return false;
+                }
+
+                state.usageStats.deploymentsMonth++;
+
+                console.log(`🚀 Deploying to ${platform}...`);
+                showToast(`🚀 Deployment to ${platform} initiated!`);
+
+                // In production, integrate with Firebase Hosting, Vercel, etc.
+                return true;
+              },
+            };
+
+            // ============================================
+            // BLOCKCHAIN HUB - Anti-Theft Protection
+            // ============================================
+            const BlockchainHub = {
+              enabled: false, // Enable when blockchain is configured
+              chain: "polygon", // polygon, ethereum, bsc
+
+              async hashCode(code) {
+                const encoder = new TextEncoder();
+                const data = encoder.encode(code);
+                const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+              },
+
+              async registerOwnership(code, userId) {
+                if (!FreemiumModel.checkAccess("blockchain")) {
+                  console.log("⛓️ Blockchain protection requires Pro/Enterprise");
+                  return false;
+                }
+
+                try {
+                  const hash = await this.hashCode(code);
+                  console.log(`⛓️ Registering code ownership: ${hash}`);
+
+                  // In production: Store on blockchain
+                  const certificate = {
+                    hash: hash,
+                    owner: userId,
+                    timestamp: Date.now(),
+                    chain: this.chain,
+                  };
+
+                  showToast("⛓️ Code registered on blockchain!");
+                  return certificate;
+                } catch (error) {
+                  console.error("[Blockchain] Error:", error);
+                  return false;
+                }
+              },
+
+              async verifyOwnership(code, userId) {
+                const hash = await this.hashCode(code);
+                console.log(`⛓️ Verifying ownership for hash: ${hash}`);
+                // In production: Check blockchain records
+                return true;
+              },
+            };
+
+            // ============================================
+            // SECURITY HUB - Dark Web & Advanced Protection
+            // ============================================
+            const SecurityHub = {
+              darkWebMonitoring: {
+                enabled: false,
+
+                async scanForTheft(codeHash) {
+                  if (!FreemiumModel.checkAccess("darkWeb")) {
+                    console.log("🕵️ Dark web monitoring requires Enterprise plan");
+                    return null;
+                  }
+
+                  console.log("🕵️ Scanning dark web for stolen code...");
+
+                  // In production: Integrate with threat intelligence APIs
+                  const results = {
+                    found: false,
+                    locations: [],
+                    timestamp: Date.now(),
+                  };
+
+                  return results;
+                },
+
+                startMonitoring(codeHash) {
+                  console.log(
+                    `🕵️ Started continuous monitoring for: ${codeHash.substring(
+                      0,
+                      16
+                    )}...`
+                  );
+                  // Set up periodic scans
+                },
+              },
+
+              ddosProtection: {
+                requestCounts: new Map(),
+                limit: 100,
+                window: 60000, // 1 minute
+
+                checkRate(ip) {
+                  const now = Date.now();
+                  const record = this.requestCounts.get(ip) || {
+                    count: 0,
+                    resetTime: now + this.window,
+                  };
+
+                  if (now > record.resetTime) {
+                    record.count = 1;
+                    record.resetTime = now + this.window;
+                  } else {
+                    record.count++;
+                  }
+
+                  this.requestCounts.set(ip, record);
+                  return record.count < this.limit;
+                },
+              },
+
+              sanitizeInput(input) {
+                // XSS prevention
+                return input
+                  .replace(/</g, "&lt;")
+                  .replace(/>/g, "&gt;")
+                  .replace(/"/g, "&quot;")
+                  .replace(/'/g, "&#x27;")
+                  .replace(/\//g, "&#x2F;");
+              },
+            };
+
+            // ============================================
+            // AUTO-UPDATE HUB - Silent Background Updates
+            // ============================================
+            const AutoUpdateHub = {
+              currentVersion: APP_VERSION,
+              updateCheckInterval: 86400000, // 24 hours in milliseconds
+              updateURL:
+                "https://api.github.com/repos/iahcreations/platform/releases/latest",
+
+              init() {
+                const lastCheck = localStorage.getItem("last_update_check");
+                const now = Date.now();
+
+                // Check if 24 hours have passed since last check
+                if (
+                  !lastCheck ||
+                  now - parseInt(lastCheck) > this.updateCheckInterval
+                ) {
+                  this.checkForUpdates();
+                }
+              },
+
+              async checkForUpdates() {
+                try {
+                  // Silent check - no user notification
+                  console.log(
+                    "%c🔄 Checking for updates...",
+                    "color: gray; font-size: 10px"
+                  );
+
+                  localStorage.setItem("last_update_check", Date.now().toString());
+
+                  // In production, this would fetch from actual update server
+                  // For now, just log that check was performed
+                  console.log(
+                    "%c✓ Update check complete",
+                    "color: gray; font-size: 10px"
+                  );
+
+                  // If update available, cache it silently
+                  // Apply on next page load
+                } catch (error) {
+                  // Silent failure - don't notify user
+                  console.log(
+                    "%c⚠ Update check failed silently",
+                    "color: gray; font-size: 10px"
+                  );
+                }
+              },
+
+              applyUpdate() {
+                // Apply cached update if available
+                const cachedUpdate = localStorage.getItem("cached_update");
+                if (cachedUpdate) {
+                  // Apply update silently
+                  localStorage.removeItem("cached_update");
+                }
+              },
+            };
+
+            // ============================================
+            // UTILITY FUNCTIONS
+            // ============================================
+            function showToast(message, type = "success") {
+              const container = document.getElementById("toast-container");
+              const toast = document.createElement("div");
+              toast.className = `px-6 py-3 rounded-lg shadow-lg text-white animate-fade-in ${
+                type === "success" ? "bg-green-600" : "bg-red-600"
+              }`;
+              toast.textContent = message;
+              container.appendChild(toast);
+              setTimeout(() => toast.remove(), 3000);
             }
-          );
-        } else {
-          VoiceEngine.stopListening();
-          state.voiceTranscript = "";
-          render();
-        }
-      };
 
-      window.speakMessage = function (text) {
-        VoiceEngine.speak(text);
-        showToast("🔊 Speaking...");
-      };
+            window.setView = function (view) {
+              state.view = view;
+              state.menuOpen = false; // Close menu when navigating
+              window.scrollTo(0, 0);
+              render();
+            };
 
-      // ============================================
-      // RENDER FUNCTIONS
-      // ============================================
-      function renderNavbar() {
-        return `
-                <nav class="bg-gray-900 border-b border-gray-800 sticky top-0 z-30 backdrop-blur-md bg-opacity-90">
-                    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-                        <div class="flex items-center cursor-pointer" onclick="setView('home')">
-                            <div class="bg-blue-600 p-1.5 rounded-lg mr-2">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <rect x="2" y="2" width="20" height="20" rx="2"/>
-                                    <path d="M6 18h4v-4H6Z M14 18h4v-4h-4Z M6 10h4V6H6Z M14 10h4V6h-4Z"/>
-                                </svg>
-                            </div>
-                            <span class="font-bold text-xl">IAH <span class="text-blue-400">CREATIONS</span></span>
-                        </div>
-                        
-                        <div class="hidden md:flex items-center space-x-4">
-                            <button onclick="setView('home')" class="px-3 py-2 rounded text-sm ${
-                              state.view === "home"
-                                ? "text-blue-400"
-                                : "text-gray-300 hover:text-white"
-                            }">Home</button>
-                            <button onclick="setView('templates')" class="px-3 py-2 rounded text-sm ${
-                              state.view === "templates"
-                                ? "text-blue-400"
-                                : "text-gray-300 hover:text-white"
-                            }">Templates</button>
-                            <button onclick="setView('builder')" class="px-3 py-2 rounded text-sm ${
-                              state.view === "builder"
-                                ? "text-blue-400"
-                                : "text-gray-300 hover:text-white"
-                            }">AI Builder</button>
-                            <button onclick="setView('pricing')" class="px-3 py-2 rounded text-sm ${
-                              state.view === "pricing"
-                                ? "text-blue-400"
-                                : "text-gray-300 hover:text-white"
-                            }">Pricing</button>
-                            <button onclick="setView('contact')" class="px-3 py-2 rounded text-sm ${
-                              state.view === "contact"
-                                ? "text-blue-400"
-                                : "text-gray-300 hover:text-white"
-                            }">Contact</button>
-                        </div>
-                        
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs bg-gray-800 px-2 py-1 rounded border border-gray-700">v${APP_VERSION}</span>
-                        </div>
-                    </div>
-                </nav>
-            `;
-      }
+            window.toggleMenu = function () {
+              state.menuOpen = !state.menuOpen;
+              render();
+            };
 
-      function renderHero() {
-        return `
-                <div class="relative bg-gradient-to-br from-gray-900 via-blue-900/20 to-purple-900/20 overflow-hidden">
-                    <div class="max-w-7xl mx-auto px-4 pt-20 pb-24 text-center">
-                        <div class="inline-block mb-4 px-3 py-1 rounded-full bg-gray-800 border border-gray-700 text-xs">
-                            <span class="w-2 h-2 bg-green-400 rounded-full inline-block animate-pulse mr-2"></span>
-                            Commercial Build v${APP_VERSION} - Production Ready
-                        </div>
-                        <h1 class="text-4xl md:text-6xl font-extrabold text-white mb-6 neon-text">
-                            <span class="block">Enterprise-Grade AI Platform</span>
-                            <span class="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
-                                Multi-Database • 20+ Languages • Voice AI
-                            </span>
-                        </h1>
-                        <p class="max-w-2xl mx-auto text-gray-300 text-lg mb-10">
-                            Transform your ideas into production-ready websites with Gemini 2.0 AI, Firebase, RTL support, and voice recognition. Deploy in 24-72 hours.
-                        </p>
-                        <div class="flex justify-center gap-4 flex-wrap">
-                            <button onclick="setView('features')" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white px-8 py-4 rounded-lg font-bold shadow-lg transition-all transform hover:scale-105">
-                                Explore Features
-                            </button>
-                            <button onclick="window.open('${BUSINESS_CARD_URL}', '_blank')" class="bg-gray-800 hover:bg-gray-700 text-white px-8 py-4 rounded-lg font-bold border border-gray-600 transition-all">
-                                Virtual Business Card
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-      }
+            window.toggleChat = function () {
+              state.chatOpen = !state.chatOpen;
+              render();
+              if (state.chatOpen) {
+                setTimeout(() => {
+                  const chatContainer = document.getElementById("chat-messages");
+                  if (chatContainer)
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }, 100);
+              }
+            };
 
-      function renderFeatures() {
-        const features = [
-          {
-            icon: "🤖",
-            title: "Gemini 2.0 AI Integration",
-            description:
-              "Real-time AI chatbot powered by Google's latest Gemini 2.0 Flash model with context-aware responses.",
-          },
-          {
-            icon: "🔒",
-            title: "Firebase Security",
-            description:
-              "Enterprise-grade security with artifacts path structure and secure authentication.",
-          },
-          {
-            icon: "🗄️",
-            title: "Multi-Database Support",
-            description:
-              "Firebase, Cloud SQL, BigQuery, Spanner, and Bigtable integration for trillion-scale data.",
-          },
-          {
-            icon: "🌍",
-            title: "20+ Languages with RTL",
-            description:
-              "Full globalization support including Arabic and Hebrew with automatic RTL layout.",
-          },
-          {
-            icon: "🎤",
-            title: "Voice Recognition & Synthesis",
-            description:
-              "Web Speech API integration for voice commands and text-to-speech in 12+ languages.",
-          },
-          {
-            icon: "🎓",
-            title: "Google Scholar Integration",
-            description:
-              "Search academic papers, analyze citations, and generate bibliographies (Pro/Enterprise).",
-          },
-          {
-            icon: "📁",
-            title: "Multi-Modal Input",
-            description:
-              "Upload and process video, audio, images, and documents with AI analysis.",
-          },
-          {
-            icon: "⚡",
-            title: "Quantum Query Engine",
-            description:
-              "Trillion-scale data processing with quantum-inspired algorithms for instant retrieval.",
-          },
-        ];
+            window.handleChatSubmit = async function (e) {
+              e.preventDefault();
+              const input = document.getElementById("chat-input");
+              const text = input.value.trim();
+              if (!text) return;
 
-        return `
+              state.messages.push({ role: "user", text });
+              input.value = "";
+              render();
+
+              setTimeout(() => {
+                const chatContainer = document.getElementById("chat-messages");
+                if (chatContainer)
+                  chatContainer.scrollTop = chatContainer.scrollHeight;
+              }, 50);
+
+              try {
+                const response = await AIHub.generate(text);
+                state.messages.push({ role: "bot", text: response });
+                render();
+                setTimeout(() => {
+                  const chatContainer = document.getElementById("chat-messages");
+                  if (chatContainer)
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }, 50);
+              } catch (err) {
+                state.messages.push({
+                  role: "bot",
+                  text: "I'm having trouble connecting. Please try again.",
+                });
+                render();
+              }
+            };
+
+            window.startVoiceInput = function () {
+              state.isVoiceRecording = !state.isVoiceRecording;
+
+              if (state.isVoiceRecording) {
+                VoiceEngine.listen(
+                  (transcript, isFinal) => {
+                    state.voiceTranscript = transcript;
+                    render();
+
+                    if (isFinal) {
+                      const input = document.getElementById("chat-input");
+                      if (input) {
+                        input.value = transcript;
+                        state.isVoiceRecording = false;
+                        state.voiceTranscript = "";
+                        render();
+                      }
+                    }
+                  },
+                  (error) => {
+                    console.error("Voice error:", error);
+                    state.isVoiceRecording = false;
+                    state.voiceTranscript = "";
+                    showToast("Voice input error: " + error, "error");
+                    render();
+                  }
+                );
+              } else {
+                VoiceEngine.stopListening();
+                state.voiceTranscript = "";
+                render();
+              }
+            };
+
+            window.speakMessage = function (text) {
+              VoiceEngine.speak(text);
+              showToast("🔊 Speaking...");
+            };
+
+            // ============================================
+            // RENDER FUNCTIONS
+            // ============================================
+            function renderNavbar() {
+              return `
+                      <nav class="bg-gray-900 border-b border-gray-800 sticky top-0 z-30 backdrop-blur-md bg-opacity-90">
+                          <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+                              <div class="flex items-center cursor-pointer" onclick="setView('home')">
+                                  <div class="bg-gradient-to-br from-blue-600 to-purple-600 p-1.5 rounded-lg mr-2">
+                                      <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <rect x="2" y="2" width="20" height="20" rx="2"/>
+                                          <path d="M6 18h4v-4H6Z M14 18h4v-4h-4Z M6 10h4V6H6Z M14 10h4V6h-4Z"/>
+                                      </svg>
+                                  </div>
+                                  <span class="font-bold text-xl">The <span class="gradient-text">IAH CREATIONS</span></span>
+                              </div>
+
+                              <div class="hidden md:flex items-center space-x-4">
+                                  <button onclick="setView('home')" class="px-3 py-2 rounded text-sm ${
+                                    state.view === "home"
+                                      ? "text-blue-400"
+                                      : "text-gray-300 hover:text-white"
+                                  }">Home</button>
+                                  <button onclick="setView('templates')" class="px-3 py-2 rounded text-sm ${
+                                    state.view === "templates"
+                                      ? "text-blue-400"
+                                      : "text-gray-300 hover:text-white"
+                                  }">Templates</button>
+                                  <button onclick="setView('builder')" class="px-3 py-2 rounded text-sm ${
+                                    state.view === "builder"
+                                      ? "text-blue-400"
+                                      : "text-gray-300 hover:text-white"
+                                  }">AI Builder</button>
+                                  <button onclick="setView('pricing')" class="px-3 py-2 rounded text-sm ${
+                                    state.view === "pricing"
+                                      ? "text-blue-400"
+                                      : "text-gray-300 hover:text-white"
+                                  }">Pricing</button>
+                                  <button onclick="setView('contact')" class="px-3 py-2 rounded text-sm ${
+                                    state.view === "contact"
+                                      ? "text-blue-400"
+                                      : "text-gray-300 hover:text-white"
+                                  }">Contact</button>
+                              </div>
+
+                              <div class="flex items-center gap-3">
+                                  <span class="text-xs bg-gray-800 px-2 py-1 rounded border border-gray-700">v${APP_VERSION}</span>
+                                  <button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800 transition-colors" aria-label="Menu">
+                                      <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                                      </svg>
+                                  </button>
+                              </div>
+                          </div>
+                      </nav>
+                  `;
+            }
+
+            function renderHero() {
+              return `
+                      <div class="relative bg-gradient-to-br from-gray-900 via-blue-900/20 to-purple-900/20 overflow-hidden">
+                          <div class="max-w-7xl mx-auto px-4 pt-20 pb-24 text-center">
+                              <div class="inline-block mb-4 px-3 py-1 rounded-full bg-gray-800 border border-gray-700 text-xs">
+                                  <span class="w-2 h-2 bg-green-400 rounded-full inline-block animate-pulse mr-2"></span>
+                                  Commercial Build v${APP_VERSION} - Production Ready
+                              </div>
+                              <h1 class="text-4xl md:text-6xl font-extrabold text-white mb-6 professional-text">
+                                  <span class="block">Enterprise-Grade AI Platform</span>
+                                  <span class="block gradient-text">
+                                      Multi-Database • 20+ Languages • Voice AI
+                                  </span>
+                              </h1>
+                              <p class="max-w-2xl mx-auto text-gray-300 text-lg mb-10">
+                                  Transform your ideas into production-ready websites with Gemini 2.0 AI, Firebase, RTL support, and voice recognition. Deploy in 24-72 hours.
+                              </p>
+                              <div class="flex justify-center gap-4 flex-wrap">
+                                  <button onclick="setView('features')" class="btn-primary text-white px-8 py-4 rounded-lg font-bold">
+                                      Explore Features
+                                  </button>
+                                  <button onclick="window.open('${BUSINESS_CARD_URL}', '_blank')" class="bg-gray-800 hover:bg-gray-700 text-white px-8 py-4 rounded-lg font-bold border border-gray-600 transition-all hover:shadow-lg">
+                                      Virtual Business Card
+                                  </button>
+                              </div>
+                          </div>
+                      </div>
+                  `;
+            }
+
+            function renderFeatures() {
+              const features = [
+                {
+                  icon: "🤖",
+                  title: "Gemini 2.0 AI Integration",
+                  description:
+                    "Real-time AI chatbot powered by Google's latest Gemini 2.0 Flash model with context-aware responses.",
+                },
+                {
+                  icon: "🔒",
+                  title: "Firebase Security",
+                  description:
+                    "Enterprise-grade security with artifacts path structure and secure authentication.",
+                },
+                {
+                  icon: "🗄️",
+                  title: "Multi-Database Support",
+                  description:
+                    "Firebase, Cloud SQL, BigQuery, Spanner, and Bigtable integration for trillion-scale data.",
+                },
+                {
+                  icon: "🌍",
+                  title: "20+ Languages with RTL",
+                  description:
+                    "Full globalization support including Arabic and Hebrew with automatic RTL layout.",
+                },
+                {
+                  icon: "🎤",
+                  title: "Voice Recognition & Synthesis",
+                  description:
+                    "Web Speech API integration for voice commands and text-to-speech in 12+ languages.",
+                },
+                {
+                  icon: "🎓",
+                  title: "Google Scholar Integration",
+                  description:
+                    "Search academic papers, analyze citations, and generate bibliographies (Pro/Enterprise).",
+                },
+                {
+                  icon: "📁",
+                  title: "Multi-Modal Input",
+                  description:
+                    "Upload and process video, audio, images, and documents with AI analysis.",
+                },
+                {
+                  icon: "⚡",
+                  title: "Quantum Query Engine",
+                  description:
+                    "Trillion-scale data processing with quantum-inspired algorithms for instant retrieval.",
+                },
+              ];
+
+              return `
+                      <div class="max-w-7xl mx-auto px-4 py-16">
+                          <div class="text-center mb-12">
+                              <h2 class="text-4xl font-bold text-white mb-4 professional-text">Platform Features</h2>
+                              <p class="text-gray-400 text-lg">Enterprise-grade capabilities for modern web development</p>
+                          </div>
+                          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                              ${features
+                                .map(
+                                  (feature) => `
+                                  <div class="holographic-card p-6 rounded-xl">
+                                      <div class="text-4xl mb-4">${feature.icon}</div>
+                                      <h3 class="text-xl font-bold text-white mb-2">${feature.title}</h3>
+                                      <p class="text-gray-400 text-sm">${feature.description}</p>
+                                  </div>
+                              `
+                                )
+                                .join("")}
+                          </div>
+                      </div>
+                  `;
+            }
+
+            function renderPricing() {
+              const tiers = [
+                {
+                  name: "Free",
+                  price: "₹0",
+                  period: "forever",
+                  features: [
+                    "10 AI queries/day",
+                    "3 file uploads/day",
+                    "Firestore database",
+                    "Basic templates",
+                    "Community support",
+                  ],
+                  highlight: false,
+                },
+                {
+                  name: "Pro",
+                  price: "₹999",
+                  period: "/month",
+                  features: [
+                    "1,000 AI queries/day",
+                    "100 file uploads/day",
+                    "Cloud SQL + Firestore",
+                    "Premium templates",
+                    "Google Scholar (50/day)",
+                    "Priority support",
+                    "Voice features",
+                  ],
+                  highlight: true,
+                  badge: "Most Popular",
+                },
+                {
+                  name: "Enterprise",
+                  price: "₹4,999",
+                  period: "/month",
+                  features: [
+                    "Unlimited AI queries",
+                    "Unlimited uploads",
+                    "All 5 databases",
+                    "Google Scholar (500/day)",
+                    "24/7 dedicated support",
+                    "Custom AI training",
+                    "White-label options",
+                    "SLA guarantee",
+                  ],
+                  highlight: false,
+                },
+              ];
+
+              return `
+                      <div class="max-w-7xl mx-auto px-4 py-16">
+                          <div class="text-center mb-12">
+                              <h2 class="text-4xl font-bold text-white mb-4 neon-text">Pricing Plans</h2>
+                              <p class="text-gray-400 text-lg">Choose the perfect plan for your needs</p>
+                          </div>
+                          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                              ${tiers
+                                .map(
+                                  (tier) => `
+                                  <div class="relative holographic-card p-8 rounded-2xl ${
+                                    tier.highlight
+                                      ? "border-blue-500 shadow-[0_0_30px_rgba(59,130,246,0.3)] transform scale-105"
+                                      : ""
+                                  }">
+                                      ${
+                                        tier.badge
+                                          ? `<div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-1 rounded-full text-sm font-bold">${tier.badge}</div>`
+                                          : ""
+                                      }
+                                      <h3 class="text-2xl font-bold text-white mb-2">${
+                                        tier.name
+                                      }</h3>
+                                      <div class="mb-6">
+                                          <span class="text-4xl font-bold text-white">${
+                                            tier.price
+                                          }</span>
+                                          <span class="text-gray-400">${
+                                            tier.period
+                                          }</span>
+                                      </div>
+                                      <ul class="space-y-3 mb-8">
+                                          ${tier.features
+                                            .map(
+                                              (feature) => `
+                                              <li class="flex items-start gap-2 text-gray-300 text-sm">
+                                                  <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                  <span>${feature}</span>
+                                              </li>
+                                          `
+                                            )
+                                            .join("")}
+                                      </ul>
+                                      <button onclick="setView('contact')" class="w-full py-3 rounded-lg font-bold transition-all ${
+                                        tier.highlight
+                                          ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500"
+                                          : "bg-gray-700 text-white hover:bg-gray-600"
+                                      }">
+                                          Get Started
+                                      </button>
+                                  </div>
+                              `
+                                )
+                                .join("")}
+                          </div>
+                      </div>
+                  `;
+            }
+
+            // ============================================
+            // TEMPLATE MARKETPLACE
+            // ============================================
+            function renderTemplates() {
+              const allTemplates = [
+                ...TEMPLATES.mobileApps,
+                ...TEMPLATES.webApps,
+                ...TEMPLATES.websites,
+              ];
+
+              return `
                 <div class="max-w-7xl mx-auto px-4 py-16">
-                    <div class="text-center mb-12">
-                        <h2 class="text-4xl font-bold text-white mb-4 neon-text">Platform Features</h2>
-                        <p class="text-gray-400 text-lg">Enterprise-grade capabilities for modern web development</p>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        ${features
-                          .map(
-                            (feature) => `
-                            <div class="holographic-card p-6 rounded-xl">
-                                <div class="text-4xl mb-4">${feature.icon}</div>
-                                <h3 class="text-xl font-bold text-white mb-2">${feature.title}</h3>
-                                <p class="text-gray-400 text-sm">${feature.description}</p>
-                            </div>
-                        `
-                          )
-                          .join("")}
-                    </div>
-                </div>
-            `;
-      }
+                  <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-white mb-4 neon-text">Template Marketplace</h2>
+                    <p class="text-gray-400 text-lg">Premium templates for Mobile Apps, Web Applications & Websites</p>
+                  </div>
 
-      function renderPricing() {
-        const tiers = [
-          {
-            name: "Free",
-            price: "₹0",
-            period: "forever",
-            features: [
-              "10 AI queries/day",
-              "3 file uploads/day",
-              "Firestore database",
-              "Basic templates",
-              "Community support",
-            ],
-            highlight: false,
-          },
-          {
-            name: "Pro",
-            price: "₹999",
-            period: "/month",
-            features: [
-              "1,000 AI queries/day",
-              "100 file uploads/day",
-              "Cloud SQL + Firestore",
-              "Premium templates",
-              "Google Scholar (50/day)",
-              "Priority support",
-              "Voice features",
-            ],
-            highlight: true,
-            badge: "Most Popular",
-          },
-          {
-            name: "Enterprise",
-            price: "₹4,999",
-            period: "/month",
-            features: [
-              "Unlimited AI queries",
-              "Unlimited uploads",
-              "All 5 databases",
-              "Google Scholar (500/day)",
-              "24/7 dedicated support",
-              "Custom AI training",
-              "White-label options",
-              "SLA guarantee",
-            ],
-            highlight: false,
-          },
-        ];
-
-        return `
-                <div class="max-w-7xl mx-auto px-4 py-16">
-                    <div class="text-center mb-12">
-                        <h2 class="text-4xl font-bold text-white mb-4 neon-text">Pricing Plans</h2>
-                        <p class="text-gray-400 text-lg">Choose the perfect plan for your needs</p>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        ${tiers
-                          .map(
-                            (tier) => `
-                            <div class="relative holographic-card p-8 rounded-2xl ${
-                              tier.highlight
-                                ? "border-blue-500 shadow-[0_0_30px_rgba(59,130,246,0.3)] transform scale-105"
+                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    ${allTemplates
+                      .map(
+                        (t) => `
+                      <div class="holographic-card rounded-xl overflow-hidden hover:scale-105 transition-transform">
+                        <img src="${t.image}" alt="${
+                          t.name
+                        }" class="w-full h-48 object-cover" />
+                        <div class="p-6">
+                          <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-white">${t.name}</h3>
+                            ${
+                              t.rating
+                                ? `<span class="text-yellow-400">⭐ ${t.rating}</span>`
                                 : ""
-                            }">
-                                ${
-                                  tier.badge
-                                    ? `<div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-1 rounded-full text-sm font-bold">${tier.badge}</div>`
-                                    : ""
-                                }
-                                <h3 class="text-2xl font-bold text-white mb-2">${
-                                  tier.name
-                                }</h3>
-                                <div class="mb-6">
-                                    <span class="text-4xl font-bold text-white">${
-                                      tier.price
-                                    }</span>
-                                    <span class="text-gray-400">${
-                                      tier.period
-                                    }</span>
-                                </div>
-                                <ul class="space-y-3 mb-8">
-                                    ${tier.features
-                                      .map(
-                                        (feature) => `
-                                        <li class="flex items-start gap-2 text-gray-300 text-sm">
-                                            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                            <span>${feature}</span>
-                                        </li>
-                                    `
-                                      )
-                                      .join("")}
-                                </ul>
-                                <button onclick="setView('contact')" class="w-full py-3 rounded-lg font-bold transition-all ${
-                                  tier.highlight
-                                    ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500"
-                                    : "bg-gray-700 text-white hover:bg-gray-600"
-                                }">
-                                    Get Started
-                                </button>
-                            </div>
-                        `
-                          )
-                          .join("")}
-                    </div>
+                            }
+                          </div>
+                          <p class="text-sm text-gray-400 mb-3">${t.subcategory} • ${
+                          t.tech
+                        }</p>
+                          <ul class="space-y-1 mb-4">
+                            ${t.features
+                              .slice(0, 3)
+                              .map(
+                                (f) => `
+                              <li class="text-sm text-gray-300">✓ ${f}</li>
+                            `
+                              )
+                              .join("")}
+                          </ul>
+                          <div class="flex justify-between items-center">
+                            <span class="text-2xl font-bold text-white">${
+                              state.currency
+                            } ${t.price[state.currency]}</span>
+                            <button onclick="buyTemplate('${
+                              t.id
+                            }')" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold">
+                              Buy Now
+                            </button>
+                          </div>
+                          ${
+                            t.downloads
+                              ? `<p class="text-xs text-gray-500 mt-2">${t.downloads}+ downloads</p>`
+                              : ""
+                          }
+                        </div>
+                      </div>
+                    `
+                      )
+                      .join("")}
+                  </div>
                 </div>
-            `;
-      }
+              `;
+            }
 
-      // ============================================
-      // TEMPLATE MARKETPLACE
-      // ============================================
-      function renderTemplates() {
-        const allTemplates = [
-          ...TEMPLATES.mobileApps,
-          ...TEMPLATES.webApps,
-          ...TEMPLATES.websites,
-        ];
-
-        return `
-          <div class="max-w-7xl mx-auto px-4 py-16">
-            <div class="text-center mb-12">
-              <h2 class="text-4xl font-bold text-white mb-4 neon-text">Template Marketplace</h2>
-              <p class="text-gray-400 text-lg">Premium templates for Mobile Apps, Web Applications & Websites</p>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              ${allTemplates
-                .map(
-                  (t) => `
-                <div class="holographic-card rounded-xl overflow-hidden hover:scale-105 transition-transform">
-                  <img src="${t.image}" alt="${
-                    t.name
-                  }" class="w-full h-48 object-cover" />
-                  <div class="p-6">
-                    <div class="flex justify-between items-start mb-2">
-                      <h3 class="text-xl font-bold text-white">${t.name}</h3>
+            // ============================================
+            // PROMPT-TO-APP BUILDER
+            // ============================================
+            function renderBuilder() {
+              return `
+                <div class="max-w-4xl mx-auto px-4 py-16">
+                  <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-white mb-4 neon-text">AI App Builder</h2>
+                    <p class="text-gray-400 text-lg">Describe your app in plain English, AI generates the code!</p>
+                    <div class="mt-4 inline-block px-4 py-2 bg-gray-800 rounded-full text-sm">
                       ${
-                        t.rating
-                          ? `<span class="text-yellow-400">⭐ ${t.rating}</span>`
-                          : ""
+                        state.userTier === "free"
+                          ? `🎯 ${
+                              3 - state.usageStats.promptsToday
+                            }/3 free prompts today`
+                          : state.userTier === "pro"
+                          ? `⭐ ${
+                              50 - state.usageStats.promptsToday
+                            }/50 prompts today`
+                          : `💎 Unlimited prompts`
                       }
                     </div>
-                    <p class="text-sm text-gray-400 mb-3">${t.subcategory} • ${
-                    t.tech
-                  }</p>
-                    <ul class="space-y-1 mb-4">
-                      ${t.features
-                        .slice(0, 3)
-                        .map(
-                          (f) => `
-                        <li class="text-sm text-gray-300">✓ ${f}</li>
-                      `
-                        )
-                        .join("")}
-                    </ul>
-                    <div class="flex justify-between items-center">
-                      <span class="text-2xl font-bold text-white">${
-                        state.currency
-                      } ${t.price[state.currency]}</span>
-                      <button onclick="buyTemplate('${
-                        t.id
-                      }')" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold">
-                        Buy Now
+                  </div>
+
+                  <div class="holographic-card p-8 rounded-xl">
+                    <form onsubmit="handlePromptSubmit(event)" class="space-y-6">
+                      <div>
+                        <label class="block text-sm font-bold text-gray-300 mb-2">Project Type</label>
+                        <div class="grid grid-cols-3 gap-4">
+                          <button type="button" onclick="selectProjectType('mobile')" class="p-4 rounded-lg border-2 ${
+                            state.selectedProjectType === "mobile"
+                              ? "border-blue-500 bg-blue-900/30"
+                              : "border-gray-700 bg-gray-800 hover:border-gray-600"
+                          }">
+                            <div class="text-3xl mb-2">📱</div>
+                            <div class="text-sm font-bold text-white">Mobile App</div>
+                          </button>
+                          <button type="button" onclick="selectProjectType('web')" class="p-4 rounded-lg border-2 ${
+                            state.selectedProjectType === "web"
+                              ? "border-blue-500 bg-blue-900/30"
+                              : "border-gray-700 bg-gray-800 hover:border-gray-600"
+                          }">
+                            <div class="text-3xl mb-2">💻</div>
+                            <div class="text-sm font-bold text-white">Web App</div>
+                          </button>
+                          <button type="button" onclick="selectProjectType('website')" class="p-4 rounded-lg border-2 ${
+                            state.selectedProjectType === "website"
+                              ? "border-blue-500 bg-blue-900/30"
+                              : "border-gray-700 bg-gray-800 hover:border-gray-600"
+                          }">
+                            <div class="text-3xl mb-2">🌐</div>
+                            <div class="text-sm font-bold text-white">Website</div>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label class="block text-sm font-bold text-gray-300 mb-2">Describe Your App</label>
+                        <textarea
+                          id="app-description"
+                          required
+                          rows="6"
+                          class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500"
+                          placeholder="Example: Create a todo list app with dark mode, local storage, and drag-and-drop features..."
+                        ></textarea>
+                      </div>
+
+                      <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold py-4 rounded-lg transition-all flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        Generate App with AI
                       </button>
-                    </div>
+                    </form>
+
                     ${
-                      t.downloads
-                        ? `<p class="text-xs text-gray-500 mt-2">${t.downloads}+ downloads</p>`
-                        : ""
-                    }
-                  </div>
-                </div>
-              `
-                )
-                .join("")}
-            </div>
-          </div>
-        `;
-      }
-
-      // ============================================
-      // PROMPT-TO-APP BUILDER
-      // ============================================
-      function renderBuilder() {
-        return `
-          <div class="max-w-4xl mx-auto px-4 py-16">
-            <div class="text-center mb-12">
-              <h2 class="text-4xl font-bold text-white mb-4 neon-text">AI App Builder</h2>
-              <p class="text-gray-400 text-lg">Describe your app in plain English, AI generates the code!</p>
-              <div class="mt-4 inline-block px-4 py-2 bg-gray-800 rounded-full text-sm">
-                ${
-                  state.userTier === "free"
-                    ? `🎯 ${
-                        3 - state.usageStats.promptsToday
-                      }/3 free prompts today`
-                    : state.userTier === "pro"
-                    ? `⭐ ${
-                        50 - state.usageStats.promptsToday
-                      }/50 prompts today`
-                    : `💎 Unlimited prompts`
-                }
-              </div>
-            </div>
-            
-            <div class="holographic-card p-8 rounded-xl">
-              <form onsubmit="handlePromptSubmit(event)" class="space-y-6">
-                <div>
-                  <label class="block text-sm font-bold text-gray-300 mb-2">Project Type</label>
-                  <div class="grid grid-cols-3 gap-4">
-                    <button type="button" onclick="selectProjectType('mobile')" class="p-4 rounded-lg border-2 ${
-                      state.selectedProjectType === "mobile"
-                        ? "border-blue-500 bg-blue-900/30"
-                        : "border-gray-700 bg-gray-800 hover:border-gray-600"
-                    }">
-                      <div class="text-3xl mb-2">📱</div>
-                      <div class="text-sm font-bold text-white">Mobile App</div>
-                    </button>
-                    <button type="button" onclick="selectProjectType('web')" class="p-4 rounded-lg border-2 ${
-                      state.selectedProjectType === "web"
-                        ? "border-blue-500 bg-blue-900/30"
-                        : "border-gray-700 bg-gray-800 hover:border-gray-600"
-                    }">
-                      <div class="text-3xl mb-2">💻</div>
-                      <div class="text-sm font-bold text-white">Web App</div>
-                    </button>
-                    <button type="button" onclick="selectProjectType('website')" class="p-4 rounded-lg border-2 ${
-                      state.selectedProjectType === "website"
-                        ? "border-blue-500 bg-blue-900/30"
-                        : "border-gray-700 bg-gray-800 hover:border-gray-600"
-                    }">
-                      <div class="text-3xl mb-2">🌐</div>
-                      <div class="text-sm font-bold text-white">Website</div>
-                    </button>
-                  </div>
-                </div>
-                
-                <div>
-                  <label class="block text-sm font-bold text-gray-300 mb-2">Describe Your App</label>
-                  <textarea 
-                    id="app-description" 
-                    required 
-                    rows="6" 
-                    class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500"
-                    placeholder="Example: Create a todo list app with dark mode, local storage, and drag-and-drop features..."
-                  ></textarea>
-                </div>
-                
-                <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold py-4 rounded-lg transition-all flex items-center justify-center gap-2">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                  Generate App with AI
-                </button>
-              </form>
-              
-              ${
-                state.generatedCode
-                  ? `
-                <div class="mt-8 p-6 bg-gray-900 rounded-lg border border-green-500">
-                  <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-xl font-bold text-white">✅ Code Generated!</h3>
-                    <button onclick="deployCode()" class="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-bold">
-                      🚀 Deploy Now
-                    </button>
-                  </div>
-                  <pre class="bg-black p-4 rounded text-green-400 text-xs overflow-x-auto max-h-64">${state.generatedCode.code.substring(
-                    0,
-                    500
-                  )}...</pre>
-                </div>
-              `
-                  : ""
-              }
-            </div>
-          </div>
-        `;
-      }
-
-      function renderContact() {
-        return `
-                <div class="max-w-4xl mx-auto px-4 py-16">
-                    <div class="text-center mb-12">
-                        <h2 class="text-4xl font-bold text-white mb-4 neon-text">Contact Us</h2>
-                        <p class="text-gray-400 text-lg">Ready to transform your business with AI?</p>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div class="holographic-card p-8 rounded-xl">
-                            <h3 class="text-2xl font-bold text-white mb-6">Get in Touch</h3>
-                            <div class="space-y-4">
-                                <div class="flex items-start gap-4">
-                                    <div class="bg-blue-600 p-3 rounded-lg">
-                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                                    </div>
-                                    <div>
-                                        <p class="text-gray-400 text-sm">Email Us</p>
-                                        <a href="mailto:theiahcreations@gmail.com" class="text-xl text-white font-semibold hover:text-blue-400">theiahcreations@gmail.com</a>
-                                    </div>
-                                </div>
-                                <div class="flex items-start gap-4">
-                                    <div class="bg-purple-600 p-3 rounded-lg">
-                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                    </div>
-                                    <div>
-                                        <p class="text-gray-400 text-sm">Location</p>
-                                        <p class="text-xl text-white font-semibold">Jaipur, Rajasthan, India</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <form onsubmit="handleContactSubmit(event)" class="holographic-card p-8 rounded-xl">
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-sm text-gray-400 mb-2">Name</label>
-                                    <input type="text" required class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500" placeholder="Your Name">
-                                </div>
-                                <div>
-                                    <label class="block text-sm text-gray-400 mb-2">Email</label>
-                                    <input type="email" required class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500" placeholder="your@email.com">
-                                </div>
-                                <div>
-                                    <label class="block text-sm text-gray-400 mb-2">Message</label>
-                                    <textarea rows="4" required class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500" placeholder="How can we help?"></textarea>
-                                </div>
-                                <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold py-3 rounded-lg transition-all">
-                                    Send Message
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            `;
-      }
-
-      window.handleContactSubmit = async function (e) {
-        e.preventDefault();
-        const form = e.target;
-        const name = form.querySelector('input[type="text"]').value;
-        const email = form.querySelector('input[type="email"]').value;
-        const message = form.querySelector("textarea").value;
-
-        try {
-          if (db && isFirebaseReady) {
-            await addDoc(
-              collection(db, getCollectionPath("contact_requests")),
-              {
-                name,
-                email,
-                message,
-                timestamp: serverTimestamp(),
-                status: "new",
-              }
-            );
-          }
-          showToast("✅ Message sent successfully!");
-          form.reset();
-        } catch (error) {
-          console.error("Error:", error);
-          showToast("❌ Error sending message", "error");
-        }
-      };
-
-      function renderChatBot() {
-        return `
-                <div class="fixed bottom-4 right-4 z-50 flex flex-col items-end">
-                    ${
-                      state.chatOpen
+                      state.generatedCode
                         ? `
-                        <div class="holographic-card rounded-2xl w-80 md:w-96 mb-4 overflow-hidden flex flex-col" style="height: 500px;">
-                            <div class="bg-gray-900 p-4 border-b border-gray-700 flex justify-between items-center">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                    <h3 class="font-bold text-white">IAH AI Assistant</h3>
-                                </div>
-                                <button onclick="toggleChat()" class="text-gray-400 hover:text-white">✕</button>
-                            </div>
-                            <div class="flex-1 p-4 overflow-y-auto space-y-4" id="chat-messages">
-                                ${state.messages
-                                  .map(
-                                    (msg) => `
-                                    <div class="flex ${
-                                      msg.role === "user"
-                                        ? "justify-end"
-                                        : "justify-start"
-                                    }">
-                                        <div class="max-w-[80%] p-3 rounded-xl ${
-                                          msg.role === "user"
-                                            ? "bg-blue-600 text-white rounded-tr-none"
-                                            : "bg-gray-700 text-gray-200 rounded-tl-none"
-                                        }">
-                                            <div class="whitespace-pre-wrap">${
-                                              msg.text
-                                            }</div>
-                                            ${
-                                              msg.role === "bot"
-                                                ? `
-                                                <button onclick="speakMessage(\`${msg.text.replace(
-                                                  /`/g,
-                                                  "'"
-                                                )}\`)" class="text-xs text-blue-400 hover:text-blue-300 mt-2">
-                                                    🔊 Speak
-                                                </button>
-                                            `
-                                                : ""
-                                            }
-                                        </div>
-                                    </div>
-                                `
-                                  )
-                                  .join("")}
-                            </div>
-                            <form onsubmit="handleChatSubmit(event)" class="p-4 bg-gray-900 border-t border-gray-700">
-                                ${
-                                  state.isVoiceRecording
-                                    ? `
-                                    <div class="text-center py-2 mb-2 bg-red-900/30 border border-red-500 rounded text-red-400 text-sm">
-                                        🎤 Listening... ${
-                                          state.voiceTranscript || "Speak now"
-                                        }
-                                    </div>
-                                `
-                                    : ""
-                                }
-                                <div class="flex gap-2">
-                                    <input type="text" id="chat-input" placeholder="Ask anything..." class="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500">
-                                    <button type="button" onclick="startVoiceInput()" class="p-2 rounded-lg ${
-                                      state.isVoiceRecording
-                                        ? "bg-red-600 hover:bg-red-500"
-                                        : "bg-gray-700 hover:bg-gray-600"
-                                    } text-white transition-colors">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
-                                    </button>
-                                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white p-2 rounded-lg transition-colors">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-                                    </button>
-                                </div>
-                            </form>
+                      <div class="mt-8 p-6 bg-gray-900 rounded-lg border border-green-500">
+                        <div class="flex justify-between items-center mb-4">
+                          <h3 class="text-xl font-bold text-white">✅ Code Generated!</h3>
+                          <button onclick="deployCode()" class="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-bold">
+                            🚀 Deploy Now
+                          </button>
                         </div>
+                        <pre class="bg-black p-4 rounded text-green-400 text-xs overflow-x-auto max-h-64">${state.generatedCode.code.substring(
+                          0,
+                          500
+                        )}...</pre>
+                      </div>
                     `
                         : ""
                     }
-                    <button onclick="toggleChat()" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white p-4 rounded-full shadow-lg transition-all transform hover:scale-110">
-                        ${
-                          state.chatOpen
-                            ? `
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        `
-                            : `
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-                        `
-                        }
-                    </button>
+                  </div>
                 </div>
-            `;
-      }
+              `;
+            }
 
-      // ============================================
-      // INTERACTIVE HANDLERS
-      // ============================================
-      window.selectProjectType = function (type) {
-        state.selectedProjectType = type;
-        render();
-      };
+            function renderContact() {
+              return `
+                      <div class="max-w-4xl mx-auto px-4 py-16">
+                          <div class="text-center mb-12">
+                              <h2 class="text-4xl font-bold text-white mb-4 neon-text">Contact Us</h2>
+                              <p class="text-gray-400 text-lg">Ready to transform your business with AI?</p>
+                          </div>
+                          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                              <div class="holographic-card p-8 rounded-xl">
+                                  <h3 class="text-2xl font-bold text-white mb-6">Get in Touch</h3>
+                                  <div class="space-y-4">
+                                      <div class="flex items-start gap-4">
+                                          <div class="bg-blue-600 p-3 rounded-lg">
+                                              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                          </div>
+                                          <div>
+                                              <p class="text-gray-400 text-sm">Email Us</p>
+                                              <a href="mailto:theiahcreations@gmail.com" class="text-xl text-white font-semibold hover:text-blue-400">theiahcreations@gmail.com</a>
+                                          </div>
+                                      </div>
+                                      <div class="flex items-start gap-4">
+                                          <div class="bg-purple-600 p-3 rounded-lg">
+                                              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                          </div>
+                                          <div>
+                                              <p class="text-gray-400 text-sm">Location</p>
+                                              <p class="text-xl text-white font-semibold">Jaipur, Rajasthan, India</p>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
 
-      window.handlePromptSubmit = async function (e) {
-        e.preventDefault();
-        const description = document.getElementById("app-description").value;
-        const type = state.selectedProjectType || "website";
+                              <form onsubmit="handleContactSubmit(event)" class="holographic-card p-8 rounded-xl">
+                                  <div class="space-y-4">
+                                      <div>
+                                          <label class="block text-sm text-gray-400 mb-2">Name</label>
+                                          <input type="text" required class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500" placeholder="Your Name">
+                                      </div>
+                                      <div>
+                                          <label class="block text-sm text-gray-400 mb-2">Email</label>
+                                          <input type="email" required class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500" placeholder="your@email.com">
+                                      </div>
+                                      <div>
+                                          <label class="block text-sm text-gray-400 mb-2">Message</label>
+                                          <textarea rows="4" required class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500" placeholder="How can we help?"></textarea>
+                                      </div>
+                                      <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold py-3 rounded-lg transition-all">
+                                          Send Message
+                                      </button>
+                                  </div>
+                              </form>
+                          </div>
+                      </div>
+                  `;
+            }
 
-        if (!description) {
-          showToast("Please describe your app first", "error");
-          return;
-        }
+            window.handleContactSubmit = async function (e) {
+              e.preventDefault();
+              const form = e.target;
+              const name = form.querySelector('input[type="text"]').value;
+              const email = form.querySelector('input[type="email"]').value;
+              const message = form.querySelector("textarea").value;
 
-        const button = e.target.querySelector("button");
-        const originalText = button.innerHTML;
-        button.innerHTML = `<div class="spinner border-white mr-2"></div> Generating...`;
-        button.disabled = true;
+              try {
+                if (db && isFirebaseReady) {
+                  await addDoc(
+                    collection(db, getCollectionPath("contact_requests")),
+                    {
+                      name,
+                      email,
+                      message,
+                      timestamp: serverTimestamp(),
+                      status: "new",
+                    }
+                  );
+                }
+                showToast("✅ Message sent successfully!");
+                form.reset();
+              } catch (error) {
+                console.error("Error:", error);
+                showToast("❌ Error sending message", "error");
+              }
+            };
 
-        await PromptToAppHub.generateApp(description, type);
+            function renderChatBot() {
+              return `
+                      <div class="fixed bottom-4 right-4 z-50 flex flex-col items-end">
+                          ${
+                            state.chatOpen
+                              ? `
+                              <div class="holographic-card rounded-2xl w-80 md:w-96 mb-4 overflow-hidden flex flex-col" style="height: 500px;">
+                                  <div class="bg-gray-900 p-4 border-b border-gray-700 flex justify-between items-center">
+                                      <div class="flex items-center gap-2">
+                                          <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                          <h3 class="font-bold text-white">IAH AI Assistant</h3>
+                                      </div>
+                                      <button onclick="toggleChat()" class="text-gray-400 hover:text-white">✕</button>
+                                  </div>
+                                  <div class="flex-1 p-4 overflow-y-auto space-y-4" id="chat-messages">
+                                      ${state.messages
+                                        .map(
+                                          (msg) => `
+                                          <div class="flex ${
+                                            msg.role === "user"
+                                              ? "justify-end"
+                                              : "justify-start"
+                                          }">
+                                              <div class="max-w-[80%] p-3 rounded-xl ${
+                                                msg.role === "user"
+                                                  ? "bg-blue-600 text-white rounded-tr-none"
+                                                  : "bg-gray-700 text-gray-200 rounded-tl-none"
+                                              }">
+                                                  <div class="whitespace-pre-wrap">${
+                                                    msg.text
+                                                  }</div>
+                                                  ${
+                                                    msg.role === "bot"
+                                                      ? `
+                                                      <button onclick="speakMessage(\`${msg.text.replace(
+                                                        /`/g,
+                                                        "'"
+                                                      )}\`)" class="text-xs text-blue-400 hover:text-blue-300 mt-2">
+                                                          🔊 Speak
+                                                      </button>
+                                                  `
+                                                      : ""
+                                                  }
+                                              </div>
+                                          </div>
+                                      `
+                                        )
+                                        .join("")}
+                                  </div>
+                                  <form onsubmit="handleChatSubmit(event)" class="p-4 bg-gray-900 border-t border-gray-700">
+                                      ${
+                                        state.isVoiceRecording
+                                          ? `
+                                          <div class="text-center py-2 mb-2 bg-red-900/30 border border-red-500 rounded text-red-400 text-sm">
+                                              🎤 Listening... ${
+                                                state.voiceTranscript || "Speak now"
+                                              }
+                                          </div>
+                                      `
+                                          : ""
+                                      }
+                                      <div class="flex gap-2">
+                                          <input type="text" id="chat-input" placeholder="Ask anything..." class="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500">
+                                          <button type="button" onclick="startVoiceInput()" class="p-2 rounded-lg ${
+                                            state.isVoiceRecording
+                                              ? "bg-red-600 hover:bg-red-500"
+                                              : "bg-gray-700 hover:bg-gray-600"
+                                          } text-white transition-colors">
+                                              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+                                          </button>
+                                          <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white p-2 rounded-lg transition-colors">
+                                              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                                          </button>
+                                      </div>
+                                  </form>
+                              </div>
+                          `
+                              : ""
+                          }
+                          <button onclick="toggleChat()" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white p-4 rounded-full shadow-lg transition-all transform hover:scale-110">
+                              ${
+                                state.chatOpen
+                                  ? `
+                                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                              `
+                                  : `
+                                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                              `
+                              }
+                          </button>
+                      </div>
+                  `;
+            }
 
-        button.innerHTML = originalText;
-        button.disabled = false;
-        render();
-      };
+            // ============================================
+            // INTERACTIVE HANDLERS
+            // ============================================
+            window.selectProjectType = function (type) {
+              state.selectedProjectType = type;
+              render();
+            };
 
-      window.deployCode = async function () {
-        if (state.generatedCode) {
-          await PromptToAppHub.deployCode(state.generatedCode.code);
-        }
-      };
+            window.handlePromptSubmit = async function (e) {
+              e.preventDefault();
+              const description = document.getElementById("app-description").value;
+              const type = state.selectedProjectType || "website";
 
-      window.buyTemplate = function (id) {
-        const template = PaymentHub.findTemplate(id);
-        if (template) {
-          state.activeTemplate = template;
-          render(); // Re-render to show modal
-        }
-      };
+              if (!description) {
+                showToast("Please describe your app first", "error");
+                return;
+              }
 
-      window.closePaymentModal = function () {
-        state.activeTemplate = null;
-        render();
-      };
+              const button = e.target.querySelector("button");
+              const originalText = button.innerHTML;
+              button.innerHTML = `<div class="spinner border-white mr-2"></div> Generating...`;
+              button.disabled = true;
 
-      window.processPayment = async function (method) {
-        if (state.activeTemplate) {
-          await PaymentHub.processPayment(state.activeTemplate.id, method);
-          // In a real app, we'd wait for confirmation.
-          // For demo, we'll close modal after a delay if it was a direct action
-          if (method === "upi") {
-            setTimeout(() => {
-              closePaymentModal();
-              showToast("Payment link opened! Check your UPI app.");
-            }, 2000);
-          }
-        }
-      };
+              await PromptToAppHub.generateApp(description, type);
 
-      // ============================================
-      // PAYMENT MODAL
-      // ============================================
-      function renderPaymentModal() {
-        if (!state.activeTemplate) return "";
+              button.innerHTML = originalText;
+              button.disabled = false;
+              render();
+            };
 
-        const t = state.activeTemplate;
-        const price = t.price[state.currency];
+            window.deployCode = async function () {
+              if (state.generatedCode) {
+                await PromptToAppHub.deployCode(state.generatedCode.code);
+              }
+            };
 
-        return `
-          <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
-            <div class="bg-gray-900 border border-blue-500 rounded-2xl max-w-md w-full overflow-hidden shadow-2xl relative">
-              <button onclick="closePaymentModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
-              
-              <div class="p-6 border-b border-gray-800">
-                <h3 class="text-xl font-bold text-white mb-1">Secure Payment</h3>
-                <p class="text-gray-400 text-sm">Purchase: <span class="text-blue-400 font-semibold">${t.name}</span></p>
-              </div>
-              
-              <div class="p-6 space-y-4">
-                <div class="text-center mb-6">
-                  <span class="text-4xl font-bold text-white">${state.currency} ${price}</span>
-                </div>
-                
-                <div class="space-y-3">
-                  <button onclick="processPayment('upi')" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white p-4 rounded-xl flex items-center justify-between group transition-all">
-                    <div class="flex items-center gap-3">
-                      <span class="text-2xl">📱</span>
-                      <div class="text-left">
-                        <div class="font-bold">Pay via UPI</div>
-                        <div class="text-xs text-blue-200">PhonePe, GPay, Paytm</div>
+            window.buyTemplate = function (id) {
+              const template = PaymentHub.findTemplate(id);
+              if (template) {
+                state.activeTemplate = template;
+                render(); // Re-render to show modal
+              }
+            };
+
+            window.closePaymentModal = function () {
+              state.activeTemplate = null;
+              render();
+            };
+
+            window.processPayment = async function (method) {
+              if (state.activeTemplate) {
+                await PaymentHub.processPayment(state.activeTemplate.id, method);
+                // In a real app, we'd wait for confirmation.
+                // For demo, we'll close modal after a delay if it was a direct action
+                if (method === "upi") {
+                  setTimeout(() => {
+                    closePaymentModal();
+                    showToast("Payment link opened! Check your UPI app.");
+                  }, 2000);
+                }
+              }
+            };
+
+            // ============================================
+            // PAYMENT MODAL
+            // ============================================
+            function renderPaymentModal() {
+              if (!state.activeTemplate) return "";
+
+              const t = state.activeTemplate;
+              const price = t.price[state.currency];
+
+              return `
+                <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
+                  <div class="bg-gray-900 border border-blue-500 rounded-2xl max-w-md w-full overflow-hidden shadow-2xl relative">
+                    <button onclick="closePaymentModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
+
+                    <div class="p-6 border-b border-gray-800">
+                      <h3 class="text-xl font-bold text-white mb-1">Secure Payment</h3>
+                      <p class="text-gray-400 text-sm">Purchase: <span class="text-blue-400 font-semibold">${t.name}</span></p>
+                    </div>
+
+                    <div class="p-6 space-y-4">
+                      <div class="text-center mb-6">
+                        <span class="text-4xl font-bold text-white">${state.currency} ${price}</span>
+                      </div>
+
+                      \u003cdiv class="space-y-3"\u003e
+                        \u003cbutton onclick="processPayment('upi')" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white p-4 rounded-xl flex items-center justify-between group transition-all"\u003e
+                          \u003cdiv class="flex items-center gap-3"\u003e
+                            \u003cspan class="text-2xl"\u003e📱\u003c/span\u003e
+                            \u003cdiv class="text-left"\u003e
+                              \u003cdiv class="font-bold"\u003ePay via UPI\u003c/div\u003e
+                              \u003cdiv class="text-xs text-blue-200"\u003ePhonePe, GPay, Paytm\u003c/div\u003e
+                            \u003c/div\u003e
+                          \u003c/div\u003e
+                          \u003csvg class="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"\u003e\u003cpath stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"\u003e\u003c/path\u003e\u003c/svg\u003e
+                        \u003c/button\u003e
+
+                        \u003cdiv class="bg-gray-800 p-4 rounded-xl border border-gray-700"\u003e
+                          \u003cp class="text-center text-sm text-gray-400 mb-3"\u003eScan QR Code to Pay\u003c/p\u003e
+                          \u003cimg src="assets/upi_qr.jpg" alt="UPI QR Code" class="w-48 h-48 mx-auto rounded-lg border-2 border-blue-500" /\u003e
+                          \u003cp class="text-center text-xs text-gray-400 mt-3"\u003eUPI ID: ${UPI_ID}\u003c/p\u003e
+                        \u003c/div\u003e
+
+                        <button onclick="processPayment('crypto')" class="w-full bg-gray-800 hover:bg-gray-700 border border-gray-700 text-white p-4 rounded-xl flex items-center justify-between group transition-all">
+                          <div class="flex items-center gap-3">
+                            <span class="text-2xl">₿</span>
+                            <div class="text-left">
+                              <div class="font-bold">Pay with Crypto</div>
+                              <div class="text-xs text-gray-400">BTC, ETH, USDT</div>
+                            </div>
+                          </div>
+                          <svg class="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </button>
+
+                        <button onclick="processPayment('stripe')" class="w-full bg-gray-800 hover:bg-gray-700 border border-gray-700 text-white p-4 rounded-xl flex items-center justify-between group transition-all opacity-50 cursor-not-allowed" title="Coming Soon">
+                          <div class="flex items-center gap-3">
+                            <span class="text-2xl">💳</span>
+                            <div class="text-left">
+                              <div class="font-bold">Credit/Debit Card</div>
+                              <div class="text-xs text-gray-400">Stripe (Coming Soon)</div>
+                            </div>
+                          </div>
+                          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        </button>
+                      </div>
+
+                      <div class="mt-6 text-center">
+                        <p class="text-xs text-gray-500 flex items-center justify-center gap-1">
+                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                          Secured by Blockchain & 256-bit Encryption
+                        </p>
                       </div>
                     </div>
-                    <svg class="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                  </button>
-                  
-                  <button onclick="processPayment('crypto')" class="w-full bg-gray-800 hover:bg-gray-700 border border-gray-700 text-white p-4 rounded-xl flex items-center justify-between group transition-all">
-                    <div class="flex items-center gap-3">
-                      <span class="text-2xl">₿</span>
-                      <div class="text-left">
-                        <div class="font-bold">Pay with Crypto</div>
-                        <div class="text-xs text-gray-400">BTC, ETH, USDT</div>
-                      </div>
-                    </div>
-                    <svg class="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                  </button>
-                  
-                  <button onclick="processPayment('stripe')" class="w-full bg-gray-800 hover:bg-gray-700 border border-gray-700 text-white p-4 rounded-xl flex items-center justify-between group transition-all opacity-50 cursor-not-allowed" title="Coming Soon">
-                    <div class="flex items-center gap-3">
-                      <span class="text-2xl">💳</span>
-                      <div class="text-left">
-                        <div class="font-bold">Credit/Debit Card</div>
-                        <div class="text-xs text-gray-400">Stripe (Coming Soon)</div>
-                      </div>
-                    </div>
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                  </button>
+                  </div>
                 </div>
-                
-                <div class="mt-6 text-center">
-                  <p class="text-xs text-gray-500 flex items-center justify-center gap-1">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                    Secured by Blockchain & 256-bit Encryption
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-      }
+              `;
+            }
 
-      function renderFooter() {
-        return `
-                <footer class="bg-gray-900 border-t border-gray-800 py-8">
-                    <div class="max-w-7xl mx-auto px-4 text-center">
-                        <p class="text-gray-400 mb-2">© 2025 IAH Creations. All rights reserved.</p>
-                        <p class="text-gray-500 text-sm">Enterprise-Grade Web Development Platform v${APP_VERSION}</p>
-                        <div class="mt-4 flex justify-center gap-4">
-                            <a href="${BUSINESS_CARD_URL}" target="_blank" class="text-blue-400 hover:text-blue-300 text-sm">Virtual Business Card</a>
-                            <span class="text-gray-600">•</span>
-                            <a href="mailto:theiahcreations@gmail.com" class="text-blue-400 hover:text-blue-300 text-sm">Contact</a>
-                        </div>
-                    </div>
-                </footer>
-            `;
-      }
+            function renderFooter() {
+              return `
+                      <footer class="bg-gray-900 border-t border-gray-800 py-8">
+                          <div class="max-w-7xl mx-auto px-4 text-center">
+                              <p class="text-gray-400 mb-2">© 2025 The IAH Creations. All rights reserved.</p>
+                              <p class="text-gray-500 text-sm">Enterprise-Grade Web Development Platform v${APP_VERSION}</p>
+                              <div class="mt-4 flex justify-center gap-4 flex-wrap">
+                                  <button onclick="setView('about')" class="text-blue-400 hover:text-blue-300 text-sm">About Us</button>
+                                  <span class="text-gray-600">•</span>
+                                  <button onclick="setView('privacy')" class="text-blue-400 hover:text-blue-300 text-sm">Privacy Policy</button>
+                                  <span class="text-gray-600">•</span>
+                                  <button onclick="setView('faqs')" class="text-blue-400 hover:text-blue-300 text-sm">FAQs</button>
+                                  <span class="text-gray-600">•</span>
+                                  <button onclick="setView('terms')" class="text-blue-400 hover:text-blue-300 text-sm">Terms & Conditions</button>
+                                  <span class="text-gray-600">•</span>
+                                  <a href="${BUSINESS_CARD_URL}" target="_blank" class="text-blue-400 hover:text-blue-300 text-sm">Virtual Business Card</a>
+                                  <span class="text-gray-600">•</span>
+                                  <a href="mailto:theiahcreations@gmail.com" class="text-blue-400 hover:text-blue-300 text-sm">Contact</a>
+                              </div>
+                          </div>
+                      </footer>
+                  `;
+            }
 
-      // ============================================
-      // MAIN RENDER FUNCTION
-      // ============================================
-      function render() {
-        let content = renderNavbar();
+            // ============================================
+            // HAMBURGER MENU
+            // ============================================
+            function renderHamburgerMenu() {
+              return `
+                \u003cdiv class="hamburger-overlay ${state.menuOpen ? 'open' : ''}" onclick="toggleMenu()"\u003e\u003c/div\u003e
+                \u003cdiv class="hamburger-menu ${state.menuOpen ? 'open' : ''}"\u003e
+                  \u003cdiv class="p-6 border-b border-gray-800 flex justify-between items-center"\u003e
+                    \u003ch2 class="text-xl font-bold text-white"\u003eMenu\u003c/h2\u003e
+                    \u003cbutton onclick="toggleMenu()" class="text-gray-400 hover:text-white"\u003e✕\u003c/button\u003e
+                  \u003c/div\u003e
+                  \u003cnav class="p-6 space-y-2"\u003e
+                    \u003cbutton onclick="setView('home')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors"\u003eHome\u003c/button\u003e
+                    \u003cbutton onclick="setView('features')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors"\u003eFeatures\u003c/button\u003e
+                    \u003cbutton onclick="setView('templates')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors"\u003eTemplates\u003c/button\u003e
+                    \u003cbutton onclick="setView('builder')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors"\u003eAI Builder\u003c/button\u003e
+                    \u003cbutton onclick="setView('pricing')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors"\u003ePricing\u003c/button\u003e
+                    \u003cbutton onclick="setView('about')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors"\u003eAbout Us\u003c/button\u003e
+                    \u003cbutton onclick="setView('faqs')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors"\u003eFAQs\u003c/button\u003e
+                    \u003cbutton onclick="setView('privacy')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors"\u003ePrivacy Policy\u003c/button\u003e
+                    \u003cbutton onclick="setView('terms')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors"\u003eTerms \u0026 Conditions\u003c/button\u003e
+                    \u003cbutton onclick="setView('contact')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors"\u003eContact\u003c/button\u003e
+                  \u003c/nav\u003e
+                \u003c/div\u003e
+              `;
+            }
 
-        switch (state.view) {
-          case "home":
-            content += renderHero();
-            content += renderFeatures();
-            break;
-          case "features":
-            content += renderFeatures();
-            break;
-          case "templates":
-            content += renderTemplates();
-            break;
-          case "builder":
-            content += renderBuilder();
-            break;
-          case "pricing":
-            content += renderPricing();
-            break;
-          case "contact":
-            content += renderContact();
-            break;
-          default:
-            content += renderHero();
-        }
+            // ============================================
+            // LEGAL PAGES
+            // ============================================
+            function renderAboutUs() {
+              return `
+                \u003cdiv class="max-w-4xl mx-auto px-4 py-16"\u003e
+                  \u003ch2 class="text-4xl font-bold text-white mb-8 professional-text text-center"\u003eAbout The IAH Creations\u003c/h2\u003e
+                  \u003cdiv class="holographic-card p-8 rounded-xl space-y-6"\u003e
+                    \u003csection\u003e
+                      \u003ch3 class="text-2xl font-bold text-white mb-4"\u003eOur Mission\u003c/h3\u003e
+                      \u003cp class="text-gray-300 leading-relaxed"\u003eAt The IAH Creations, we're revolutionizing web development by combining cutting-edge AI technology with enterprise-grade infrastructure. Our mission is to make professional web development accessible to everyone, from startups to large enterprises.\u003c/p\u003e
+                    \u003c/section\u003e
+                    \u003csection\u003e
+                      \u003ch3 class="text-2xl font-bold text-white mb-4"\u003eOur Technology\u003c/h3\u003e
+                      \u003cul class="space-y-2 text-gray-300"\u003e
+                        \u003cli\u003e✓ Powered by Google Gemini 2.0 Flash AI\u003c/li\u003e
+                        \u003cli\u003e✓ Multi-database support (Firebase, Cloud SQL, BigQuery, Spanner, Bigtable)\u003c/li\u003e
+                        \u003cli\u003e✓ 20+ language support with RTL capabilities\u003c/li\u003e
+                        \u003cli\u003e✓ Voice recognition and synthesis\u003c/li\u003e
+                        \u003cli\u003e✓ Blockchain-based code protection\u003c/li\u003e
+                      \u003c/ul\u003e
+                    \u003c/section\u003e
+                    \u003csection\u003e
+                      \u003ch3 class="text-2xl font-bold text-white mb-4"\u003eWhy Choose Us\u003c/h3\u003e
+                      \u003cp class="text-gray-300 leading-relaxed"\u003eWe deliver production-ready websites in 24-72 hours with enterprise-grade security, scalability, and performance. Our platform combines the power of AI with human expertise to create exceptional digital experiences.\u003c/p\u003e
+                    \u003c/section\u003e
+                    \u003csection\u003e
+                      \u003ch3 class="text-2xl font-bold text-white mb-4"\u003eContact Information\u003c/h3\u003e
+                      \u003cp class="text-gray-300"\u003eEmail: \u003ca href="mailto:theiahcreations@gmail.com" class="text-blue-400 hover:text-blue-300"\u003etheiahcreations@gmail.com\u003c/a\u003e\u003c/p\u003e
+                      \u003cp class="text-gray-300"\u003eLocation: Jaipur, Rajasthan, India\u003c/p\u003e
+                    \u003c/section\u003e
+                  \u003c/div\u003e
+                \u003c/div\u003e
+              `;
+            }
 
-        content += renderFooter();
-        content += renderChatBot();
-        content += renderPaymentModal();
+            function renderPrivacyPolicy() {
+              return `
+                \u003cdiv class="max-w-4xl mx-auto px-4 py-16"\u003e
+                  \u003ch2 class="text-4xl font-bold text-white mb-8 professional-text text-center"\u003ePrivacy Policy\u003c/h2\u003e
+                  \u003cdiv class="holographic-card p-8 rounded-xl space-y-6 text-gray-300"\u003e
+                    \u003cp class="text-sm text-gray-400"\u003eEffective Date: December 8, 2025\u003c/p\u003e
+                    \u003csection\u003e
+                      \u003ch3 class="text-xl font-bold text-white mb-3"\u003e1. Information We Collect\u003c/h3\u003e
+                      \u003cp\u003eWe collect information you provide directly, including name, email, and project requirements. We also collect usage data through Firebase Analytics.\u003c/p\u003e
+                    \u003c/section\u003e
+                    \u003csection\u003e
+                      \u003ch3 class="text-xl font-bold text-white mb-3"\u003e2. How We Use Your Information\u003c/h3\u003e
+                      \u003cul class="list-disc list-inside space-y-1"\u003e
+                        \u003cli\u003eTo provide and improve our services\u003c/li\u003e
+                        \u003cli\u003eTo communicate with you about your projects\u003c/li\u003e
+                        \u003cli\u003eTo analyze platform usage and performance\u003c/li\u003e
+                        \u003cli\u003eTo ensure security and prevent fraud\u003c/li\u003e
+                      \u003c/ul\u003e
+                    \u003c/section\u003e
+                    \u003csection\u003e
+                      \u003ch3 class="text-xl font-bold text-white mb-3"\u003e3. Third-Party Services\u003c/h3\u003e
+                      \u003cp\u003eWe use Google Firebase for authentication and data storage, and Google Gemini AI for code generation. These services have their own privacy policies.\u003c/p\u003e
+                    \u003c/section\u003e
+                    \u003csection\u003e
+                      \u003ch3 class="text-xl font-bold text-white mb-3"\u003e4. Data Security\u003c/h3\u003e
+                      \u003cp\u003eWe implement industry-standard security measures including encryption, secure authentication, and regular security audits.\u003c/p\u003e
+                    \u003c/section\u003e
+                    \u003csection\u003e
+                      \u003ch3 class="text-xl font-bold text-white mb-3"\u003e5. Your Rights\u003c/h3\u003e
+                      \u003cp\u003eYou have the right to access, correct, or delete your personal data. Contact us at theiahcreations@gmail.com for requests.\u003c/p\u003e
+                    \u003c/section\u003e
+                    \u003csection\u003e
+                      \u003ch3 class="text-xl font-bold text-white mb-3"\u003e6. GDPR Compliance\u003c/h3\u003e
+                      \u003cp\u003eWe comply with GDPR requirements for EU users, including data portability and the right to be forgotten.\u003c/p\u003e
+                    \u003c/section\u003e
+                  \u003c/div\u003e
+                \u003c/div\u003e
+              `;
+            }
 
-        document.getElementById("root").innerHTML = content;
-      }
+            function renderFAQs() {
+              const faqs = [
+                { q: "What is The IAH Creations?", a: "The IAH Creations is an AI-powered web development platform that helps you create production-ready websites in 24-72 hours using cutting-edge technology." },
+                { q: "How does the AI Builder work?", a: "Simply describe your app in plain English, select the type (mobile/web/website), and our Gemini 2.0 AI generates production-ready code instantly." },
+                { q: "What payment methods do you accept?", a: "We accept UPI (PhonePe, GPay, Paytm), cryptocurrency (BTC, ETH, USDT), and credit/debit cards through Stripe (coming soon)." },
+                { q: "How long does deployment take?", a: "Most projects are deployed within 24-72 hours, depending on complexity and your chosen plan." },
+                { q: "What's included in each pricing tier?", a: "Free: 3 AI prompts/day, view-only templates. Pro: 50 prompts/day, 10 template downloads, blockchain protection. Enterprise: Unlimited everything plus dark web monitoring." },
+                { q: "How do I get support?", a: "Free users get community support, Pro users get 24-hour email support, and Enterprise users get 24/7 phone support with a dedicated manager." },
+                { q: "Is my data secure?", a: "Yes! We use enterprise-grade security including 256-bit encryption, Firebase authentication, and optional blockchain protection for your code." },
+                { q: "Can I cancel my subscription?", a: "Yes, you can cancel anytime. Pro and Enterprise subscriptions are month-to-month with no long-term commitment." }
+              ];
 
-      // ============================================
-      // INITIALIZATION
-      // ============================================
-      console.log(
-        `%c🚀 IAH Creations Platform v${APP_VERSION}`,
-        "color: #3b82f6; font-size: 20px; font-weight: bold"
-      );
-      console.log("%c✅ All systems operational", "color: green");
-      console.log(
-        `%c🤖 Gemini AI: ${AIHub.apiKey ? "Configured" : "Not configured"}`,
-        AIHub.apiKey ? "color: green" : "color: orange"
-      );
-      console.log(
-        `%c🔒 Firebase: ${isFirebaseReady ? "Connected" : "Demo mode"}`,
-        isFirebaseReady ? "color: green" : "color: orange"
-      );
+              return `
+                \u003cdiv class="max-w-4xl mx-auto px-4 py-16"\u003e
+                  \u003ch2 class="text-4xl font-bold text-white mb-8 professional-text text-center"\u003eFrequently Asked Questions\u003c/h2\u003e
+                  \u003cdiv class="space-y-4"\u003e
+                    ${faqs.map(faq =\u003e `
+                      \u003cdiv class="holographic-card p-6 rounded-xl"\u003e
+                        \u003ch3 class="text-lg font-bold text-white mb-2"\u003e${faq.q}\u003c/h3\u003e
+                        \u003cp class="text-gray-300"\u003e${faq.a}\u003c/p\u003e
+                      \u003c/div\u003e
+                    `).join('')}
+                  \u003c/div\u003e
+                \u003c/div\u003e
+              `;
+            }
 
-      // Initial render
-      render();
+            function renderTerms() {
+              return `
+                \u003cdiv class="max-w-4xl mx-auto px-4 py-16"\u003e
+                  \u003ch2 class="text-4xl font-bold text-white mb-8 professional-text text-center"\u003eTerms \u0026 Conditions\u003c/h2\u003e
+                  \u003cdiv class="holographic-card p-8 rounded-xl space-y-6 text-gray-300"\u003e
+                    \u003cp class="text-sm text-gray-400"\u003eEffective Date: December 8, 2025\u003c/p\u003e
+                    \u003csection\u003e
+                      \u003ch3 class="text-xl font-bold text-white mb-3"\u003e1. Acceptance of Terms\u003c/h3\u003e
+                      \u003cp\u003eBy accessing and using The IAH Creations platform, you accept and agree to be bound by these Terms and Conditions.\u003c/p\u003e
+                    \u003c/section\u003e
+                    \u003csection\u003e
+                      \u003ch3 class="text-xl font-bold text-white mb-3"\u003e2. Service Description\u003c/h3\u003e
+                      \u003cp\u003eThe IAH Creations provides AI-powered web development services, templates, and deployment solutions. Services are provided "as is" with continuous improvements.\u003c/p\u003e
+                    \u003c/section\u003e
+                    \u003csection\u003e
+                      \u003ch3 class="text-xl font-bold text-white mb-3"\u003e3. User Responsibilities\u003c/h3\u003e
+                      \u003cul class="list-disc list-inside space-y-1"\u003e
+                        \u003cli\u003eProvide accurate information\u003c/li\u003e
+                        \u003cli\u003eUse services lawfully and ethically\u003c/li\u003e
+                        \u003cli\u003eMaintain account security\u003c/li\u003e
+                        \u003cli\u003eComply with applicable laws\u003c/li\u003e
+                      \u003c/ul\u003e
+                    \u003c/section\u003e
+                    \u003csection\u003e
+                      \u003ch3 class="text-xl font-bold text-white mb-3"\u003e4. Intellectual Property\u003c/h3\u003e
+                      \u003cp\u003eCode generated through our platform belongs to you. Our platform, AI models, and templates remain our intellectual property.\u003c/p\u003e
+                    \u003c/section\u003e
+                    \u003csection\u003e
+                      \u003ch3 class="text-xl font-bold text-white mb-3"\u003e5. Payment Terms\u003c/h3\u003e
+                      \u003cp\u003eSubscriptions are billed monthly. Refunds are provided within 7 days of purchase if no services have been used.\u003c/p\u003e
+                    \u003c/section\u003e
+                    \u003csection\u003e
+                      \u003ch3 class="text-xl font-bold text-white mb-3"\u003e6. Limitation of Liability\u003c/h3\u003e
+                      \u003cp\u003eThe IAH Creations is not liable for indirect, incidental, or consequential damages arising from platform use.\u003c/p\u003e
+                    \u003c/section\u003e
+                    \u003csection\u003e
+                      \u003ch3 class="text-xl font-bold text-white mb-3"\u003e7. Governing Law\u003c/h3\u003e
+                      \u003cp\u003eThese terms are governed by the laws of India. Disputes will be resolved in Jaipur, Rajasthan courts.\u003c/p\u003e
+                    \u003c/section\u003e
+                    \u003csection\u003e
+                      \u003ch3 class="text-xl font-bold text-white mb-3"\u003e8. Contact\u003c/h3\u003e
+                      \u003cp\u003eFor questions about these terms, contact us at theiahcreations@gmail.com\u003c/p\u003e
+                    \u003c/section\u003e
+                  \u003c/div\u003e
+                \u003c/div\u003e
+              `;
+            }
 
-      // Firebase auth listener
-      if (auth && typeof auth.onAuthStateChanged === "function") {
-        auth.onAuthStateChanged((user) => {
-          state.userProfile = user;
-          if (user) {
-            console.log("%c👤 User authenticated:", "color: green", user.uid);
-          }
-        });
+            // ============================================
+            // MAIN RENDER FUNCTION
+            // ============================================
+            function render() {
+              let content = renderNavbar();
 
-        if (!auth.currentUser) {
-          signInAnonymously(auth).catch((e) => console.warn("Auth error:", e));
-        }
-      }
+              switch (state.view) {
+                case "home":
+                  content += renderHero();
+                  content += renderFeatures();
+                  break;
+                case "features":
+                  content += renderFeatures();
+                  break;
+                case "templates":
+                  content += renderTemplates();
+                  break;
+                case "builder":
+                  content += renderBuilder();
+                  break;
+                case "pricing":
+                  content += renderPricing();
+                  break;
+                case "about":
+                  content += renderAboutUs();
+                  break;
+                case "privacy":
+                  content += renderPrivacyPolicy();
+                  break;
+                case "faqs":
+                  content += renderFAQs();
+                  break;
+                case "terms":
+                  content += renderTerms();
+                  break;
+                case "contact":
+                  content += renderContact();
+                  break;
+                default:
+                  content += renderHero();
+              }
+
+              content += renderFooter();
+              content += renderChatBot();
+              content += renderPaymentModal();
+              content += renderHamburgerMenu();
+
+              document.getElementById("root").innerHTML = content;
+            }
+
+            // ============================================
+            // INITIALIZATION
+            // ============================================
+            console.log(
+              `%c🚀 The IAH Creations Platform v${APP_VERSION}`,
+              "color: #3b82f6; font-size: 20px; font-weight: bold"
+            );
+            console.log("%c✅ All systems operational", "color: green");
+            console.log(
+              `%c🤖 Gemini AI: ${AIHub.apiKey ? "Configured" : "Not configured"}`,
+              AIHub.apiKey ? "color: green" : "color: orange"
+            );
+            console.log(
+              `%c🔒 Firebase: ${isFirebaseReady ? "Connected" : "Demo mode"}`,
+              isFirebaseReady ? "color: green" : "color: orange"
+            );
+
+            // Initialize auto-update feature (silent)
+            AutoUpdateHub.init();
+
+            // Initial render
+            render();
+
+            // Firebase auth listener
+            if (auth && typeof auth.onAuthStateChanged === "function") {
+              auth.onAuthStateChanged((user) => {
+                state.userProfile = user;
+                if (user) {
+                  console.log("%c👤 User authenticated:", "color: green", user.uid);
+                }
+              });
+
+              if (!auth.currentUser) {
+                signInAnonymously(auth).catch((e) => console.warn("Auth error:", e));
+              }
+            }
     </script>
   </body>
 </html>

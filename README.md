@@ -1,4 +1,4 @@
-# 🚀 IAH Creations - next-Gen AI Development Platform
+# 🚀 The IAH Creations - Next-Gen AI Development Platform
 
 [![Version](https://img.shields.io/badge/version-5.0.0-blue.svg)](https://github.com/iahcreations/platform)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -62,6 +62,36 @@ Describe your app in natural language → AI generates production-ready code ins
 - **Mobile Apps** (React Native, Flutter)
 - **Web Applications** (React, Vue, Angular)
 - **Websites** (Next.js, HTML5, WordPress)
+
+### 🎨 **Professional UI Design**
+
+- Modern glass-morphism effects
+- Subtle professional shadows (no neon glows)
+- Smooth gradient text
+- Responsive hamburger navigation menu
+- Mobile-first design approach
+
+### 📄 **Complete Legal Documentation**
+
+- **About Us** - Company mission and technology
+- **Privacy Policy** - GDPR compliant data practices
+- **FAQs** - 8+ comprehensive Q&A pairs
+- **Terms & Conditions** - Full legal framework
+- Accessible via hamburger menu and footer
+
+### 💳 **Enhanced Payment Integration**
+
+- **QR Code Display** - Scan to pay with UPI apps
+- **UPI ID** - aggarwalharshul49@okicici
+- **Visual Payment Modal** - Professional design
+- Multiple payment methods supported
+
+### 🔄 **Auto-Update System**
+
+- Silent background updates every 24 hours
+- No user interruption or notifications
+- Automatic version checking
+- Seamless update application
 
 ---
 
