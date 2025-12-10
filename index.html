@@ -76,42 +76,49 @@
 
     <script type="module">
       // ============================================
-      // FIREBASE INITIALIZATION (SECURE)
+      // FIREBASE INITIALIZATION - The IAH Creations
       // ============================================
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
       import {
         getAuth,
         signInAnonymously,
         onAuthStateChanged,
-      } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+      } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
       import {
         getFirestore,
         collection,
         addDoc,
         serverTimestamp,
-      } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+      } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-      // Get config from window (injected by Firebase Hosting) or localStorage
-      const finalConfig =
-        typeof __firebase_config !== "undefined"
-          ? JSON.parse(__firebase_config)
-          : JSON.parse(
-              localStorage.getItem("firebase_config") ||
-                '{"projectId":"iah-creations"}'
-            );
+      // Your web app's Firebase configuration
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      const firebaseConfig = {
+        apiKey: "AIzaSyDqG9f8LZOMjgYp1gA1hf5yRcjvYzSbWuw",
+        authDomain: "the-iah-creationgit-1741-47b3f.firebaseapp.com",
+        projectId: "the-iah-creationgit-1741-47b3f",
+        storageBucket: "the-iah-creationgit-1741-47b3f.firebasestorage.app",
+        messagingSenderId: "113120495542",
+        appId: "1:113120495542:web:65602865e6c25596832317",
+        measurementId: "G-YV5LF87RD5",
+      };
 
       const appId =
-        typeof __app_id !== "undefined" ? __app_id : "iah-creations";
+        typeof __app_id !== "undefined"
+          ? __app_id
+          : "the-iah-creationgit-1741-47b3f";
 
       let app,
+        analytics,
         auth,
         db,
         isFirebaseReady = false;
 
       try {
-        if (!finalConfig.apiKey) throw new Error("No Firebase API key");
-
-        app = initializeApp(finalConfig);
+        // Initialize Firebase
+        app = initializeApp(firebaseConfig);
+        analytics = getAnalytics(app);
         auth = getAuth(app);
         db = getFirestore(app);
         isFirebaseReady = true;
@@ -120,15 +127,18 @@
           "%c✅ Firebase initialized",
           "color: green; font-weight: bold"
         );
+        console.log("%c📊 Analytics enabled", "color: blue");
         console.log("%c🔒 Using secure artifacts path", "color: blue");
       } catch (e) {
         console.warn(
           "%c⚠️ Running in DEMO MODE (Offline)",
           "color: orange; font-weight: bold"
         );
+        console.error("Firebase init error:", e);
 
         // Mock Firebase for demo
         app = {};
+        analytics = {};
         auth = {
           currentUser: null,
           onAuthStateChanged: (cb) => {
@@ -150,6 +160,7 @@
 
       window.db = db;
       window.auth = auth;
+      window.analytics = analytics;
 
       // Secure collection path helper
       const getCollectionPath = (collectionName) =>
