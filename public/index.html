@@ -64,9 +64,171 @@
     <link rel="preconnect" href="https://cdn.tailwindcss.com" />
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!--  Schema.org -->
+    <script type="application/ld+json" id="schema-json-ld">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "The IAH Creations",
+        "url": "https://iahcreations.com",
+        "description": "Enterprise-Grade Web Development Platform"
+      }
+    </script>
+
+    <style>
+      /* Core Styles */
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      html {
+        font-size: 16px;
+        scroll-behavior: smooth;
+      }
+
+      body {
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* RTL Support */
+      [dir="rtl"] {
+        direction: rtl;
+      }
+
+      [dir="rtl"] .text-left {
+        text-align: right;
+      }
+
+      [dir="rtl"] input,
+      [dir="rtl"] textarea {
+        text-align: right;
+      }
+
+      /* Animations */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .animate-fade-in {
+        animation: fadeIn 0.3s ease-out;
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateX(100%);
+        }
+        to {
+          transform: translateX(0);
+        }
+      }
+
+      /* Professional Card Effect - Glass Morphism */
+      .holographic-card {
+        background: rgba(17, 24, 39, 0.8);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .holographic-card:hover {
+        border-color: rgba(59, 130, 246, 0.4);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04),
+          0 0 0 1px rgba(59, 130, 246, 0.1);
+        transform: translateY(-4px);
+      }
+
+      /* Professional Text - Subtle Shadow Instead of Neon */
+      .professional-text {
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Gradient Text */
+      .gradient-text {
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      /* Loading Spinner */
+      .spinner {
+        border: 3px solid rgba(59, 130, 246, 0.3);
+        border-top-color: #3b82f6;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        animation: spin 0.6s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Hamburger Menu Styles */
+      .hamburger-menu {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 300px;
+        height: 100vh;
+        background: rgba(17, 24, 39, 0.98);
+        backdrop-filter: blur(20px);
+        box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+        transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1000;
+        overflow-y: auto;
+      }
+
+      .hamburger-menu.open {
+        right: 0;
+      }
+
+      .hamburger-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(2px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        z-index: 999;
+      }
+
+      .hamburger-overlay.open {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      /* Button Hover Effects */
+      .btn-primary {
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary:hover {
+        box-shadow: 0 10px 15px rgba(59, 130, 246, 0.4);
+        transform: translateY(-2px);
+      }
+
+      .btn-primary:active {
+        transform: translateY(0);
+      }
+    </style>
   </head>
   <body
     class="min-h-screen bg-gray-900 text-gray-100 font-sans selection:bg-blue-500 selection:text-white"
