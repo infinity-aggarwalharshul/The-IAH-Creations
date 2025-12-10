@@ -1,6 +1,6 @@
-# 🚀 IAH Creations - Production Deployment Guide
+# 🚀 The IAH Creations - Production Deployment Guide
 
-## ✅ Latest Updates (v3.6.2 - Commercial Build)
+## ✅ Latest Updates (v5.1.0 - Firebase 12.6.0 Integration)
 
 ### 🎨 UI/UX Enhancements
 
@@ -70,17 +70,31 @@
 
 ### Step 4: Update index.html
 
-Replace this section (around line 250):
+The Firebase configuration is already set up in index.html (around line 259):
 
 ```javascript
+// Firebase SDK v12.6.0 (CDN)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
+import { getAuth, ... } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+import { getFirestore, ... } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+// Firebase configuration - The IAH Creations
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY_HERE",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abc123",
+  apiKey: "AIzaSyDqG9f8LZOMjgYp1gA1hf5yRcjvYzSbWuw",
+  authDomain: "the-iah-creationgit-1741-47b3f.firebaseapp.com",
+  projectId: "the-iah-creationgit-1741-47b3f",
+  storageBucket: "the-iah-creationgit-1741-47b3f.firebasestorage.app",
+  messagingSenderId: "113120495542",
+  appId: "1:113120495542:web:65602865e6c25596832317",
+  measurementId: "G-YV5LF87RD5"
 };
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const auth = getAuth(app);
+const db = getFirestore(app);
 ```
 
 ### Step 5: Firestore Security Rules
@@ -474,5 +488,7 @@ console.log("Auth state:", auth.currentUser);
 
 **🎉 Your platform is production-ready!**
 
-Built with ❤️ by IAH Creations  
-Powered by Gemini 2.0 Flash • Jaipur, Rajasthan 🇮🇳
+Built with ❤️ by The IAH Creations  
+Powered by Firebase 12.6.0 + Gemini 2.0 Flash • Jaipur, Rajasthan 🇮🇳
+
+**Last Updated**: December 10, 2025

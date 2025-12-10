@@ -1,28 +1,68 @@
-# Release Summary - v3.9.5 (Commercial Build)
+# Release Summary - v5.1.0 (Firebase 12.6.0 Integration)
 
 ## Highlights
 
-This release focuses on commercial readiness, payment infrastructure, and content authority.
+This release integrates the latest Firebase SDK (v12.6.0) with complete configuration for The IAH Creations project.
 
-### 1. Payment Gateway Overhaul
+### 1. Firebase Integration
 
-- **UPI Integration**: Added deep linking support for mobile UPI apps (GPay, PhonePe, Paytm).
-- **Crypto Support**: Enabled Ethereum wallet address copying for Web3 payments.
-- **UX Improvements**: Added "Processing" states, SSL badges, and simulated network delays for a realistic transaction experience.
-- **QR Code**: Integrated custom merchant QR code.
+- **Firebase SDK v12.6.0**: Upgraded to the latest CDN version for all Firebase services.
+- **Firebase App**: Core initialization with project-specific configuration.
+- **Firebase Analytics**: Enabled user tracking and event analytics (Measurement ID: G-YV5LF87RD5).
+- **Firebase Auth**: Authentication services with anonymous sign-in support.
+- **Firebase Firestore**: Real-time database integration for data persistence.
 
-### 2. Content & SEO
+### 2. Configuration Details
 
-- **New Blog Post**: "The Architecture of 2030" - A 1500-word deep dive into Quantum-Native Web and AI Agents.
-- **Visual Assets**: Added high-fidelity, AI-generated images for the blog section.
-- **SEO Optimization**: Enhanced meta tags and structured data for the new content.
+```javascript
+const firebaseConfig = {
+  apiKey: "AIzaSyDqG9f8LZOMjgYp1gA1hf5yRcjvYzSbWuw",
+  authDomain: "the-iah-creationgit-1741-47b3f.firebaseapp.com",
+  projectId: "the-iah-creationgit-1741-47b3f",
+  storageBucket: "the-iah-creationgit-1741-47b3f.firebasestorage.app",
+  messagingSenderId: "113120495542",
+  appId: "1:113120495542:web:65602865e6c25596832317",
+  measurementId: "G-YV5LF87RD5",
+};
+```
 
-### 3. System Stability
+### 3. Services Initialized
 
-- **Bug Fixes**: Resolved minor UI glitches in the checkout modal.
-- **Performance**: Optimized image loading for the new assets.
+| Service        | Status    | Global Variable    |
+| -------------- | --------- | ------------------ |
+| Firebase App   | ✅ Active | `app`              |
+| Analytics      | ✅ Active | `window.analytics` |
+| Authentication | ✅ Active | `window.auth`      |
+| Firestore      | ✅ Active | `window.db`        |
+
+### 4. Documentation Updates
+
+- **README.md**: Updated with Firebase v12.6.0 info, fixed duplicate lines, updated version to 5.1.0.
+- **DEPLOYMENT_GUIDE.md**: Updated Firebase configuration section with actual credentials.
+- **index.html**: Firebase initialization section branded as "The IAH Creations".
+
+## Previous Release (v3.9.5)
+
+### Payment Gateway Overhaul
+
+- **UPI Integration**: Deep linking support for mobile UPI apps.
+- **Crypto Support**: Ethereum wallet address support.
+- **QR Code**: Custom merchant QR code integration.
+
+### Content & SEO
+
+- **New Blog Post**: "The Architecture of 2030" - 1500-word article.
+- **SEO Optimization**: Enhanced meta tags and structured data.
 
 ## Next Steps
 
-- **Backend Integration**: Replace simulated payment delays with real Stripe/Razorpay API calls.
-- **Mobile Testing**: Verify UPI deep links on a wider range of devices.
+- **Firebase Security Rules**: Configure Firestore rules for production.
+- **Payment Integration**: Connect real Stripe/Razorpay API calls.
+- **Analytics Events**: Track custom events for user interactions.
+
+---
+
+**Version**: 5.1.0  
+**Firebase SDK**: 12.6.0  
+**Last Updated**: December 10, 2025  
+**Project**: The IAH Creations

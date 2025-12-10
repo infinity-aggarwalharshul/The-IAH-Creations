@@ -1,6 +1,6 @@
 # 🚀 The IAH Creations - Next-Gen AI Development Platform
 
-[![Version](https://img.shields.io/badge/version-5.0.0-blue.svg)](https://github.com/iahcreations/platform)
+[![Version](https://img.shields.io/badge/version-5.1.0-blue.svg)](https://github.com/infinity-aggarwalharshul/The-IAH-Creations)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Blockchain](https://img.shields.io/badge/blockchain-enabled-purple.svg)](BLOCKCHAIN.md)
@@ -211,7 +211,8 @@ npx serve .
 
 ### **Backend**
 
-- Firebase (Auth + Firestore)
+- Firebase v12.6.0 (Auth + Firestore + Analytics)
+- Project: `the-iah-creationgit-1741-47b3f`
 - Cloud Functions
 - Cloud SQL, BigQuery
 - Spanner, Bigtable
@@ -259,13 +260,12 @@ Every code deployment is:
 **For Business Inquiries:**
 
 - 📧 Email: [theiahcreations@gmail.com](mailto:theiahcreations@gmail.com)
-- � Email: [theiahcreations@gmail.com](mailto:theiahcreations@gmail.com)
-- �💼 LinkedIn: [View Professional Profile](https://linkedin.com/company/iahcreations)
+- 💼 LinkedIn: [View Professional Profile](https://linkedin.com/company/iahcreations)
 - 📱 UPI: `aggarwalharshul49@okicici`
   **Social:**
 
 - 🎥 YouTube: [@theiahcreations](https://www.youtube.com/@theiahcreations)
-- 📸 Instagram: [@theiahcreations](https://www.instagram.com/theiahcreations)
+- 📸 Instagram: [@theiahcreations](https://www.instagram.com/@theiahcreations)
 
 **Support:**
 
@@ -372,9 +372,10 @@ Free → Pro (₹999/mo) → Enterprise (₹4,999/mo)
 
 [🌐 Website](https://iahcreations.com) • [📖 Docs](docs/) • [🐛 Report Bug](https://github.com/iahcreations/platform/issues) • [💡 Request Feature](https://github.com/iahcreations/platform/issues)
 
-**Platform Version: 5.0.0**  
-**Last Updated**: November 30, 2025  
-**Status**: ✅ **PRODUCTION READY** | ⛓️ **BLOCKCHAIN ENABLED**
+**Platform Version: 5.1.0**  
+**Firebase SDK**: 12.6.0  
+**Last Updated**: December 10, 2025  
+**Status**: ✅ **PRODUCTION READY** | ⛓️ **BLOCKCHAIN ENABLED** | 🔥 **FIREBASE INTEGRATED**
 
 </div>
 
