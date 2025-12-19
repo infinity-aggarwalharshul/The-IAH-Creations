@@ -48,21 +48,10 @@
     />
 
     <!-- PWA Support -->
+    <meta name="theme-color" content="#1e40af" />
     <meta name="msapplication-navbutton-color" content="#1e40af" />
     <meta name="apple-mobile-web-app-status-bar-style" content="#1e40af" />
-    <script>
-      if ("serviceWorker" in navigator) {
-        const meta = document.createElement("meta");
-        meta.name = "theme-color";
-        meta.content = "#1e40af";
-        document.head.appendChild(meta);
-      }
-    </script>
-    <link
-      rel="apple-touch-icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%231e40af'/%3E%3Ctext x='50' y='55' font-size='40' text-anchor='middle' fill='white'%3EI%3C/text%3E%3C/svg%3E"
-    />
-    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="manifest" href="/manifest.json" />
 
     <!-- Security Headers -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
@@ -77,14 +66,6 @@
     <link rel="preconnect" href="https://cdn.tailwindcss.com" />
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-      /* Fallback for browsers that don't support theme-color */
-      @media (prefers-color-scheme: dark) {
-        :root {
-          color-scheme: dark;
-        }
-      }
-    </style>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
