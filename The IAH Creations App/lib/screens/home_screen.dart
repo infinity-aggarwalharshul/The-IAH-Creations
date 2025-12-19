@@ -4,6 +4,7 @@ import '../widgets/hero_section.dart';
 import '../widgets/features_section.dart';
 import '../widgets/pricing_section.dart';
 import '../widgets/ai_builder_section.dart';
+import '../widgets/social_links_section.dart';
 import '../widgets/bottom_navigation.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -22,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const FeaturesPage(),
     const AIBuilderPage(),
     const PricingPage(),
-    const ProfilePage(),
+    const SocialLinksPage(),
   ];
 
   @override
@@ -114,20 +115,16 @@ class PricingPage extends StatelessWidget {
   }
 }
 
-class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+class SocialLinksPage extends StatelessWidget {
+  const SocialLinksPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return const SingleChildScrollView(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.person, size: 64, color: Colors.white70),
-          SizedBox(height: 16),
-          Text('Profile', style: TextStyle(fontSize: 24, color: Colors.white)),
-          SizedBox(height: 8),
-          Text('Coming Soon', style: TextStyle(color: Colors.white70)),
+          SizedBox(height: 20),
+          SocialLinksSection(),
         ],
       ),
     );

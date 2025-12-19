@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../utils/constants.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
@@ -55,15 +57,22 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _menuItem(Icons.info_outline, 'About Us', () {}),
-            _menuItem(Icons.help_outline, 'FAQs', () {}),
-            _menuItem(Icons.privacy_tip_outlined, 'Privacy Policy', () {}),
-            _menuItem(Icons.description_outlined, 'Terms & Conditions', () {}),
-            _menuItem(Icons.contact_support_outlined, 'Contact', () {}),
+            _menuItem(Icons.work_outline, 'Portfolio', () => _launchUrl(AppConstants.portfolio)),
+            _menuItem(Icons.picture_as_pdf_outlined, 'Brochure', () => _launchUrl(AppConstants.brochure)),
+            _menuItem(Icons.assignment_outlined, 'Order Form', () => _launchUrl(AppConstants.orderForm)),
+            _menuItem(Icons.language_outlined, 'Website', () => _launchUrl(AppConstants.website)),
+            _menuItem(Icons.contact_support_outlined, 'Contact', () => _launchUrl('mailto:${AppConstants.supportEmail}')),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _launchUrl(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 
   Widget _menuItem(IconData icon, String title, VoidCallback onTap) {

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../utils/constants.dart';
 
 class HeroSection extends StatelessWidget {
   const HeroSection({super.key});
@@ -55,7 +57,7 @@ class HeroSection extends StatelessWidget {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () => _launchUrl(AppConstants.orderForm),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF3B82F6),
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -64,7 +66,7 @@ class HeroSection extends StatelessWidget {
                     ),
                   ),
                   child: const Text(
-                    'Start Building',
+                    'Order Now',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -72,7 +74,7 @@ class HeroSection extends StatelessWidget {
               const SizedBox(width: 16),
               Expanded(
                 child: OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () => _launchUrl(AppConstants.brochure),
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Color(0xFF3B82F6)),
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -81,7 +83,7 @@ class HeroSection extends StatelessWidget {
                     ),
                   ),
                   child: const Text(
-                    'View Demo',
+                    'View Brochure',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -131,5 +133,12 @@ class HeroSection extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _launchUrl(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 }
