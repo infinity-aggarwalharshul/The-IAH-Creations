@@ -1,0 +1,21 @@
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.toc
+*.pdf
+*.fdb_latexmk
+*.fls
+*.gz
+*.xdv
+
+# IDE settings
+.vscode/
+.qodo/
+.idea/
+*.swp
+*.swo
+
+# OS files
+Thumbs.db
+.DS_Store
