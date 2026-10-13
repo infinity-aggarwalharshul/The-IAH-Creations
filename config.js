@@ -2,10 +2,15 @@
 // This file handles environment-based configuration
 
 const getFirebaseConfig = () => {
-  // For Firebase Hosting (production)
-  if (window.location.hostname.includes('firebaseapp.com') || 
-      window.location.hostname.includes('web.app') ||
-      window.location.hostname === 'iahcreations.com') {
+  const hostname = window.location.hostname;
+  // For all deployed environments
+  if (hostname.includes('firebaseapp.com') || 
+      hostname.includes('web.app') ||
+      hostname === 'iahcreations.com' ||
+      hostname.includes('github.io') ||
+      hostname.includes('pages.dev') ||
+      hostname.includes('netlify.app') ||
+      hostname.includes('vercel.app')) {
     return {
       apiKey: "AIzaSyDqG9f8LZOMjgYp1gA1hf5yRcjvYzSbWuw",
       authDomain: "the-iah-creationgit-1741-47b3f.firebaseapp.com",
