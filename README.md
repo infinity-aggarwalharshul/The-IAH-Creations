@@ -1,6 +1,6 @@
 # 🚀 The IAH Creations - Next-Gen AI Development Platform
 
-[![Version](https://img.shields.io/badge/version-5.1.0-blue.svg)](https://github.com/infinity-aggarwalharshul/The-IAH-Creations)
+[![Version](https://img.shields.io/badge/version-5.3.0-blue.svg)](https://github.com/infinity-aggarwalharshul/The-IAH-Creations)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Blockchain](https://img.shields.io/badge/blockchain-enabled-purple.svg)](BLOCKCHAIN.md)
@@ -33,6 +33,12 @@ Describe your app in natural language → AI generates production-ready code ins
 "Create a mobile e-commerce app with payment gateway"
 → Full React Native app with Stripe integration in 2 minutes
 ```
+
+### AI Builder usage
+
+Choose a website, web app, mobile app, or browser game, select a programming language, and describe the features you need. The builder returns project files that can be previewed and downloaded individually. Free projects include up to 3 files, Pro up to 10, and Enterprise up to 20.
+
+The static site requires you to provide your own Gemini API key in the AI Builder. It is stored in your browser and sent directly to Google; a server-side API proxy is recommended before using the builder as a public production service. Paid plan selection opens payment options but does not unlock paid features until payment is verified.
 
 ### 💳 **Multi-Currency Payment Gateway**
 
@@ -99,7 +105,7 @@ Describe your app in natural language → AI generates production-ready code ins
 
 ### **🤖 AI-Powered Development**
 
-- ✅ Gemini 2.0 Flash integration
+- ✅ Gemini 3.6 Flash integration
 - ✅ Prompt-to-App code generation
 - ✅ Natural language to working application
 - ✅ Mobile App generation (iOS + Android)
@@ -191,7 +197,7 @@ npx serve .
 
 ### **AI & Generation**
 
-- Google Gemini 2.0 Flash (Latest)
+- Google Gemini 3.6 Flash
 - Natural Language Processing
 - Code generation & optimization
 

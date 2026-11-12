@@ -390,7 +390,7 @@
     // ============================================
     // CONSTANTS
     // ============================================
-    const APP_VERSION = "5.2.0"; // Blog + SEO + AI Builder v2
+    const APP_VERSION = "5.3.0"; // Multi-file AI Builder and subscription flow fixes
     const OWNER_NAME = "Harshul Aggarwal";
     const BUSINESS_NAME = "The IAH Creations";
     const BUSINESS_TYPE = "Individual Freelancer / Sole Proprietor";
@@ -569,6 +569,24 @@
     // ============================================
     // STATE MANAGEMENT (EXPANDED)
     // ============================================
+    function loadUsageStats() {
+      const today = new Date().toISOString().slice(0, 10);
+      try {
+        const saved = JSON.parse(localStorage.getItem("iah_usage_stats") || "null");
+        if (saved?.date === today && Number.isInteger(saved.promptsToday)) {
+          return {
+            date: today,
+            promptsToday: Math.max(0, saved.promptsToday),
+            deploymentsMonth: 0,
+            downloadsMonth: 0,
+          };
+        }
+      } catch (error) {
+        console.warn("Could not read saved usage statistics:", error);
+      }
+      return { date: today, promptsToday: 0, deploymentsMonth: 0, downloadsMonth: 0 };
+    }
+
     const state = {
       view: "home",
       language: "en",
@@ -582,24 +600,22 @@
       voiceTranscript: "",
 
       // New state properties
-      selectedProjectType: null, // 'mobile', 'web', 'website'
+      selectedProjectType: "website", // 'mobile', 'web', 'website', 'game'
+      selectedLanguage: "JavaScript",
       selectedCategory: null,
       selectedTech: null,
       promptToAppMode: false,
       generatedCode: null,
+      promptText: "",
       userTier: "free", // 'free', 'pro', 'enterprise'
-      usageStats: {
-        promptsToday: 0,
-        deploymentsMonth: 0,
-        downloadsMonth: 0,
-      },
+      usageStats: loadUsageStats(),
       paymentMethod: "upi",
       activeTemplate: null,
 
       messages: [
         {
           role: "bot",
-          text: `👋 Hello! I'm your AI Assistant from The IAH Creations, powered by Gemini 2.0 Flash.\\n\\nI can help you with:\\n• **Prompt-to-App**: Describe your app, I'll generate code!\\n• Template recommendations (Mobile/Web/Website)\\n• Pricing \\u0026 payment options\\n• Deployment assistance\\n\\n💼 Virtual Business Card: ${BUSINESS_CARD_URL}\\n\\nWhat would you like to create today?`,
+          text: `👋 Hello! I'm your AI Assistant from The IAH Creations, powered by Gemini 3.6 Flash.\\n\\nI can help you with:\\n• **Prompt-to-App**: Describe your app, I'll generate code!\\n• Template recommendations (Mobile/Web/Website)\\n• Pricing \\u0026 payment options\\n• Deployment assistance\\n\\n💼 Virtual Business Card: ${BUSINESS_CARD_URL}\\n\\nWhat would you like to create today?`,
         },
       ],
     };
@@ -613,6 +629,7 @@
           promptsPerDay: 3,
           templates: "view-only",
           deployments: 0,
+          generatedFiles: 3,
           blockchain: false,
           support: "community",
         },
@@ -620,6 +637,7 @@
           promptsPerDay: 50,
           templates: 10,
           deployments: 5,
+          generatedFiles: 10,
           blockchain: true,
           support: "24hr",
         },
@@ -627,6 +645,7 @@
           promptsPerDay: -1, // unlimited
           templates: -1,
           deployments: -1,
+          generatedFiles: 20,
           blockchain: true,
           darkWebMonitoring: true,
           support: "24/7-sla",
@@ -639,6 +658,7 @@
 
         switch (feature) {
           case "promptToApp":
+            if (!limits) return false;
             if (limits.promptsPerDay === -1) return true;
             return state.usageStats.promptsToday < limits.promptsPerDay;
           case "templateDownload":
@@ -656,26 +676,20 @@
       },
 
       showUpgradeModal() {
-        showToast("⭐ Upgrade to Pro for unlimited access!", "error");
-        // Redirect to pricing view to show the higher level payment upgrade options
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        if (typeof setView === 'function') {
-          setView('pricing');
-        } else {
-          state.view = 'pricing';
-          render();
-        }
+        state.view = "pricing";
+        state.menuOpen = false;
+        state.cartOpen = false;
+        render();
+        window.scrollTo({ top: 0, behavior: "smooth" });
       },
     };
 
     // ============================================
-    // AI HUB - Gemini 2.0 Integration
+    // AI HUB - Gemini Integration
     // ============================================
     const AIHub = {
-      apiKey:
-        localStorage.getItem("gemini_api_key") ||
-        "AIzaSyBIfuYCXGyGGWCpsTvFG7er5Y1jKoWqWMo",
-      model: "gemini-2.0-flash-latest",
+      apiKey: localStorage.getItem("gemini_api_key") || "",
+      model: "gemini-3.6-flash",
       apiEndpoint: "https://generativelanguage.googleapis.com/v1beta/models/",
       projectId: "projects/559759620416",
 
@@ -685,9 +699,9 @@
         console.log("%c✅ AI API key configured", "color: green");
       },
 
-      async generate(prompt, context = "", history = null) {
+      async generate(prompt, context = "", history = null, maxOutputTokens = 1024, responseMimeType = null) {
         if (!this.apiKey) {
-          return "🔑 Please configure your Gemini API key to use the AI chatbot.";
+          throw new Error("Add your Gemini API key in the AI Builder to generate a project.");
         }
 
         try {
@@ -697,7 +711,7 @@
 
       Our Platform (v${APP_VERSION}):
       - Enterprise-Grade Web Development
-      - AI-Powered (Gemini 2.0 Flash)
+      - AI-Powered (Gemini Flash)
       - Multi-Database Support (Firebase, Cloud SQL, BigQuery, Spanner, Bigtable)
       - 20+ Language Support with RTL
       - Voice Recognition & Synthesis
@@ -737,27 +751,31 @@
                   temperature: 0.7,
                   topK: 40,
                   topP: 0.95,
-                  maxOutputTokens: 1024,
+                  maxOutputTokens,
+                  ...(responseMimeType ? { responseMimeType } : {}),
                 },
               }),
             }
           );
 
           if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error?.message || "API request failed");
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error?.message || `Gemini request failed (${response.status})`);
           }
 
           const data = await response.json();
           const generatedText =
             data.candidates?.[0]?.content?.parts?.[0]?.text ||
-            "No response generated";
+            "";
+          if (!generatedText.trim()) {
+            throw new Error("Gemini returned an empty response. Please try a more specific prompt.");
+          }
 
           console.log("%c✅ AI Response generated", "color: green");
           return generatedText;
         } catch (error) {
           console.error("[AI] Error:", error);
-          return `❌ Error: ${error.message}. Please check your API key.`;
+          throw error;
         }
       },
     };
@@ -1047,71 +1065,102 @@
     // PROMPT-TO-APP HUB - AI Code Generation
     // ============================================
     const PromptToAppHub = {
-      async generateApp(description, type = "website") {
-        // Check access
+      async generateApp(description, type = "website", language = "JavaScript") {
         if (!FreemiumModel.checkAccess("promptToApp")) {
+          showToast("Daily generation limit reached. Choose a plan to continue.", "error");
           FreemiumModel.showUpgradeModal();
           return null;
         }
 
-        state.usageStats.promptsToday++;
-
         try {
-          console.log(`🚀 Generating ${type} from prompt...`);
-
-          let langRequirement = "- Use modern best practices";
-          if (type === "website" || type === "web") {
-            langRequirement = "- Must use latest languages: React 19, Next.js 15, and Tailwind CSS v4\\n- Include structure for future User Authentication and Cloud Storage";
-          } else if (type === "mobile") {
-            langRequirement = "- Must use latest languages: Flutter 3.24+ or React Native 0.74+\\n- Include structure for future User Authentication and Cloud Storage";
+          const fileLimit = FreemiumModel.tiers[state.userTier].generatedFiles;
+          const projectKind = {
+            website: "responsive website",
+            web: "web application",
+            mobile: "mobile application",
+            game: "web game that runs in a browser",
+          }[type] || "application";
+          const systemPrompt = `You are a senior ${language} developer. Generate a complete starter project for a ${projectKind}.
+User requirements: ${description}
+Required programming language: ${language}. Do not switch to a different language; use only the minimum HTML/CSS/config files needed to run it.
+Return ONLY valid JSON in this exact shape: {"files":[{"path":"relative/path/to/file.ext","content":"complete file contents"}]}.
+Include a concise README with setup/run instructions. Include all source files needed for a functional result, sensible error handling, and responsive/accessibility basics where applicable. Do not use markdown fences or explanatory text outside the JSON. Limit the project to at most ${fileLimit} files.`;
+          const response = await AIHub.generate(
+            systemPrompt,
+            "",
+            null,
+            state.userTier === "free" ? 4096 : 8192,
+            "application/json"
+          );
+          const jsonText = response.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
+          let project;
+          try {
+            project = JSON.parse(jsonText);
+          } catch {
+            throw new Error("The AI returned an invalid project-file response. Please retry with a shorter description.");
+          }
+          if (!project || !Array.isArray(project.files) || project.files.length === 0) {
+            throw new Error("The AI did not return any project files. Please try again.");
           }
 
-          const systemPrompt = `You are an expert code generator for IAH Creations.
-      Generate production-ready, clean, and well-documented code based on the user's description.
-
-      Type: ${type}
-      Description: ${description}
-
-      Requirements:
-      ${langRequirement}
-      - Include responsive design
-      - Add comments
-      - Optimize for performance
-      - Include error handling
-
-      Generate ONLY the code, no explanations.`;
-
-          const response = await AIHub.generate(description, systemPrompt);
-
+          const files = project.files.slice(0, fileLimit).map((file) => {
+            if (!file || typeof file.path !== "string" || typeof file.content !== "string") {
+              throw new Error("The AI returned a project file with a missing path or content.");
+            }
+            const path = file.path.replace(/\\/g, "/").replace(/^\/+/, "")
+              .split("/").filter((part) => part && part !== "." && part !== ".." && !/[\u0000-\u001f]/.test(part)).join("/");
+            if (!path) {
+              throw new Error("The AI returned an unsafe or empty file path.");
+            }
+            return { path, content: file.content };
+          });
+          if (new Set(files.map((file) => file.path)).size !== files.length) {
+            throw new Error("The AI returned duplicate project file paths. Please generate the project again.");
+          }
           state.generatedCode = {
-            type: type,
+            type,
+            language,
             description: description,
-            code: response,
+            files,
+            wasLimited: project.files.length > fileLimit,
             timestamp: new Date().toISOString(),
           };
-
+          state.usageStats.promptsToday++;
+          localStorage.setItem("iah_usage_stats", JSON.stringify({
+            date: state.usageStats.date,
+            promptsToday: state.usageStats.promptsToday,
+          }));
           showToast("✅ Code generated successfully!");
-          return response;
+          return files;
         } catch (error) {
           console.error("[PromptToApp] Error:", error);
-          showToast("❌ Generation failed", "error");
+          showToast(`Generation failed: ${error.message}`, "error");
           return null;
         }
       },
 
-      async deployCode(code, platform = "firebase") {
-        if (!FreemiumModel.checkAccess("deployment")) {
-          FreemiumModel.showUpgradeModal();
-          return false;
-        }
+      downloadFile(file) {
+        const blob = new Blob([file.content], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = file.path.split("/").pop() || "project-file.txt";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      },
 
-        state.usageStats.deploymentsMonth++;
-
-        console.log(`🚀 Deploying to ${platform}...`);
-        showToast(`🚀 Deployment to ${platform} initiated!`);
-
-        // In production, integrate with Firebase Hosting, Vercel, etc.
-        return true;
+      downloadProject(files, type) {
+        const blob = createProjectArchive(files);
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `iah-${type}-project.zip`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
       },
     };
 
@@ -1331,12 +1380,110 @@
       setTimeout(() => toast.remove(), 3000);
     }
 
+    function escapeHTML(value) {
+      return String(value).replace(/[&<>"']/g, (character) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[character]);
+    }
+
+    function createProjectArchive(files) {
+      const encoder = new TextEncoder();
+      const now = new Date();
+      const dosTime = (now.getHours() << 11) | (now.getMinutes() << 5) | Math.floor(now.getSeconds() / 2);
+      const dosDate = ((Math.max(1980, now.getFullYear()) - 1980) << 9) |
+        ((now.getMonth() + 1) << 5) | now.getDate();
+      const localEntries = [];
+      const directoryEntries = [];
+      let localOffset = 0;
+
+      const checksum = (bytes) => {
+        let crc = 0xffffffff;
+        for (const byte of bytes) {
+          crc ^= byte;
+          for (let bit = 0; bit < 8; bit++) {
+            crc = (crc >>> 1) ^ (crc & 1 ? 0xedb88320 : 0);
+          }
+        }
+        return (crc ^ 0xffffffff) >>> 0;
+      };
+
+      for (const file of files) {
+        const name = encoder.encode(file.path);
+        const content = encoder.encode(file.content);
+        if (name.length > 0xffff || content.length > 0xffffffff) {
+          throw new Error("A generated file is too large to include in a ZIP archive.");
+        }
+        const crc = checksum(content);
+        const local = new Uint8Array(30 + name.length + content.length);
+        const localView = new DataView(local.buffer);
+        localView.setUint32(0, 0x04034b50, true);
+        localView.setUint16(4, 20, true);
+        localView.setUint16(6, 0x0800, true);
+        localView.setUint16(8, 0, true);
+        localView.setUint16(10, dosTime, true);
+        localView.setUint16(12, dosDate, true);
+        localView.setUint32(14, crc, true);
+        localView.setUint32(18, content.length, true);
+        localView.setUint32(22, content.length, true);
+        localView.setUint16(26, name.length, true);
+        localView.setUint16(28, 0, true);
+        local.set(name, 30);
+        local.set(content, 30 + name.length);
+        localEntries.push(local);
+
+        const directory = new Uint8Array(46 + name.length);
+        const directoryView = new DataView(directory.buffer);
+        directoryView.setUint32(0, 0x02014b50, true);
+        directoryView.setUint16(4, 20, true);
+        directoryView.setUint16(6, 20, true);
+        directoryView.setUint16(8, 0x0800, true);
+        directoryView.setUint16(10, 0, true);
+        directoryView.setUint16(12, dosTime, true);
+        directoryView.setUint16(14, dosDate, true);
+        directoryView.setUint32(16, crc, true);
+        directoryView.setUint32(20, content.length, true);
+        directoryView.setUint32(24, content.length, true);
+        directoryView.setUint16(28, name.length, true);
+        directoryView.setUint16(30, 0, true);
+        directoryView.setUint16(32, 0, true);
+        directoryView.setUint16(34, 0, true);
+        directoryView.setUint16(36, 0, true);
+        directoryView.setUint32(38, 0, true);
+        directoryView.setUint32(42, localOffset, true);
+        directory.set(name, 46);
+        directoryEntries.push(directory);
+        localOffset += local.length;
+      }
+
+      if (files.length > 0xffff || localOffset > 0xffffffff) {
+        throw new Error("This generated project is too large to package as a ZIP archive.");
+      }
+      const directorySize = directoryEntries.reduce((size, entry) => size + entry.length, 0);
+      const end = new Uint8Array(22);
+      const endView = new DataView(end.buffer);
+      endView.setUint32(0, 0x06054b50, true);
+      endView.setUint16(8, files.length, true);
+      endView.setUint16(10, files.length, true);
+      endView.setUint32(12, directorySize, true);
+      endView.setUint32(16, localOffset, true);
+      endView.setUint16(20, 0, true);
+      return new Blob([...localEntries, ...directoryEntries, end], { type: "application/zip" });
+    }
+
     window.setView = function (view) {
       state.view = view;
       state.menuOpen = false;
       state.cartOpen = false;
       window.scrollTo(0, 0);
       render();
+    };
+
+    window.showUpgradePlans = function () {
+      FreemiumModel.showUpgradeModal();
     };
 
     window.toggleMenu = function () {
@@ -1495,7 +1642,7 @@
       return `
                       <nav class="bg-gray-900 border-b border-gray-800 sticky top-0 z-30 backdrop-blur-md bg-opacity-90">
                           <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-                              <div class="flex items-center gap-3">
+                              <div class="ml-auto flex items-center gap-3">
                                   <div class="flex items-center cursor-pointer" onclick="setView('home')">
                                       <div class="bg-gradient-to-br from-blue-600 to-purple-600 p-1.5 rounded-lg mr-2">
                                           <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1522,7 +1669,7 @@
                                       <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                                       ${state.cart.length > 0 ? `<span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">${state.cart.length}</span>` : ''}
                                   </button>
-                                  <button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800 transition-colors border border-gray-800 hover:border-gray-700" aria-label="Menu" title="Menu & Quick Links">
+                                  <button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800 transition-colors border border-gray-800 hover:border-gray-700" aria-label="Open navigation menu" title="Menu & Quick Links">
                                       <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                                       </svg>
@@ -1548,7 +1695,7 @@
                                   </span>
                               </h1>
                               <p class="max-w-2xl mx-auto text-gray-300 text-lg mb-10">
-                                  Transform your ideas into production-ready websites with Gemini 2.0 AI, Firebase, RTL support, and voice recognition. Deploy in 24-72 hours.
+                                  Transform your ideas into websites, web apps, mobile apps, and games with Gemini-powered project generation.
                               </p>
                               <div class="flex justify-center gap-4 flex-wrap">
                                   <button onclick="setView('features')" class="btn-primary text-white px-8 py-4 rounded-lg font-bold">
@@ -1567,9 +1714,9 @@
       const features = [
         {
           icon: "🤖",
-          title: "Gemini 2.0 AI Integration",
+          title: "Gemini AI Integration",
           description:
-            "Real-time AI chatbot powered by Google's latest Gemini 2.0 Flash model with context-aware responses.",
+            "Real-time AI chatbot powered by Google's Gemini Flash model with context-aware responses.",
         },
         {
           icon: "🔒",
@@ -1645,10 +1792,10 @@
           price: "₹0",
           period: "forever",
           features: [
-            "10 AI queries/day",
-            "3 file uploads/day",
-            "Firestore database",
-            "Basic templates",
+            "3 AI project generations/day",
+            "Up to 3 files per generated project",
+            "Choose website, web app, mobile app, or web game",
+            "Choose your programming language",
             "Community support",
           ],
           highlight: false,
@@ -1658,13 +1805,12 @@
           price: "₹999",
           period: "/month",
           features: [
-            "1,000 AI queries/day",
-            "100 file uploads/day",
-            "Cloud SQL + Firestore",
-            "Premium templates",
-            "Google Scholar (50/day)",
+            "50 AI project generations/day",
+            "Up to 10 files per generated project",
+            "More detailed project scaffolds",
+            "Choose website, web app, mobile app, or web game",
+            "Choose your programming language",
             "Priority support",
-            "Voice features",
           ],
           highlight: true,
           badge: "Most Popular",
@@ -1674,14 +1820,12 @@
           price: "₹4,999",
           period: "/month",
           features: [
-            "Unlimited AI queries",
-            "Unlimited uploads",
-            "All 5 databases",
-            "Google Scholar (500/day)",
+            "Unlimited AI project generations",
+            "Up to 20 files per generated project",
+            "Most detailed project scaffolds",
+            "Choose website, web app, mobile app, or web game",
+            "Choose your programming language",
             "24/7 dedicated support",
-            "Custom AI training",
-            "White-label options",
-            "SLA guarantee",
           ],
           highlight: false,
         },
@@ -1691,7 +1835,7 @@
                       <div class="max-w-7xl mx-auto px-4 py-16">
                           <div class="text-center mb-12">
                               <h2 class="text-4xl font-bold text-white mb-4 neon-text">Pricing Plans</h2>
-                              <p class="text-gray-400 text-lg">Choose the perfect plan for your needs</p>
+                              <p class="text-gray-400 text-lg">Choose a plan for your project-generation needs. Paid plans activate only after payment is verified.</p>
                           </div>
                           <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                               ${tiers
@@ -1729,7 +1873,7 @@
                 ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500"
                 : "bg-gray-700 text-white hover:bg-gray-600"
               }">
-                                          Get Started
+                                          ${tier.name === "Free" ? "Use Free Plan" : "Choose Plan"}
                                       </button>
                                   </div>
                               `
@@ -1797,115 +1941,108 @@
     // PROMPT-TO-APP BUILDER
     // ============================================
     function renderBuilder() {
+      const projectTypes = [
+        { id: "mobile", icon: "📱", label: "Mobile App" },
+        { id: "web", icon: "💻", label: "Web App" },
+        { id: "website", icon: "🌐", label: "Website" },
+        { id: "game", icon: "🎮", label: "Web Game" },
+      ];
+      const supportedLanguages = [
+        "JavaScript", "TypeScript", "Python", "Dart", "Kotlin", "Swift",
+        "Java", "C#", "Go", "PHP", "Ruby",
+      ];
+      const generatedFiles = state.generatedCode?.files || [];
       return `
-                <div class="max-w-4xl mx-auto px-4 py-16">
-                  <div class="text-center mb-12">
-                    <h2 class="text-4xl font-bold text-white mb-4 neon-text">AI App Builder</h2>
-                    <p class="text-gray-400 text-lg">Describe your app in plain English, AI generates the code using the latest tech (React 19, Next 15, Flutter 3.24+)!</p>
-                    <div class="mt-2 text-blue-400 text-sm font-semibold animate-pulse">
-                      🚀 Upcoming: Seamless User Authentication & Cloud Storage Integration!
-                    </div>
-                    <div class="mt-4 inline-block px-4 py-2 bg-gray-800 rounded-full text-sm">
-                      ${state.userTier === "free"
-          ? `🎯 ${3 - state.usageStats.promptsToday
-          }/3 free prompts today`
+        <div class="max-w-4xl mx-auto px-4 py-16">
+          <div class="text-center mb-10">
+            <h2 class="text-4xl font-bold text-white mb-4 neon-text">AI App Builder</h2>
+            <p class="text-gray-400 text-lg">Generate downloadable source files for a website, web app, mobile app, or browser game in your chosen language.</p>
+            <div class="mt-4 inline-block px-4 py-2 bg-gray-800 rounded-full text-sm">
+              ${state.userTier === "free"
+          ? `🎯 ${Math.max(0, 3 - state.usageStats.promptsToday)}/3 free generations today`
           : state.userTier === "pro"
-            ? `⭐ ${50 - state.usageStats.promptsToday
-            }/50 prompts today`
-            : `💎 Unlimited prompts`
-        }
-                    </div>
-                  </div>
+            ? `⭐ ${Math.max(0, 50 - state.usageStats.promptsToday)}/50 generations today`
+            : "💎 Unlimited generations"}
+            </div>
+          </div>
 
-                  <div class="holographic-card p-8 rounded-xl">
-                    <form onsubmit="handlePromptSubmit(event)" class="space-y-6">
-                      <div>
-                        <label class="block text-sm font-bold text-gray-300 mb-2">Project Type</label>
-                        <div class="grid grid-cols-3 gap-4">
-                          <button type="button" onclick="selectProjectType('mobile')" class="p-4 rounded-lg border-2 ${state.selectedProjectType === "mobile"
-          ? "border-blue-500 bg-blue-900/30"
-          : "border-gray-700 bg-gray-800 hover:border-gray-600"
-        }">
-                            <div class="text-3xl mb-2">📱</div>
-                            <div class="text-sm font-bold text-white">Mobile App</div>
-                          </button>
-                          <button type="button" onclick="selectProjectType('web')" class="p-4 rounded-lg border-2 ${state.selectedProjectType === "web"
-          ? "border-blue-500 bg-blue-900/30"
-          : "border-gray-700 bg-gray-800 hover:border-gray-600"
-        }">
-                            <div class="text-3xl mb-2">💻</div>
-                            <div class="text-sm font-bold text-white">Web App</div>
-                          </button>
-                          <button type="button" onclick="selectProjectType('website')" class="p-4 rounded-lg border-2 ${state.selectedProjectType === "website"
-          ? "border-blue-500 bg-blue-900/30"
-          : "border-gray-700 bg-gray-800 hover:border-gray-600"
-        }">
-                            <div class="text-3xl mb-2">🌐</div>
-                            <div class="text-sm font-bold text-white">Website</div>
-                          </button>
-                        </div>
-                      </div>
+          <div class="holographic-card p-6 md:p-8 rounded-xl">
+            <div class="mb-6 p-4 rounded-lg border border-amber-700/50 bg-amber-950/30">
+              <label for="gemini-api-key" class="block text-sm font-bold text-gray-200 mb-2">Your Gemini API key</label>
+              <div class="flex flex-col sm:flex-row gap-2">
+                <input id="gemini-api-key" type="password" autocomplete="off" value="${escapeHTML(AIHub.apiKey)}"
+                  placeholder="Paste your Gemini API key" class="flex-1 min-w-0 bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500" />
+                <button type="button" onclick="saveGeminiApiKey()" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold">Save on this device</button>
+              </div>
+              <p class="text-xs text-gray-400 mt-2">The key is stored in this browser and sent directly to Google Gemini. For a public production service, use a secured server-side API proxy instead.</p>
+            </div>
 
-                      <div>
-                        <label class="block text-sm font-bold text-gray-300 mb-2">Describe Your App</label>
-                        <textarea
-                          id="app-description"
-                          required
-                          rows="6"
-                          class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500"
-                          placeholder="Example: Create a todo list app with dark mode, local storage, and drag-and-drop features..."
-                        ></textarea>
-                      </div>
-
-                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <button type="button" onclick="triggerVisionScan()" class="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-4 rounded-lg transition-all flex items-center justify-center gap-2 border border-blue-500/30 hover:border-blue-500 group">
-                          <svg class="w-6 h-6 text-blue-400 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                          </svg>
-                          IAH Vision (Image to Code)
-                        </button>
-                        <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold py-4 rounded-lg transition-all flex items-center justify-center gap-2">
-                          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                          Generate App with AI
-                        </button>
-                      </div>
-                    </form>
-
-                    \${state.visionScanning ? \`
-                       <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md animate-fade-in">
-                         <div class="text-center">
-                           <div class="relative w-72 h-72 mx-auto mb-6 rounded-lg overflow-hidden border-2 border-blue-500 shadow-[0_0_50px_rgba(59,130,246,0.3)]">
-                             <img src="\${state.visionImage}" class="w-full h-full object-cover opacity-60" />
-                             <div class="absolute top-0 left-0 w-full h-2 bg-blue-400 shadow-[0_0_30px_#60a5fa] animate-scan z-10"></div>
-                             <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdHRlcm4gaWQ9InNtYWxsR3JpZCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNMTAgMEwwIDBMMCAxMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDU5LCAxMzAsIDI0NiwgMC4yKSIgc3Ryb2tlLXdpZHRoPSIwLjUiLz48L3BhdHRlcm4+PHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSJ1cmwoI3NtYWxsR3JpZCkiLz48cGF0aCBkPSJNNDAgMEwwIDBMMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDU5LCAxMzAsIDI0NiwgMC4zKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-40 z-0"></div>
-                           </div>
-                           <h3 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 mb-2">IAH Vision Engine</h3>
-                           <p class="text-blue-300 font-mono text-sm animate-pulse">> ANALYZING DOM STRUCTURE & COMPONENT HIERARCHY...</p>
-                         </div>
-                       </div>
-                    \` : ''}
-
-                    ${state.generatedCode
-          ? `
-                      <div class="mt-8 p-6 bg-gray-900 rounded-lg border border-green-500">
-                        <div class="flex justify-between items-center mb-4">
-                          <h3 class="text-xl font-bold text-white">✅ Code Generated!</h3>
-                          <button onclick="deployCode()" class="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-bold">
-                            🚀 Deploy Now
-                          </button>
-                        </div>
-                        <pre class="bg-black p-4 rounded text-green-400 text-xs overflow-x-auto max-h-64">${state.generatedCode.code.substring(
-            0,
-            500
-          )}...</pre>
-                      </div>
-                    `
-          : ""
-        }
-                  </div>
+            <form onsubmit="handlePromptSubmit(event)" class="space-y-6">
+              <div>
+                <label class="block text-sm font-bold text-gray-300 mb-2">Project type</label>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  ${projectTypes.map((project) => `
+                    <button type="button" onclick="selectProjectType('${project.id}')"
+                      aria-pressed="${state.selectedProjectType === project.id}"
+                      class="p-4 rounded-lg border-2 ${state.selectedProjectType === project.id ? "border-blue-500 bg-blue-900/30" : "border-gray-700 bg-gray-800 hover:border-gray-600"}">
+                      <div class="text-3xl mb-2">${project.icon}</div>
+                      <div class="text-sm font-bold text-white">${project.label}</div>
+                    </button>
+                  `).join("")}
                 </div>
-              `;
+              </div>
+
+              <div>
+                <label for="project-language" class="block text-sm font-bold text-gray-300 mb-2">Programming language</label>
+                <select id="project-language" onchange="selectProjectLanguage(this.value)"
+                  class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500">
+                  ${supportedLanguages.map((language) => `<option value="${language}" ${state.selectedLanguage === language ? "selected" : ""}>${language}</option>`).join("")}
+                </select>
+              </div>
+
+              <div>
+                <label for="app-description" class="block text-sm font-bold text-gray-300 mb-2">Describe the project</label>
+                <textarea id="app-description" required rows="6"
+                  class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500"
+                  placeholder="Describe the features, screens, controls, and style you want...">${escapeHTML(state.promptText)}</textarea>
+              </div>
+
+              <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold py-4 rounded-lg transition-all flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                Generate Project Files
+              </button>
+            </form>
+
+            ${generatedFiles.length ? `
+              <section class="mt-8 p-5 bg-gray-900 rounded-lg border border-green-500" aria-label="Generated project files">
+                <h3 class="text-xl font-bold text-white mb-1">✅ ${generatedFiles.length} project files generated</h3>
+                <p class="text-sm text-gray-400 mb-4">${escapeHTML(state.generatedCode.language)} · ${escapeHTML(state.generatedCode.type)} · Download each file and keep its shown path.</p>
+                <button type="button" onclick="downloadGeneratedProject()" class="mb-4 bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold">Download all files as ZIP</button>
+                <div class="space-y-3">
+                  ${generatedFiles.map((file, index) => `
+                    <div class="bg-gray-800 rounded-lg p-3">
+                      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <code class="text-green-300 break-all">${escapeHTML(file.path)}</code>
+                        <button type="button" onclick="downloadGeneratedFile(${index})" class="shrink-0 bg-green-700 hover:bg-green-600 text-white px-3 py-2 rounded-lg text-sm font-semibold">Download file</button>
+                      </div>
+                      <details class="mt-3">
+                        <summary class="cursor-pointer text-sm text-gray-400">Preview file contents</summary>
+                        <pre class="mt-2 bg-black p-3 rounded text-green-300 text-xs overflow-auto max-h-80 whitespace-pre-wrap">${escapeHTML(file.content)}</pre>
+                      </details>
+                    </div>
+                  `).join("")}
+                </div>
+                ${state.generatedCode.wasLimited ? `
+                  <div class="mt-4 p-3 rounded-lg bg-purple-950/40 border border-purple-700/50 text-sm text-gray-300">
+                    This project requested more files than your plan includes. Upgrade for a larger, more detailed scaffold.
+                    <button type="button" onclick="showUpgradePlans()" class="ml-1 text-purple-300 underline">View plans</button>
+                  </div>
+                ` : ""}
+              </section>
+            ` : ""}
+          </div>
+        </div>
+      `;
     }
 
     function renderContact() {
@@ -1956,8 +2093,8 @@
                                   <!-- Indian Compliance Info -->
                                   <div class="mt-8 p-6 bg-gray-900 rounded-xl border border-gray-800 text-sm text-gray-400 space-y-2">
                                       <p class="font-bold text-blue-400 mb-3 uppercase tracking-wider text-xs">🇮🇳 Regulatory Information</p>
-                                      <p class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Company: \${CIN}</p>
-                                      <p class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> \${GSTIN}</p>
+                                      <p class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Company: ${CIN}</p>
+                                      <p class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> ${GSTIN}</p>
                                       <p class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Governed by IT Act 2000 &amp; DPDP Act 2023</p>
                                       <p class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Consumer Protection Act 2019 compliant</p>
                                       <p class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> RBI Payment guidelines followed</p>
@@ -1982,7 +2119,7 @@
                           <!-- Open in new tab fallback -->
                           <div class="text-center mt-8">
                               <p class="text-gray-500 text-sm mb-2">Having trouble with the form above?</p>
-                              <a href="\${CONTACT_FORM_URL}" target="_blank" rel="noopener noreferrer"
+                              <a href="${CONTACT_FORM_URL}" target="_blank" rel="noopener noreferrer"
                                   class="inline-flex items-center gap-2 bg-gray-800 hover:bg-gray-700 border border-gray-600 text-white px-6 py-3 rounded-xl transition-all text-sm font-semibold">
                                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                                   Open Enquiry Form in New Tab
@@ -2110,8 +2247,49 @@
     // INTERACTIVE HANDLERS
     // ============================================
     window.selectProjectType = function (type) {
+      state.promptText = document.getElementById("app-description")?.value || state.promptText;
       state.selectedProjectType = type;
       render();
+    };
+
+    window.selectProjectLanguage = function (language) {
+      state.selectedLanguage = language;
+    };
+
+    window.saveGeminiApiKey = function () {
+      const input = document.getElementById("gemini-api-key");
+      const key = input?.value.trim();
+      if (!key) {
+        AIHub.apiKey = "";
+        localStorage.removeItem("gemini_api_key");
+        showToast("Gemini API key removed from this device.");
+        return;
+      }
+      AIHub.setApiKey(key);
+      showToast("Gemini API key saved on this device.");
+    };
+
+    window.downloadGeneratedFile = function (index) {
+      const file = state.generatedCode?.files?.[index];
+      if (!file) {
+        showToast("That generated file is no longer available. Generate the project again.", "error");
+        return;
+      }
+      PromptToAppHub.downloadFile(file);
+    };
+
+    window.downloadGeneratedProject = function () {
+      const project = state.generatedCode;
+      if (!project?.files?.length) {
+        showToast("Generate a project before downloading it.", "error");
+        return;
+      }
+      try {
+        PromptToAppHub.downloadProject(project.files, project.type);
+      } catch (error) {
+        console.error("[PromptToApp] Could not package project files:", error);
+        showToast(`Could not create project ZIP: ${error.message}`, "error");
+      }
     };
 
     window.triggerVisionScan = function () {
@@ -2147,30 +2325,33 @@
 
     window.handlePromptSubmit = async function (e) {
       e.preventDefault();
-      const description = document.getElementById("app-description").value;
+      const description = document.getElementById("app-description").value.trim();
       const type = state.selectedProjectType || "website";
+      const language = document.getElementById("project-language").value;
 
       if (!description) {
         showToast("Please describe your app first", "error");
         return;
       }
 
-      const button = e.target.querySelector("button");
+      state.promptText = description;
+      state.selectedLanguage = language;
+      state.generatedCode = null;
+      const button = e.target.querySelector('button[type="submit"]');
       const originalText = button.innerHTML;
       button.innerHTML = `<div class="spinner border-white mr-2"></div> Generating...`;
       button.disabled = true;
 
-      await PromptToAppHub.generateApp(description, type);
-
-      button.innerHTML = originalText;
-      button.disabled = false;
-      render();
-    };
-
-    window.deployCode = async function () {
-      if (state.generatedCode) {
-        await PromptToAppHub.deployCode(state.generatedCode.code);
+      try {
+        await PromptToAppHub.generateApp(description, type, language);
+      } catch (error) {
+        console.error("[PromptToApp] Unexpected generation error:", error);
+        showToast(`Generation failed: ${error.message}`, "error");
+      } finally {
+        button.innerHTML = originalText;
+        button.disabled = false;
       }
+      render();
     };
 
     window.buyTemplate = function (id) {
@@ -2191,8 +2372,8 @@
     };
 
     window.selectTier = function (tierName, priceStr) {
-      if (tierName === 'Free') {
-        state.userTier = 'Free';
+      if (tierName.toLowerCase() === "free") {
+        state.userTier = "free";
         showToast('✅ Free plan activated!');
         render();
         return;
@@ -2231,8 +2412,7 @@
         }
 
         if (state.paymentContext.isSubscription) {
-          state.userTier = name.replace(" Plan", "");
-          showToast(`✅ ${name} activated successfully!`);
+          showToast("Payment started. Paid features unlock only after payment verification; email the receipt to theiahcreations@gmail.com.", "error");
         }
 
         if (method === "upi" || method === "gpay" || method === "paypal") {
@@ -2345,6 +2525,7 @@
                     <div class="p-6 border-b border-gray-800">
                       <h3 class="text-xl font-bold text-white mb-1">🔐 Secure Payment Portal</h3>
                       <p class="text-gray-400 text-sm">Purchase: <span class="text-blue-400 font-semibold">${itemName}</span></p>
+                      ${state.paymentContext?.isSubscription ? `<p class="text-amber-300 text-xs mt-2">Paid plan access is not enabled automatically. Payment must be verified before an upgrade is applied.</p>` : ""}
                     </div>
 
                     <div class="p-6 space-y-4">
@@ -2438,6 +2619,13 @@
       return `
                       <footer class="bg-gray-900 border-t border-gray-800 py-8">
                           <div class="max-w-7xl mx-auto px-4 text-center">
+                              <div class="mb-6">
+                                  <h2 class="text-lg font-semibold text-white mb-2">Connect with us</h2>
+                                  <a href="mailto:theiahcreations@gmail.com" class="text-blue-400 hover:text-blue-300 transition-colors">theiahcreations@gmail.com</a>
+                                  <div class="mt-3">
+                                      <button onclick="setView('contact')" class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded-lg font-semibold transition-colors">Contact Us</button>
+                                  </div>
+                              </div>
                               <p class="text-gray-400 mb-1">© 2025-2026 The IAH Creations. All rights reserved.</p>
                               <p class="text-xs text-gray-500 mb-3">Compliant with IT Act 2000 • DPDP Act 2023 • Consumer Protection Act 2019 • RBI Payment Guidelines</p>
                               <p class="text-gray-500 text-xs mb-5">Enterprise-Grade Web Development Platform v${APP_VERSION}</p>
@@ -2477,7 +2665,7 @@
                     <p class="text-xs text-gray-500 mb-1">Current Tier</p>
                     <div class="flex items-center justify-between">
                       <span class="px-2 py-0.5 bg-blue-600/20 text-blue-400 text-xs font-bold rounded uppercase">${state.userTier}</span>
-                      <button onclick="FreemiumModel.showUpgradeModal(); toggleMenu();" class="text-xs text-purple-400 hover:text-purple-300 underline font-semibold">Upgrade Plan</button>
+                      <button onclick="showUpgradePlans()" class="text-xs text-purple-400 hover:text-purple-300 underline font-semibold">Upgrade Plan</button>
                     </div>
                   </div>
 
@@ -2613,7 +2801,7 @@
                     <section>
                       <h3 class="text-2xl font-bold text-white mb-4">Our Technology</h3>
                       <ul class="space-y-2 text-gray-300">
-                        <li>✓ Powered by Google Gemini 2.0 Flash AI</li>
+                        <li>✓ Powered by Google Gemini Flash AI</li>
                         <li>✓ Multi-database support (Firebase, Cloud SQL, BigQuery, Spanner, Bigtable)</li>
                         <li>✓ 20+ language support with RTL capabilities</li>
                         <li>✓ Voice recognition and synthesis</li>
@@ -2681,7 +2869,7 @@
         },
         {
           q: "How does the AI Builder work?",
-          a: "Simply describe your app in plain English, select the type (mobile/web/website), and our Gemini 2.0 AI generates production-ready code instantly.",
+          a: "Describe a website, web app, mobile app, or browser game, choose a programming language, and generate downloadable project files with Gemini AI.",
         },
         {
           q: "What payment methods do you accept?",
@@ -2794,7 +2982,7 @@
           <p class="mb-6 leading-relaxed">In this comprehensive guide, we will explore the profound impact of AI on web development, the tools that are leading the charge, and why businesses must adapt to stay competitive in an increasingly automated world. We will delve into AI-driven UI design, automated testing, predictive user analytics, and the seamless integration of large language models (LLMs) into everyday web services.</p>
           
           <h2 class="text-2xl font-bold text-white mt-10 mb-4">1. AI-Driven Code Generation and Prompt-to-App Technologies</h2>
-          <p class="mb-6 leading-relaxed">Gone are the days when developers had to write every line of boilerplate code manually. Today, AI assistants like Gemini 2.0 Flash are capable of understanding natural language prompts and generating production-ready code in seconds. This 'Prompt-to-App' technology significantly reduces the time-to-market for startups.</p>
+          <p class="mb-6 leading-relaxed">Gone are the days when developers had to write every line of boilerplate code manually. Today, AI assistants like Gemini Flash are capable of understanding natural language prompts and generating production-ready code in seconds. This 'Prompt-to-App' technology significantly reduces the time-to-market for startups.</p>
           <p class="mb-6 leading-relaxed">These advanced systems don't just output raw code; they understand context, architecture, and modern best practices. They automatically implement responsive designs, ensure accessibility compliance, and even integrate seamlessly with backend services like Firebase or Cloud SQL. This means developers can focus on complex business logic and unique user experiences rather than repetitive tasks.</p>
           
           <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1200&q=80" alt="AI Code Generation" class="w-full h-auto rounded-xl my-8 object-cover shadow-lg" />
