@@ -12,7 +12,8 @@
 
 ### 🤖 AI & Backend Features
 
-- ✅ **Gemini 3.6 Flash** - AI model used by the app
+- ✅ **Gemini model selector** - Gemini 4 Carbon/Argon and Gemini 3.8/3.6 Flash, subject to API-key access
+- ✅ **AI Builder modules** - Plan-gated project scaffolds; cloud integrations require user credentials and setup
 - ✅ **Hidden Auto-Updates** - Background system updates (non-intrusive)
 - ✅ **Cloud Storage Ready** - Firebase integration for file uploads
 - ✅ **Real-time Database** - Order and asset tracking
@@ -489,6 +490,6 @@ console.log("Auth state:", auth.currentUser);
 **🎉 Your platform is production-ready!**
 
 Built with ❤️ by The IAH Creations  
-Powered by Firebase 12.6.0 + Gemini 3.6 Flash • Jaipur, Rajasthan 🇮🇳
+Powered by Firebase 12.6.0 + Google Gemini • Jaipur, Rajasthan 🇮🇳
 
 **Last Updated**: December 10, 2025

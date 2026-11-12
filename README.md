@@ -1,13 +1,13 @@
 # 🚀 The IAH Creations - Next-Gen AI Development Platform
 
-[![Version](https://img.shields.io/badge/version-5.3.0-blue.svg)](https://github.com/infinity-aggarwalharshul/The-IAH-Creations)
+[![Version](https://img.shields.io/badge/version-5.4.0-blue.svg)](https://github.com/infinity-aggarwalharshul/The-IAH-Creations)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Blockchain](https://img.shields.io/badge/blockchain-enabled-purple.svg)](BLOCKCHAIN.md)
 
 > **Enterprise-Grade AI Platform with Prompt-to-App Technology, Multi-Currency Payments, Blockchain Anti-Theft, and Dark Web Monitoring**
 
-Transform your ideas into production-ready applications using natural language. Deploy in 24-72 hours with enterprise-grade security and global payment support.
+Transform your ideas into downloadable starter projects using natural language. Generated projects require review, configuration, and testing before production use.
 
 ---
 
@@ -27,18 +27,18 @@ Transform your ideas into production-ready applications using natural language. 
 
 ### 🆕 **Prompt-to-App Technology**
 
-Describe your app in natural language → AI generates production-ready code instantly!
+Describe your app in natural language → AI generates a downloadable starter project.
 
 ```
-"Create a mobile e-commerce app with payment gateway"
-→ Full React Native app with Stripe integration in 2 minutes
+"Create a mobile e-commerce app with product browsing and a cart"
+→ Starter project files in your selected language, ready to configure and test
 ```
 
 ### AI Builder usage
 
-Choose a website, web app, mobile app, or browser game, select a programming language, and describe the features you need. The builder returns project files that can be previewed and downloaded individually. Free projects include up to 3 files, Pro up to 10, and Enterprise up to 20.
+Choose a website, web app, mobile app, or browser game, select a programming language and Google Gemini model, and describe the features you need. Generated files can be previewed and downloaded individually or as a ZIP. Free projects include up to 3 files, Pro up to 10, and Enterprise up to 20. Plan modules are included as requested scaffolds: Free includes responsive/accessibility basics, safer configuration, setup guidance, and local persistence; Pro adds Firebase Auth, Firestore, cloud storage, API-client states, and tests; Enterprise adds Gemini AI, voice, and localization/RTL scaffolds. External services still require credentials, configuration, and review.
 
-The static site requires you to provide your own Gemini API key in the AI Builder. It is stored in your browser and sent directly to Google; a server-side API proxy is recommended before using the builder as a public production service. Paid plan selection opens payment options but does not unlock paid features until payment is verified.
+The static site requires your own Gemini API key in the AI Builder. It is stored in your browser and sent directly to Google; a server-side API proxy is recommended before public production use. The model selector includes Gemini 4 Carbon, Gemini 4 Argon, Gemini 3.8 Flash, and Gemini 3.6 Flash; model availability depends on your Google AI Studio account. Paid plan selection opens payment options but does not unlock paid features until payment is verified.
 
 ### 💳 **Multi-Currency Payment Gateway**
 
@@ -105,7 +105,7 @@ The static site requires you to provide your own Gemini API key in the AI Builde
 
 ### **🤖 AI-Powered Development**
 
-- ✅ Gemini 3.6 Flash integration
+- ✅ Gemini model selector (Gemini 4 Carbon/Argon and Gemini 3.8/3.6 Flash)
 - ✅ Prompt-to-App code generation
 - ✅ Natural language to working application
 - ✅ Mobile App generation (iOS + Android)
@@ -197,7 +197,7 @@ npx serve .
 
 ### **AI & Generation**
 
-- Google Gemini 3.6 Flash
+- Google Gemini API (selectable Gemini 4 Carbon/Argon, Gemini 3.8 Flash, or Gemini 3.6 Flash)
 - Natural Language Processing
 - Code generation & optimization
 

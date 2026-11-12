@@ -157,6 +157,11 @@
       font-family: var(--font-sans);
     }
 
+    .social-footer-link svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
     h1,
     h2,
     h3 {
@@ -390,7 +395,7 @@
     // ============================================
     // CONSTANTS
     // ============================================
-    const APP_VERSION = "5.3.0"; // Multi-file AI Builder and subscription flow fixes
+    const APP_VERSION = "5.4.0"; // Platform modules, model selection, and footer socials
     const OWNER_NAME = "Harshul Aggarwal";
     const BUSINESS_NAME = "The IAH Creations";
     const BUSINESS_TYPE = "Individual Freelancer / Sole Proprietor";
@@ -399,6 +404,35 @@
     const UPI_ID = "aggarwalharshul49@okicici";
     const UPI_QR_CODE = "assets/upi_qr.jpg";
     const CONTACT_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScDpyoz7sv4W96kEXL-IwUny5nHCAhjy4LutOetzJyf6xgrfg/viewform?usp=preview";
+    const AI_MODELS = [
+      { id: "gemini-4-carbon", name: "Gemini 4 Carbon (latest, strongest reasoning)" },
+      { id: "gemini-4-argon", name: "Gemini 4 Argon (efficient reasoning)" },
+      { id: "gemini-3.8-flash", name: "Gemini 3.8 Flash" },
+      { id: "gemini-3.6-flash", name: "Gemini 3.6 Flash" },
+    ];
+    const BUILDER_MODULES = [
+      { id: "responsive-ui", name: "Responsive, accessible UI", requirement: "Use semantic UI, mobile-responsive layouts, keyboard access, and accessible labels.", tiers: ["free", "pro", "enterprise"] },
+      { id: "safe-config", name: "Safe configuration and input validation", requirement: "Validate user inputs, handle errors, and keep secrets out of client code and source control.", tiers: ["free", "pro", "enterprise"] },
+      { id: "readme", name: "README and setup instructions", requirement: "Include clear install, run, test, and configuration steps in the README.", tiers: ["free", "pro", "enterprise"] },
+      { id: "local-storage", name: "Local data persistence", requirement: "Persist appropriate user data with the platform's local storage/database API and handle unavailable storage.", tiers: ["free", "pro", "enterprise"] },
+      { id: "firebase-auth", name: "Firebase authentication scaffold", requirement: "Add a Firebase Auth integration scaffold with sign-in/sign-out flow and placeholder environment configuration.", tiers: ["pro", "enterprise"] },
+      { id: "firestore", name: "Firestore data-layer scaffold", requirement: "Add a Firestore data-access scaffold with clear user-scoped access expectations and setup guidance.", tiers: ["pro", "enterprise"] },
+      { id: "cloud-storage", name: "Cloud file-storage scaffold", requirement: "Add a cloud file-storage scaffold with validation, access-control setup notes, and placeholder configuration.", tiers: ["pro", "enterprise"] },
+      { id: "api-client", name: "API client and request-state handling", requirement: "Add a reusable API client with loading, empty, success, and error states.", tiers: ["pro", "enterprise"] },
+      { id: "tests", name: "Automated test scaffold", requirement: "Include focused automated tests for the core behavior and document the test command.", tiers: ["pro", "enterprise"] },
+      { id: "gemini", name: "Gemini AI/ML integration scaffold", requirement: "For suitable project requirements, add a Gemini server-side integration scaffold using a server environment variable for the key; never expose keys in browser code.", tiers: ["enterprise"] },
+      { id: "voice", name: "Voice input and accessible controls", requirement: "For suitable projects, add voice input/output using supported platform APIs and show a graceful fallback when unavailable.", tiers: ["enterprise"] },
+      { id: "i18n", name: "Localization and RTL layout scaffold", requirement: "Add a small localization structure and layout support that can switch between left-to-right and right-to-left languages.", tiers: ["enterprise"] },
+    ];
+    const SOCIAL_LINKS = [
+      { name: "Instagram", label: "Instagram", href: "https://www.instagram.com/theiahcreations/", color: "text-pink-400", hover: "hover:bg-pink-600/20", icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>' },
+      { name: "Facebook", label: "Facebook", href: "https://www.facebook.com/profile.php?id=61584339846407", color: "text-blue-400", hover: "hover:bg-blue-600/20", icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.5 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.6 1.6-1.6h1.7V3.8c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3V10H7.3v3h2.8v8z"/></svg>' },
+      { name: "X", label: "X", href: "https://x.com/theiahcreations", color: "text-white", hover: "hover:bg-gray-700", icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3L12 14.6 5.5 22H2.3l7.3-8.4L1.8 2h6.5l4.5 6.8zm-1.1 18h1.7L7.3 3.9H5.5z"/></svg>' },
+      { name: "YouTube", label: "YouTube", href: "https://www.youtube.com/@theiahcreations", color: "text-red-400", hover: "hover:bg-red-600/20", icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8M9.6 15.6V8.4L15.8 12z"/></svg>' },
+      { name: "LinkedIn", label: "LinkedIn", href: "https://www.linkedin.com/company/the-iah-creations/", color: "text-blue-400", hover: "hover:bg-blue-600/20", icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20.4 20.4h-3.6v-5.6c0-1.3 0-3-1.8-3s-2.1 1.4-2.1 2.9v5.7H9.3V8.8h3.5v1.6h.1c.5-.9 1.7-1.9 3.4-1.9 3.7 0 4.4 2.4 4.4 5.5zM5.2 7.2a2.1 2.1 0 1 1 0-4.2 2.1 2.1 0 0 1 0 4.2m1.8 13.2H3.4V8.8H7z"/></svg>' },
+      { name: "WhatsApp", label: "WhatsApp", href: "https://www.whatsapp.com/channel/0029Vb6p2x0IHphLdvVfDp23", color: "text-green-400", hover: "hover:bg-green-600/20", icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20.5 3.5A11.8 11.8 0 0 0 2 17.7L.5 23.5l6-1.6a11.8 11.8 0 0 0 14-18.4M12 21a9.7 9.7 0 0 1-5-1.4l-.4-.2-3.5.9.9-3.4-.2-.4A9.8 9.8 0 1 1 12 21m5.4-7.3c-.3-.1-1.6-.8-1.9-.9-.3-.1-.5-.1-.7.2l-.9 1.1c-.2.2-.3.2-.6.1a7.9 7.9 0 0 1-2.3-1.4 8.7 8.7 0 0 1-1.6-2c-.2-.3 0-.4.1-.6l.5-.6.3-.5c.1-.2 0-.4 0-.5l-.8-2c-.2-.5-.4-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.3s1 2.7 1.1 2.9c.1.2 2 3.1 4.9 4.3 1.8.8 2.5.8 3.4.7.5-.1 1.6-.7 1.8-1.3.2-.6.2-1.1.1-1.2z"/></svg>' },
+      { name: "Discord", label: "Discord", href: "https://discord.com/invite/fS93jmzJbd", color: "text-indigo-400", hover: "hover:bg-indigo-600/20", icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19.7 5.2a18 18 0 0 0-4.4-1.4l-.6 1.2a16.6 16.6 0 0 0-5.4 0l-.6-1.2a18 18 0 0 0-4.4 1.4C1.5 9.3.7 13.3 1.1 17.3a18 18 0 0 0 5.4 2.7l1.2-1.9-1.9-.9.5-.4a12.8 12.8 0 0 0 11.4 0l.5.4-1.9.9 1.2 1.9a18 18 0 0 0 5.4-2.7c.5-4.6-.8-8.5-3.2-12.1M8.8 14.9c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2m6.4 0c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2"/></svg>' },
+    ];
     // Note: Business is unregistered — operating as individual freelancer
     // Update these when registered:
     const CIN = "Individual Freelancer / Sole Proprietor";
@@ -608,6 +642,9 @@
       generatedCode: null,
       promptText: "",
       userTier: "free", // 'free', 'pro', 'enterprise'
+      selectedAIModel: AI_MODELS.some((model) => model.id === localStorage.getItem("iah_ai_model"))
+        ? localStorage.getItem("iah_ai_model")
+        : AI_MODELS[0].id,
       usageStats: loadUsageStats(),
       paymentMethod: "upi",
       activeTemplate: null,
@@ -615,7 +652,7 @@
       messages: [
         {
           role: "bot",
-          text: `👋 Hello! I'm your AI Assistant from The IAH Creations, powered by Gemini 3.6 Flash.\\n\\nI can help you with:\\n• **Prompt-to-App**: Describe your app, I'll generate code!\\n• Template recommendations (Mobile/Web/Website)\\n• Pricing \\u0026 payment options\\n• Deployment assistance\\n\\n💼 Virtual Business Card: ${BUSINESS_CARD_URL}\\n\\nWhat would you like to create today?`,
+          text: `👋 Hello! I'm your AI Assistant from The IAH Creations, powered by Google Gemini.\\n\\nI can help you with:\\n• **Prompt-to-App**: Describe your app, I'll generate code!\\n• Template recommendations (Mobile/Web/Website)\\n• Pricing \\u0026 payment options\\n• Deployment assistance\\n\\n💼 Virtual Business Card: ${BUSINESS_CARD_URL}\\n\\nWhat would you like to create today?`,
         },
       ],
     };
@@ -630,6 +667,7 @@
           templates: "view-only",
           deployments: 0,
           generatedFiles: 3,
+          moduleLimit: 4,
           blockchain: false,
           support: "community",
         },
@@ -638,6 +676,7 @@
           templates: 10,
           deployments: 5,
           generatedFiles: 10,
+          moduleLimit: 9,
           blockchain: true,
           support: "24hr",
         },
@@ -646,6 +685,7 @@
           templates: -1,
           deployments: -1,
           generatedFiles: 20,
+          moduleLimit: 12,
           blockchain: true,
           darkWebMonitoring: true,
           support: "24/7-sla",
@@ -689,7 +729,9 @@
     // ============================================
     const AIHub = {
       apiKey: localStorage.getItem("gemini_api_key") || "",
-      model: "gemini-3.6-flash",
+      get model() {
+        return state.selectedAIModel;
+      },
       apiEndpoint: "https://generativelanguage.googleapis.com/v1beta/models/",
       projectId: "projects/559759620416",
 
@@ -699,7 +741,7 @@
         console.log("%c✅ AI API key configured", "color: green");
       },
 
-      async generate(prompt, context = "", history = null, maxOutputTokens = 1024, responseMimeType = null) {
+      async generate(prompt, context = "", history = null, maxOutputTokens = 1024, responseMimeType = null, responseSchema = null) {
         if (!this.apiKey) {
           throw new Error("Add your Gemini API key in the AI Builder to generate a project.");
         }
@@ -753,6 +795,7 @@
                   topP: 0.95,
                   maxOutputTokens,
                   ...(responseMimeType ? { responseMimeType } : {}),
+                  ...(responseSchema ? { responseSchema } : {}),
                 },
               }),
             }
@@ -822,6 +865,10 @@
       },
 
       speak(text) {
+        if (!window.speechSynthesis || typeof SpeechSynthesisUtterance === "undefined") {
+          showToast("Text-to-speech is not supported in this browser.", "error");
+          return;
+        }
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.rate = 1.0;
         utterance.pitch = 1.0;
@@ -1080,17 +1127,43 @@
             mobile: "mobile application",
             game: "web game that runs in a browser",
           }[type] || "application";
+          const platformModules = BUILDER_MODULES
+            .filter((module) => module.tiers.includes(state.userTier))
+            .slice(0, FreemiumModel.tiers[state.userTier].moduleLimit);
+          const moduleRequirements = platformModules
+            .map((module) => `- ${module.name}: ${module.requirement}`)
+            .join("\n");
           const systemPrompt = `You are a senior ${language} developer. Generate a complete starter project for a ${projectKind}.
 User requirements: ${description}
 Required programming language: ${language}. Do not switch to a different language; use only the minimum HTML/CSS/config files needed to run it.
+Selected AI model for this project: ${AIHub.model}. If adding an AI integration, use this model and read credentials from an environment variable; never hard-code API keys.
+The following platform modules are included by the ${state.userTier} plan. Implement each in the generated project where applicable:
+${moduleRequirements}
 Return ONLY valid JSON in this exact shape: {"files":[{"path":"relative/path/to/file.ext","content":"complete file contents"}]}.
-Include a concise README with setup/run instructions. Include all source files needed for a functional result, sensible error handling, and responsive/accessibility basics where applicable. Do not use markdown fences or explanatory text outside the JSON. Limit the project to at most ${fileLimit} files.`;
+Include all source files needed for a functional result, sensible error handling, and setup instructions. Keep API keys out of generated files and document required environment variables. Do not claim cloud services are connected unless the generated project includes configuration and setup instructions. Do not use markdown fences or explanatory text outside the JSON. Limit the project to at most ${fileLimit} files; combine closely related modules when necessary to stay within the plan's limit.`;
           const response = await AIHub.generate(
             systemPrompt,
             "",
             null,
-            state.userTier === "free" ? 4096 : 8192,
-            "application/json"
+            state.userTier === "free" ? 8192 : state.userTier === "pro" ? 16384 : 32768,
+            "application/json",
+            {
+              type: "OBJECT",
+              properties: {
+                files: {
+                  type: "ARRAY",
+                  items: {
+                    type: "OBJECT",
+                    properties: {
+                      path: { type: "STRING" },
+                      content: { type: "STRING" },
+                    },
+                    required: ["path", "content"],
+                  },
+                },
+              },
+              required: ["files"],
+            }
           );
           const jsonText = response.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
           let project;
@@ -1482,6 +1555,21 @@ Include a concise README with setup/run instructions. Include all source files n
       render();
     };
 
+    window.selectAIModel = function (modelId) {
+      if (!AI_MODELS.some((model) => model.id === modelId)) {
+        showToast("That AI model is not available.", "error");
+        return;
+      }
+      state.selectedAIModel = modelId;
+      try {
+        localStorage.setItem("iah_ai_model", modelId);
+      } catch (error) {
+        console.warn("Could not save AI model preference:", error);
+        showToast("Model selected for this session, but could not be saved.", "error");
+      }
+      render();
+    };
+
     window.showUpgradePlans = function () {
       FreemiumModel.showUpgradeModal();
     };
@@ -1630,8 +1718,13 @@ Include a concise README with setup/run instructions. Include all source files n
       }
     };
 
-    window.speakMessage = function (text) {
-      VoiceEngine.speak(text);
+    window.speakMessageAt = function (messageIndex) {
+      const message = state.messages[messageIndex];
+      if (!message || message.role !== "bot") {
+        showToast("This message is no longer available.", "error");
+        return;
+      }
+      VoiceEngine.speak(message.text);
       showToast("🔊 Speaking...");
     };
 
@@ -1951,6 +2044,9 @@ Include a concise README with setup/run instructions. Include all source files n
         "JavaScript", "TypeScript", "Python", "Dart", "Kotlin", "Swift",
         "Java", "C#", "Go", "PHP", "Ruby",
       ];
+      const includedModules = BUILDER_MODULES
+        .filter((module) => module.tiers.includes(state.userTier))
+        .slice(0, FreemiumModel.tiers[state.userTier].moduleLimit);
       const generatedFiles = state.generatedCode?.files || [];
       return `
         <div class="max-w-4xl mx-auto px-4 py-16">
@@ -1993,12 +2089,35 @@ Include a concise README with setup/run instructions. Include all source files n
               </div>
 
               <div>
+                <label for="ai-model" class="block text-sm font-bold text-gray-300 mb-2">AI model</label>
+                <select id="ai-model" onchange="selectAIModel(this.value)"
+                  class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500">
+                  ${AI_MODELS.map((model) => `<option value="${model.id}" ${state.selectedAIModel === model.id ? "selected" : ""}>${model.name}</option>`).join("")}
+                </select>
+                <p class="text-xs text-gray-500 mt-1">Gemini models listed in Google’s model documentation. Availability depends on your API key and Google AI Studio account.</p>
+              </div>
+
+              <div>
                 <label for="project-language" class="block text-sm font-bold text-gray-300 mb-2">Programming language</label>
                 <select id="project-language" onchange="selectProjectLanguage(this.value)"
                   class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500">
                   ${supportedLanguages.map((language) => `<option value="${language}" ${state.selectedLanguage === language ? "selected" : ""}>${language}</option>`).join("")}
                 </select>
               </div>
+
+              <section class="rounded-lg border border-gray-700 bg-gray-900/70 p-4" aria-labelledby="builder-modules-heading">
+                <h3 id="builder-modules-heading" class="text-sm font-bold text-gray-200 mb-1">Platform modules included with ${escapeHTML(state.userTier)} plan</h3>
+                <p class="text-xs text-gray-400 mb-3">The builder asks the AI to scaffold these in the generated files. Cloud integrations still require your own credentials and setup.</p>
+                <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  ${includedModules.map((module) => `
+                    <li class="flex items-start gap-2 text-sm text-gray-300">
+                      <span class="text-green-400" aria-hidden="true">✓</span>
+                      <span>${escapeHTML(module.name)}</span>
+                    </li>
+                  `).join("")}
+                </ul>
+                ${state.userTier !== "enterprise" ? `<button type="button" onclick="showUpgradePlans()" class="mt-3 text-sm text-purple-300 underline">Upgrade for more platform modules</button>` : ""}
+              </section>
 
               <div>
                 <label for="app-description" class="block text-sm font-bold text-gray-300 mb-2">Describe the project</label>
@@ -2173,7 +2292,7 @@ Include a concise README with setup/run instructions. Include all source files n
                                   <div class="flex-1 p-4 overflow-y-auto space-y-4" id="chat-messages">
                                       ${state.messages
             .map(
-              (msg) => `
+              (msg, messageIndex) => `
                                           <div class="flex ${msg.role === "user"
                   ? "justify-end"
                   : "justify-start"
@@ -2182,14 +2301,11 @@ Include a concise README with setup/run instructions. Include all source files n
                   ? "bg-blue-600 text-white rounded-tr-none"
                   : "bg-gray-700 text-gray-200 rounded-tl-none"
                 }">
-                                                  <div class="whitespace-pre-wrap">${msg.text
+                                                  <div class="whitespace-pre-wrap">${escapeHTML(msg.text)
                 }</div>
                                                   ${msg.role === "bot"
                   ? `
-                                                      <button onclick="speakMessage(\`${msg.text.replace(
-                    /`/g,
-                    "'"
-                  )}\`)" class="text-xs text-blue-400 hover:text-blue-300 mt-2">
+                                                      <button onclick="speakMessageAt(${messageIndex})" class="text-xs text-blue-400 hover:text-blue-300 mt-2">
                                                           🔊 Speak
                                                       </button>
                                                   `
@@ -2205,7 +2321,7 @@ Include a concise README with setup/run instructions. Include all source files n
                                       ${state.isVoiceRecording
             ? `
                                           <div class="text-center py-2 mb-2 bg-red-900/30 border border-red-500 rounded text-red-400 text-sm">
-                                              🎤 Listening... ${state.voiceTranscript ||
+                                              🎤 Listening... ${escapeHTML(state.voiceTranscript) ||
             "Speak now"
             }
                                           </div>
@@ -2621,8 +2737,17 @@ Include a concise README with setup/run instructions. Include all source files n
                           <div class="max-w-7xl mx-auto px-4 text-center">
                               <div class="mb-6">
                                   <h2 class="text-lg font-semibold text-white mb-2">Connect with us</h2>
-                                  <a href="mailto:theiahcreations@gmail.com" class="text-blue-400 hover:text-blue-300 transition-colors">theiahcreations@gmail.com</a>
-                                  <div class="mt-3">
+                                  <nav aria-label="Social media" class="flex flex-wrap justify-center gap-3 mt-4">
+                                      ${SOCIAL_LINKS.map((social) => `
+                                        <a href="${social.href}" target="_blank" rel="noopener noreferrer"
+                                          aria-label="${escapeHTML(social.label)} (opens in a new tab)"
+                                          title="${escapeHTML(social.label)}"
+                                          class="social-footer-link inline-flex items-center justify-center w-11 h-11 rounded-full bg-gray-800 ${social.color} ${social.hover} transition-colors">
+                                          ${social.icon}
+                                        </a>
+                                      `).join("")}
+                                  </nav>
+                                  <div class="mt-4">
                                       <button onclick="setView('contact')" class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded-lg font-semibold transition-colors">Contact Us</button>
                                   </div>
                               </div>
