@@ -274,7 +274,6 @@
         measurementId: "G-DEMO",
       };
     };
-  </script>
     // Fail-safe auto-remover for any initializing overlay
     (function () {
       function dismissLoader() {
@@ -294,26 +293,24 @@
 </head>
 
 <body class="min-h-screen bg-gray-900 text-gray-100 font-sans selection:bg-blue-500 selection:text-white">
-  <div id="root"></div>
+  <div id="root">
+    <main style="min-height:100vh;display:grid;place-items:center;padding:2rem;background:#111827;color:#f9fafb;font-family:system-ui,sans-serif">
+      <div style="max-width:44rem">
+        <p style="color:#60a5fa;font-weight:700;letter-spacing:.08em">THE IAH CREATIONS</p>
+        <h1 style="font-size:clamp(2rem,6vw,4rem);line-height:1.1;margin:.75rem 0">Websites and apps built for your business.</h1>
+        <p style="color:#d1d5db;font-size:1.125rem;line-height:1.7">We build modern websites, web apps, and mobile apps for startups and businesses.</p>
+        <a style="display:inline-block;margin-top:1rem;padding:.75rem 1rem;border-radius:.5rem;background:#2563eb;color:#fff;text-decoration:none;font-weight:700" href="mailto:theiahcreations@gmail.com">Contact us</a>
+      </div>
+    </main>
+  </div>
   <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
   <script type="module">
     // ============================================
     // FIREBASE INITIALIZATION - The IAH Creations
     // ============================================
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-analytics.js";
-    import {
-      getAuth,
-      signInAnonymously,
-      onAuthStateChanged,
-    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-    import {
-      getFirestore,
-      collection,
-      addDoc,
-      serverTimestamp,
-    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+    let addDoc, collection, onAuthStateChanged, serverTimestamp, signInAnonymously;
+    let auth, db, analytics, isFirebaseReady = false;
 
     // Secure Firebase configuration
     let firebaseConfig = {
@@ -334,58 +331,56 @@
         ? __app_id
         : "the-iah-creationgit-1741-47b3f";
 
-    let app,
-      analytics,
-      auth,
-      db,
-      isFirebaseReady = false;
+    async function initializeFirebase() {
+      try {
+        const [firebaseApp, firebaseAnalytics, firebaseAuth, firestore] = await Promise.all([
+          import("https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js"),
+          import("https://www.gstatic.com/firebasejs/10.14.1/firebase-analytics.js"),
+          import("https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js"),
+          import("https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js"),
+        ]);
 
-    try {
-      // Initialize Firebase
-      app = initializeApp(firebaseConfig);
-      analytics = getAnalytics(app);
-      auth = getAuth(app);
-      db = getFirestore(app);
-      isFirebaseReady = true;
+        addDoc = firestore.addDoc;
+        collection = firestore.collection;
+        onAuthStateChanged = firebaseAuth.onAuthStateChanged;
+        serverTimestamp = firestore.serverTimestamp;
+        signInAnonymously = firebaseAuth.signInAnonymously;
 
-      console.log(
-        "%c✅ Firebase initialized",
-        "color: green; font-weight: bold"
-      );
-      console.log("%c📊 Analytics enabled", "color: blue");
-      console.log("%c🔒 Using secure artifacts path", "color: blue");
-    } catch (e) {
-      console.warn(
-        "%c⚠️ Running in DEMO MODE (Offline)",
-        "color: orange; font-weight: bold"
-      );
-      console.error("Firebase init error:", e);
+        const app = firebaseApp.initializeApp(firebaseConfig);
+        analytics = firebaseAnalytics.getAnalytics(app);
+        auth = firebaseAuth.getAuth(app);
+        db = firestore.getFirestore(app);
+        isFirebaseReady = true;
 
-      // Mock Firebase for demo
-      app = {};
-      analytics = {};
-      auth = {
-        currentUser: null,
-        onAuthStateChanged: (cb) => {
-          setTimeout(() => cb(null), 500);
-          return () => { };
-        },
-        signInAnonymously: async () => ({
-          user: { uid: "demo_user", isAnonymous: true },
-        }),
-      };
-      db = {
-        collection: () => ({}),
-        addDoc: async (col, data) => {
-          console.log("📝 Demo Firestore Write:", data);
-          return { id: "demo_doc_" + Date.now() };
-        },
-      };
+        console.log("%c✅ Firebase initialized", "color: green; font-weight: bold");
+        console.log("%c📊 Analytics enabled", "color: blue");
+        console.log("%c🔒 Using secure artifacts path", "color: blue");
+
+        onAuthStateChanged(auth, (user) => {
+          state.userProfile = user;
+          if (user) {
+            console.log("%c👤 User authenticated:", "color: green", user.uid);
+          }
+        });
+
+        if (!auth.currentUser) {
+          signInAnonymously(auth).catch((error) => console.warn("Auth error:", error));
+        }
+      } catch (error) {
+        console.warn(
+          "%c⚠️ Running in DEMO MODE (Offline)",
+          "color: orange; font-weight: bold"
+        );
+        console.error("Firebase initialization error:", error);
+        auth = null;
+        db = null;
+        analytics = null;
+      }
+
+      window.db = db;
+      window.auth = auth;
+      window.analytics = analytics;
     }
-
-    window.db = db;
-    window.auth = auth;
-    window.analytics = analytics;
 
     // Secure collection path helper
     const getCollectionPath = (collectionName) =>
@@ -3040,19 +3035,7 @@
     // Initial render
     render();
 
-    // Firebase auth listener
-    if (auth && typeof auth.onAuthStateChanged === "function") {
-      auth.onAuthStateChanged((user) => {
-        state.userProfile = user;
-        if (user) {
-          console.log("%c👤 User authenticated:", "color: green", user.uid);
-        }
-      });
-
-      if (!auth.currentUser) {
-        signInAnonymously(auth).catch((e) => console.warn("Auth error:", e));
-      }
-    }
+    initializeFirebase();
   </script>
 </body>
 
