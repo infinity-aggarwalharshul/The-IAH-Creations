@@ -1,6 +1,6 @@
 # 🚀 The IAH Creations - Production Deployment Guide
 
-## ✅ Latest Updates (v5.1.0 - Firebase 12.6.0 Integration)
+## ✅ Latest Updates (v5.5.0 - Authenticated AI and private cloud data)
 
 ### 🎨 UI/UX Enhancements
 
@@ -12,10 +12,10 @@
 
 ### 🤖 AI & Backend Features
 
-- ✅ **Gemini model selector** - Gemini 4 Carbon/Argon and Gemini 3.8/3.6 Flash, subject to API-key access
+- ✅ **Gemini model selector** - Gemini 4 Carbon/Argon and Gemini 3.8/3.6 Flash through the authenticated AI service
 - ✅ **AI Builder modules** - Plan-gated project scaffolds; cloud integrations require user credentials and setup
 - ✅ **Hidden Auto-Updates** - Background system updates (non-intrusive)
-- ✅ **Cloud Storage Ready** - Firebase integration for file uploads
+- ✅ **Private Cloud Storage uploads** - Firebase Storage uploads require the rules and service setup below
 - ✅ **Real-time Database** - Order and asset tracking
 - ✅ **Smart Caching** - Optimized performance
 
@@ -56,7 +56,7 @@
 ### Step 2: Enable Services
 
 ```
-✅ Authentication → Enable Anonymous & Email/Password
+✅ Authentication → Enable Email/Password (email verification is required; anonymous sign-in is not used)
 ✅ Firestore Database → Create database (Start in production mode)
 ✅ Storage → Enable for file uploads
 ✅ Hosting → Optional (for Firebase hosting)
@@ -69,51 +69,53 @@
 3. Click Web icon (</>)
 4. Copy the config object
 
-### Step 4: Update index.html
+### Step 4: Configure the static site
 
-The Firebase configuration is already set up in index.html (around line 259):
+The Firebase Web config is public client configuration, not a server credential. The site uses the existing Firebase project config by default. To override it or configure the AI endpoint, edit `config.js`:
 
 ```javascript
-// Firebase SDK v12.6.0 (CDN)
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
-import { getAuth, ... } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-import { getFirestore, ... } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
-
-// Firebase configuration - The IAH Creations
-const firebaseConfig = {
-  apiKey: "AIzaSyDqG9f8LZOMjgYp1gA1hf5yRcjvYzSbWuw",
-  authDomain: "the-iah-creationgit-1741-47b3f.firebaseapp.com",
-  projectId: "the-iah-creationgit-1741-47b3f",
-  storageBucket: "the-iah-creationgit-1741-47b3f.firebasestorage.app",
-  messagingSenderId: "113120495542",
-  appId: "1:113120495542:web:65602865e6c25596832317",
-  measurementId: "G-YV5LF87RD5"
+window.IAH_CONFIG.firebaseConfig = {
+  apiKey: "YOUR_FIREBASE_WEB_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  appId: "YOUR_WEB_APP_ID"
 };
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const auth = getAuth(app);
-const db = getFirestore(app);
+window.IAH_CONFIG.agentApiUrl = "https://YOUR_CLOUD_RUN_SERVICE.run.app";
 ```
 
-### Step 5: Firestore Security Rules
+### Step 5: Deploy Firebase security rules
 
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /artifacts/{appId}/users/{userId}/{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-    match /artifacts/{appId}/public/{document=**} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-  }
-}
+Review `firestore.rules` and `storage.rules`, then deploy them before allowing users to upload or save messages:
+
+```bash
+firebase deploy --only firestore:rules,storage --project YOUR_PROJECT_ID
 ```
+
+The rules restrict private messages and uploaded files to their verified owner and allow only bounded contact-form creation.
+
+## LangGraph AI service on Cloud Run
+
+1. Enable Cloud Run, Cloud Build, Secret Manager, and the Firebase Storage bucket for the project.
+2. Create a Secret Manager secret named `gemini-api-key` containing a Gemini API key. Do not put this key in `config.js` or browser code.
+3. Use a dedicated Cloud Run service account with `roles/storage.objectViewer`, `roles/datastore.user` (for the per-user AI request limiter), and access to the Gemini secret. Cloud Run uses Application Default Credentials for Firebase Admin.
+4. Deploy the service from the repository root:
+
+```bash
+gcloud run deploy iah-ai-agent \
+  --source server/agent \
+  --region YOUR_REGION \
+  --allow-unauthenticated \
+  --set-env-vars "FIREBASE_STORAGE_BUCKET=YOUR_STORAGE_BUCKET,AI_AGENT_ALLOWED_ORIGINS=https://iahcreations.com,https://www.iahcreations.com" \
+  --set-secrets "GEMINI_API_KEY=gemini-api-key:latest" \
+  --project YOUR_PROJECT_ID
+```
+
+The Cloud Run endpoint must be publicly reachable for browser CORS requests, but `/chat` and `/generate` reject requests without a valid, verified Firebase ID token. Keep the Cloud Run service account least-privileged, set the exact production origins (and any preview origins you use), and configure provider quotas/monitoring before launch. The `/health` endpoint is unauthenticated and reports service availability only.
+
+The service also enforces a Firestore-backed limit of 10 AI requests per user per minute by default and three Builder generations per day for the free tier. Pro and Enterprise generation limits are 50/day and unlimited, respectively, but those tiers are read only from Firebase custom claims (`plan`); configure claims through a trusted, payment-verified admin/backend process, never from browser input. Adjust request limits only after reviewing model spend and abuse risk.
+
+After deployment, set `window.IAH_CONFIG.agentApiUrl` in `config.js` to the Cloud Run service URL and redeploy the static site. Enable Email/Password authentication and configure the email verification action URL / authorized domains in Firebase Console.
 
 ## 💳 Payment Gateway Setup
 
@@ -155,13 +157,32 @@ gtag("config", "GA_MEASUREMENT_ID"); // Replace with your actual ID
 
 ### Cloudflare Pages
 
-```bash
-# 1. Deploy
-npx wrangler pages publish .
+This is a static site. In Cloudflare Pages, connect the
+`infinity-aggarwalharshul/The-IAH-Creations` GitHub repository, select `main` as
+the production branch, set the build command to `sh scripts/build-pages.sh`,
+and set the build output directory to `dist`. The script copies only public
+website assets; it does not publish backend source, Firebase rules, or
+repository documentation.
 
-# 2. Add custom domain in Cloudflare dashboard
-# 3. Update DNS records (automatic)
+For a one-time CLI deployment, authenticate with Cloudflare and create the
+Pages project if it does not already exist:
+
+```bash
+npx wrangler login
+npx wrangler pages project create iah-creations
+npx wrangler pages deploy dist --project-name=iah-creations
 ```
+
+For subsequent CLI deployments, run the build script and deploy its output:
+
+```bash
+sh scripts/build-pages.sh
+npx wrangler pages deploy dist --project-name=iah-creations
+```
+
+Add the desired custom domain in the Cloudflare Pages project settings and
+follow Cloudflare's DNS instructions. The domain will not switch providers
+until its DNS records are changed at the current DNS host.
 
 ### Vercel
 
@@ -275,14 +296,9 @@ npx netlify deploy --prod --dir=.
 ### Quick Deploy (Cloudflare - Recommended)
 
 ```bash
-# Install Wrangler
-npm install -g wrangler
-
-# Login
-wrangler login
-
-# Deploy
-wrangler pages publish . --project-name=iah-creations
+npx wrangler login
+sh scripts/build-pages.sh
+npx wrangler pages deploy dist --project-name=iah-creations
 ```
 
 ### Alternative: Vercel
@@ -301,17 +317,9 @@ netlify deploy --prod --dir=.
 
 ### Alternative: GitHub Pages
 
-```bash
-# 1. Push to GitHub
-git init
-git add .
-git commit -m "Initial commit"
-git branch -M main
-git remote add origin https://github.com/yourusername/iah-creations.git
-git push -u origin main
-
-# 2. Enable GitHub Pages in repository settings
-```
+GitHub Pages is currently configured for this repository. Push updates to
+`main` to trigger its existing Pages workflow. Cloudflare Pages must be linked
+separately using the setup above.
 
 ## 🔍 Testing Checklist
 

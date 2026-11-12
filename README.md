@@ -1,6 +1,6 @@
 # 🚀 The IAH Creations - Next-Gen AI Development Platform
 
-[![Version](https://img.shields.io/badge/version-5.4.0-blue.svg)](https://github.com/infinity-aggarwalharshul/The-IAH-Creations)
+[![Version](https://img.shields.io/badge/version-5.5.0-blue.svg)](https://github.com/infinity-aggarwalharshul/The-IAH-Creations)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Blockchain](https://img.shields.io/badge/blockchain-enabled-purple.svg)](BLOCKCHAIN.md)
@@ -36,9 +36,9 @@ Describe your app in natural language → AI generates a downloadable starter pr
 
 ### AI Builder usage
 
-Choose a website, web app, mobile app, or browser game, select a programming language and Google Gemini model, and describe the features you need. Generated files can be previewed and downloaded individually or as a ZIP. Free projects include up to 3 files, Pro up to 10, and Enterprise up to 20. Plan modules are included as requested scaffolds: Free includes responsive/accessibility basics, safer configuration, setup guidance, and local persistence; Pro adds Firebase Auth, Firestore, cloud storage, API-client states, and tests; Enterprise adds Gemini AI, voice, and localization/RTL scaffolds. External services still require credentials, configuration, and review.
+The AI Builder sends generation requests to the authenticated server-side service and supports Gemini 4 Carbon, Gemini 4 Argon, Gemini 3.8 Flash, and Gemini 3.6 Flash, subject to API access. Language and framework choices adjust to the selected website, web app, mobile app, or browser game target. Users need a verified Firebase email account, and the Cloud Run service needs a Gemini API key in Secret Manager. The browser does not store or send provider credentials. Generated files can be previewed and downloaded individually or as a ZIP. Generated output is a starter project and must be reviewed, tested, and configured before production use.
 
-The static site requires your own Gemini API key in the AI Builder. It is stored in your browser and sent directly to Google; a server-side API proxy is recommended before public production use. The model selector includes Gemini 4 Carbon, Gemini 4 Argon, Gemini 3.8 Flash, and Gemini 3.6 Flash; model availability depends on your Google AI Studio account. Paid plan selection opens payment options but does not unlock paid features until payment is verified.
+The chatbot uses a LangGraph workflow for intent routing, safe document context extraction, and business, technical, or general responses. Signed-in users can attach up to five PDF, DOCX, TXT, Markdown, or CSV files (10 MB each); files and chat history are stored under that user's Firebase account. Cloud deployment and Firebase security rules are required before these features are live. Paid plan selection still does not unlock paid features until payment is verified.
 
 ### 💳 **Multi-Currency Payment Gateway**
 
@@ -105,7 +105,7 @@ The static site requires your own Gemini API key in the AI Builder. It is stored
 
 ### **🤖 AI-Powered Development**
 
-- ✅ Gemini model selector (Gemini 4 Carbon/Argon and Gemini 3.8/3.6 Flash)
+- ✅ Gemini model selector (Gemini 4 Carbon/Argon and Gemini 3.8/3.6 Flash through Cloud Run)
 - ✅ Prompt-to-App code generation
 - ✅ Natural language to working application
 - ✅ Mobile App generation (iOS + Android)
@@ -152,8 +152,8 @@ The static site requires your own Gemini API key in the AI Builder. It is stored
 
 ```bash
 # Clone repository
-git clone https://github.com/iahcreations/platform.git
-cd platform
+git clone https://github.com/infinity-aggarwalharshul/The-IAH-Creations.git
+cd The-IAH-Creations
 
 # Open directly (no build required!)
 # Just open index.html in your browser
@@ -197,7 +197,7 @@ npx serve .
 
 ### **AI & Generation**
 
-- Google Gemini API (selectable Gemini 4 Carbon/Argon, Gemini 3.8 Flash, or Gemini 3.6 Flash)
+- Google Gemini API (server-side Gemini 4 Carbon/Argon or Gemini 3.8/3.6 Flash)
 - Natural Language Processing
 - Code generation & optimization
 
@@ -376,10 +376,10 @@ Free → Pro (₹999/mo) → Enterprise (₹4,999/mo)
 
 **Made with ❤️ and ⛓️ Blockchain by [IAH Creations](https://iahcreations.com)**
 
-[🌐 Website](https://iahcreations.com) • [📖 Docs](docs/) • [🐛 Report Bug](https://github.com/iahcreations/platform/issues) • [💡 Request Feature](https://github.com/iahcreations/platform/issues)
+[🌐 Website](https://iahcreations.com) • [📖 Deployment Guide](DEPLOYMENT_GUIDE.md) • [🐛 Report Bug](https://github.com/infinity-aggarwalharshul/The-IAH-Creations/issues) • [💡 Request Feature](https://github.com/infinity-aggarwalharshul/The-IAH-Creations/issues)
 
-**Platform Version: 5.1.0**  
-**Firebase SDK**: 12.6.0  
+**Platform Version: 5.5.0**
+**Firebase SDK**: 10.14.1
 **Last Updated**: December 10, 2025  
 **Status**: ✅ **PRODUCTION READY** | ⛓️ **BLOCKCHAIN ENABLED** | 🔥 **FIREBASE INTEGRATED**
 

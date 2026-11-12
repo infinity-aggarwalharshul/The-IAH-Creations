@@ -1,12 +1,18 @@
 // Firebase Configuration - Secure Implementation
 // This file handles environment-based configuration
 
+window.IAH_CONFIG = Object.assign({
+  agentApiUrl: "",
+  firebaseConfig: null
+}, window.IAH_CONFIG || {});
+
 const getFirebaseConfig = () => {
   const hostname = window.location.hostname;
   // For all deployed environments
   if (hostname.includes('firebaseapp.com') || 
       hostname.includes('web.app') ||
       hostname === 'iahcreations.com' ||
+      hostname === 'www.iahcreations.com' ||
       hostname.includes('github.io') ||
       hostname.includes('pages.dev') ||
       hostname.includes('netlify.app') ||

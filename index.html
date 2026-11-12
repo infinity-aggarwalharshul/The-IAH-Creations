@@ -147,6 +147,7 @@
   <link rel="preconnect" href="https://cdn.tailwindcss.com" />
 
   <script src="https://cdn.tailwindcss.com" defer></script>
+  <script src="./config.js"></script>
   <style>
     :root {
       --font-sans: 'Inter', system-ui, sans-serif;
@@ -214,20 +215,20 @@
     .hamburger-menu {
       position: fixed;
       top: 0;
-      right: -380px;
+      left: -380px;
       width: 360px;
       max-width: 88vw;
       height: 100vh;
       background: rgba(17, 24, 39, 0.98);
       backdrop-filter: blur(20px);
-      box-shadow: -4px 0 25px rgba(0, 0, 0, 0.6);
-      transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 4px 0 25px rgba(0, 0, 0, 0.6);
+      transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       z-index: 1000;
       overflow-y: auto;
     }
 
     .hamburger-menu.open {
-      right: 0;
+      left: 0;
     }
 
     .hamburger-overlay {
@@ -314,7 +315,9 @@
     // ============================================
     // FIREBASE INITIALIZATION - The IAH Creations
     // ============================================
-    let addDoc, collection, onAuthStateChanged, serverTimestamp, signInAnonymously;
+    let addDoc, collection, getDocs, limit, onAuthStateChanged, orderBy, query, serverTimestamp;
+    let createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail;
+    let signInWithEmailAndPassword, signOut, ref, uploadBytesResumable, deleteObject;
     let auth, db, analytics, isFirebaseReady = false;
 
     // Secure Firebase configuration
@@ -325,7 +328,7 @@
     };
     try {
       if (typeof window.getFirebaseConfig === "function") {
-        firebaseConfig = window.getFirebaseConfig();
+        firebaseConfig = window.IAH_CONFIG?.firebaseConfig || window.getFirebaseConfig();
       }
     } catch (cfgErr) {
       console.warn("Could not retrieve dynamic Firebase config:", cfgErr);
@@ -338,42 +341,72 @@
 
     async function initializeFirebase() {
       try {
-        const [firebaseApp, firebaseAnalytics, firebaseAuth, firestore] = await Promise.all([
+        if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "demo-api-key") {
+          throw new Error("Firebase is not configured for this host. Set Firebase credentials in config.js.");
+        }
+        const [firebaseApp, firebaseAuth, firestore, firebaseStorage] = await Promise.all([
           import("https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js"),
-          import("https://www.gstatic.com/firebasejs/10.14.1/firebase-analytics.js"),
           import("https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js"),
           import("https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js"),
+          import("https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js"),
         ]);
 
         addDoc = firestore.addDoc;
         collection = firestore.collection;
+        getDocs = firestore.getDocs;
+        limit = firestore.limit;
         onAuthStateChanged = firebaseAuth.onAuthStateChanged;
+        orderBy = firestore.orderBy;
+        query = firestore.query;
         serverTimestamp = firestore.serverTimestamp;
-        signInAnonymously = firebaseAuth.signInAnonymously;
+        createUserWithEmailAndPassword = firebaseAuth.createUserWithEmailAndPassword;
+        sendEmailVerification = firebaseAuth.sendEmailVerification;
+        sendPasswordResetEmail = firebaseAuth.sendPasswordResetEmail;
+        signInWithEmailAndPassword = firebaseAuth.signInWithEmailAndPassword;
+        signOut = firebaseAuth.signOut;
+        ref = firebaseStorage.ref;
+        uploadBytesResumable = firebaseStorage.uploadBytesResumable;
+        deleteObject = firebaseStorage.deleteObject;
 
         const app = firebaseApp.initializeApp(firebaseConfig);
-        analytics = firebaseAnalytics.getAnalytics(app);
         auth = firebaseAuth.getAuth(app);
         db = firestore.getFirestore(app);
+        storage = firebaseStorage.getStorage(app);
         isFirebaseReady = true;
 
         console.log("%c✅ Firebase initialized", "color: green; font-weight: bold");
-        console.log("%c📊 Analytics enabled", "color: blue");
-        console.log("%c🔒 Using secure artifacts path", "color: blue");
 
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
+          const previousUid = state.userProfile?.uid;
+          if (previousUid && previousUid !== user?.uid) {
+            state.generatedCode = null;
+            state.promptText = "";
+          }
           state.userProfile = user;
+          state.userTier = "free";
+          state.chatFiles = [];
+          state.messages = [{ role: "bot", text: CHAT_WELCOME_TEXT }];
           if (user) {
             console.log("%c👤 User authenticated:", "color: green", user.uid);
+            try {
+              const claims = (await user.getIdTokenResult()).claims;
+              if (auth.currentUser?.uid !== user.uid) return;
+              if (["free", "pro", "enterprise"].includes(claims.plan)) {
+                state.userTier = claims.plan;
+              }
+            } catch (error) {
+              console.error("[Auth] Could not load verified plan claims:", error);
+            }
+            if (user.emailVerified) {
+              await loadUserChatHistory(user);
+            }
           }
+          if (auth.currentUser?.uid !== user?.uid) return;
+          render();
         });
-
-        if (!auth.currentUser) {
-          signInAnonymously(auth).catch((error) => console.warn("Auth error:", error));
-        }
       } catch (error) {
         console.warn(
-          "%c⚠️ Running in DEMO MODE (Offline)",
+          "%c⚠️ Firebase services are unavailable",
           "color: orange; font-weight: bold"
         );
         console.error("Firebase initialization error:", error);
@@ -391,11 +424,12 @@
     const getCollectionPath = (collectionName) =>
       `artifacts/${appId}/public/data/${collectionName}`;
     window.getCollectionPath = getCollectionPath;
+    let storage = null;
 
     // ============================================
     // CONSTANTS
     // ============================================
-    const APP_VERSION = "5.4.0"; // Platform modules, model selection, and footer socials
+    const APP_VERSION = "5.5.0";
     const OWNER_NAME = "Harshul Aggarwal";
     const BUSINESS_NAME = "The IAH Creations";
     const BUSINESS_TYPE = "Individual Freelancer / Sole Proprietor";
@@ -405,11 +439,65 @@
     const UPI_QR_CODE = "assets/upi_qr.jpg";
     const CONTACT_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScDpyoz7sv4W96kEXL-IwUny5nHCAhjy4LutOetzJyf6xgrfg/viewform?usp=preview";
     const AI_MODELS = [
-      { id: "gemini-4-carbon", name: "Gemini 4 Carbon (latest, strongest reasoning)" },
+      { id: "gemini-4-carbon", name: "Gemini 4 Carbon (advanced reasoning)" },
       { id: "gemini-4-argon", name: "Gemini 4 Argon (efficient reasoning)" },
       { id: "gemini-3.8-flash", name: "Gemini 3.8 Flash" },
       { id: "gemini-3.6-flash", name: "Gemini 3.6 Flash" },
     ];
+    const BUILDER_PROJECT_TYPES = {
+      mobile: {
+        icon: "📱",
+        label: "Mobile App",
+        projectKind: "mobile application",
+        languages: [
+          { value: "TypeScript", label: "TypeScript (React Native)", framework: "React Native" },
+          { value: "JavaScript", label: "JavaScript (React Native)", framework: "React Native" },
+          { value: "Dart", label: "Dart (Flutter)", framework: "Flutter" },
+          { value: "Kotlin", label: "Kotlin (Android)", framework: "native Android" },
+          { value: "Swift", label: "Swift (iOS)", framework: "native iOS" },
+        ],
+        defaultLanguage: "TypeScript",
+      },
+      web: {
+        icon: "💻",
+        label: "Web App",
+        projectKind: "web application",
+        languages: [
+          { value: "TypeScript", label: "TypeScript (React)", framework: "React" },
+          { value: "JavaScript", label: "JavaScript (React)", framework: "React" },
+          { value: "Python", label: "Python (FastAPI)", framework: "FastAPI with a browser frontend" },
+          { value: "Java", label: "Java (Spring Boot)", framework: "Spring Boot" },
+          { value: "C#", label: "C# (ASP.NET Core)", framework: "ASP.NET Core" },
+          { value: "Go", label: "Go", framework: "Go with a browser frontend" },
+          { value: "PHP", label: "PHP (Laravel)", framework: "Laravel" },
+        ],
+        defaultLanguage: "TypeScript",
+      },
+      website: {
+        icon: "🌐",
+        label: "Website",
+        projectKind: "website",
+        languages: [
+          { value: "JavaScript", label: "JavaScript (HTML/CSS frontend)", framework: "HTML, CSS, and JavaScript" },
+          { value: "TypeScript", label: "TypeScript", framework: "HTML, CSS, and TypeScript" },
+          { value: "PHP", label: "PHP", framework: "PHP with HTML and CSS" },
+          { value: "Python", label: "Python (Flask)", framework: "Flask with HTML and CSS" },
+          { value: "Ruby", label: "Ruby (Rails)", framework: "Rails with HTML and CSS" },
+        ],
+        defaultLanguage: "JavaScript",
+      },
+      game: {
+        icon: "🎮",
+        label: "Web Game",
+        projectKind: "browser-based web game",
+        languages: [
+          { value: "JavaScript", label: "JavaScript (Canvas/WebGL)", framework: "Canvas or WebGL" },
+          { value: "TypeScript", label: "TypeScript (Canvas/WebGL)", framework: "Canvas or WebGL" },
+          { value: "C#", label: "C# (Unity WebGL)", framework: "Unity WebGL" },
+        ],
+        defaultLanguage: "JavaScript",
+      },
+    };
     const BUILDER_MODULES = [
       { id: "responsive-ui", name: "Responsive, accessible UI", requirement: "Use semantic UI, mobile-responsive layouts, keyboard access, and accessible labels.", tiers: ["free", "pro", "enterprise"] },
       { id: "safe-config", name: "Safe configuration and input validation", requirement: "Validate user inputs, handle errors, and keep secrets out of client code and source control.", tiers: ["free", "pro", "enterprise"] },
@@ -621,6 +709,8 @@
       return { date: today, promptsToday: 0, deploymentsMonth: 0, downloadsMonth: 0 };
     }
 
+    const CHAT_WELCOME_TEXT = `👋 Hello! I'm your AI Assistant from The IAH Creations. I can help with business questions, technical guidance, and your uploaded project documents. Sign in with a verified email to start a private chat.`;
+
     const state = {
       view: "home",
       language: "en",
@@ -628,7 +718,12 @@
       cart: JSON.parse(localStorage.getItem('iah_cart') || '[]'),
       cartOpen: false,
       userProfile: null,
+      authModalOpen: false,
+      authMode: "signin",
+      authError: "",
       chatOpen: false,
+      chatFiles: [],
+      chatUploading: false,
       menuOpen: false, // Hamburger menu state
       isVoiceRecording: false,
       voiceTranscript: "",
@@ -652,7 +747,7 @@
       messages: [
         {
           role: "bot",
-          text: `👋 Hello! I'm your AI Assistant from The IAH Creations, powered by Google Gemini.\\n\\nI can help you with:\\n• **Prompt-to-App**: Describe your app, I'll generate code!\\n• Template recommendations (Mobile/Web/Website)\\n• Pricing \\u0026 payment options\\n• Deployment assistance\\n\\n💼 Virtual Business Card: ${BUSINESS_CARD_URL}\\n\\nWhat would you like to create today?`,
+          text: CHAT_WELCOME_TEXT,
         },
       ],
     };
@@ -727,99 +822,59 @@
     // ============================================
     // AI HUB - Gemini Integration
     // ============================================
+    async function callAgentApi(path, payload, expectedUser = state.userProfile) {
+      const user = expectedUser;
+      if (!user || !user.emailVerified) {
+        throw new Error("Sign in with a verified email address to use AI features.");
+      }
+      if (state.userProfile?.uid !== user.uid) {
+        throw new Error("Your account changed. Please retry the request after signing in again.");
+      }
+      const baseUrl = window.IAH_CONFIG?.agentApiUrl?.trim();
+      if (!baseUrl) {
+        throw new Error("The AI service is not configured yet. Contact the site administrator.");
+      }
+      const token = await user.getIdToken();
+      if (state.userProfile?.uid !== user.uid) {
+        throw new Error("Your account changed. Please retry the request after signing in again.");
+      }
+      const response = await fetch(`${baseUrl.replace(/\/+$/, "")}${path}`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.detail || data.error || `AI service request failed (${response.status}).`);
+      }
+      return data;
+    }
+
     const AIHub = {
-      apiKey: localStorage.getItem("gemini_api_key") || "",
       get model() {
         return state.selectedAIModel;
       },
-      apiEndpoint: "https://generativelanguage.googleapis.com/v1beta/models/",
-      projectId: "projects/559759620416",
-
-      setApiKey(key) {
-        this.apiKey = key;
-        localStorage.setItem("gemini_api_key", key);
-        console.log("%c✅ AI API key configured", "color: green");
-      },
 
       async generate(prompt, context = "", history = null, maxOutputTokens = 1024, responseMimeType = null, responseSchema = null) {
-        if (!this.apiKey) {
-          throw new Error("Add your Gemini API key in the AI Builder to generate a project.");
+        const data = await callAgentApi("/generate", {
+          prompt,
+          context,
+          history: history?.map((message) => ({
+            role: message.role === "user" ? "user" : "assistant",
+            text: message.text,
+          })) || [],
+          model: this.model,
+          max_output_tokens: maxOutputTokens,
+          response_mime_type: responseMimeType,
+          response_schema: responseSchema,
+        });
+        if (typeof data.text !== "string" || !data.text.trim()) {
+          throw new Error("The AI service returned an empty response. Please try again.");
         }
-
-        try {
-          console.log(`🤖 AIHub (${this.model}): Generating response...`);
-
-          const systemContext = `You are an AI assistant for IAH Creations, a cutting-edge web development company.
-
-      Our Platform (v${APP_VERSION}):
-      - Enterprise-Grade Web Development
-      - AI-Powered (Gemini Flash)
-      - Multi-Database Support (Firebase, Cloud SQL, BigQuery, Spanner, Bigtable)
-      - 20+ Language Support with RTL
-      - Voice Recognition & Synthesis
-      - Google Scholar Integration
-      - Custom Web Development starting at ₹4,999
-
-      Our Services:
-      - AI-powered website templates
-      - Mobile app development
-      - Prompt-to-app technology
-      - Blockchain integration
-      - Real-time AI chatbots
-
-      Virtual Business Card: ${BUSINESS_CARD_URL}
-      Contact: theiahcreations@gmail.com
-
-      Be helpful, professional, and guide users toward our services when appropriate.`;
-
-          let fullPrompt = "";
-          if (history && history.length > 0) {
-            const historyText = history.map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.text}`).join('\n\n');
-            fullPrompt = `${systemContext}\n\nConversation History:\n${historyText}\n\nAssistant:`;
-          } else {
-            fullPrompt = context
-              ? `${systemContext}\n\nContext: ${context}\n\nUser: ${prompt}`
-              : `${systemContext}\n\nUser: ${prompt}`;
-          }
-
-          const response = await fetch(
-            `${this.apiEndpoint}${this.model}:generateContent?key=${this.apiKey}`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                contents: [{ parts: [{ text: fullPrompt }] }],
-                generationConfig: {
-                  temperature: 0.7,
-                  topK: 40,
-                  topP: 0.95,
-                  maxOutputTokens,
-                  ...(responseMimeType ? { responseMimeType } : {}),
-                  ...(responseSchema ? { responseSchema } : {}),
-                },
-              }),
-            }
-          );
-
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.error?.message || `Gemini request failed (${response.status})`);
-          }
-
-          const data = await response.json();
-          const generatedText =
-            data.candidates?.[0]?.content?.parts?.[0]?.text ||
-            "";
-          if (!generatedText.trim()) {
-            throw new Error("Gemini returned an empty response. Please try a more specific prompt.");
-          }
-
-          console.log("%c✅ AI Response generated", "color: green");
-          return generatedText;
-        } catch (error) {
-          console.error("[AI] Error:", error);
-          throw error;
-        }
+        return data.text;
       },
     };
 
@@ -1121,12 +1176,9 @@
 
         try {
           const fileLimit = FreemiumModel.tiers[state.userTier].generatedFiles;
-          const projectKind = {
-            website: "responsive website",
-            web: "web application",
-            mobile: "mobile application",
-            game: "web game that runs in a browser",
-          }[type] || "application";
+          const projectType = BUILDER_PROJECT_TYPES[type] || BUILDER_PROJECT_TYPES.website;
+          const languageOption = projectType.languages.find((option) => option.value === language);
+          const projectKind = projectType.projectKind;
           const platformModules = BUILDER_MODULES
             .filter((module) => module.tiers.includes(state.userTier))
             .slice(0, FreemiumModel.tiers[state.userTier].moduleLimit);
@@ -1135,7 +1187,7 @@
             .join("\n");
           const systemPrompt = `You are a senior ${language} developer. Generate a complete starter project for a ${projectKind}.
 User requirements: ${description}
-Required programming language: ${language}. Do not switch to a different language; use only the minimum HTML/CSS/config files needed to run it.
+Required programming language: ${language}. Target framework/platform: ${languageOption?.framework || "a framework appropriate to the selected platform"}. Do not switch to a different primary programming language; include only supporting files needed to run the selected platform.
 Selected AI model for this project: ${AIHub.model}. If adding an AI integration, use this model and read credentials from an environment variable; never hard-code API keys.
 The following platform modules are included by the ${state.userTier} plan. Implement each in the generated project where applicable:
 ${moduleRequirements}
@@ -1148,15 +1200,15 @@ Include all source files needed for a functional result, sensible error handling
             state.userTier === "free" ? 8192 : state.userTier === "pro" ? 16384 : 32768,
             "application/json",
             {
-              type: "OBJECT",
+              type: "object",
               properties: {
                 files: {
-                  type: "ARRAY",
+                  type: "array",
                   items: {
-                    type: "OBJECT",
+                    type: "object",
                     properties: {
-                      path: { type: "STRING" },
-                      content: { type: "STRING" },
+                      path: { type: "string" },
+                      content: { type: "string" },
                     },
                     required: ["path", "content"],
                   },
@@ -1574,6 +1626,224 @@ Include all source files needed for a functional result, sensible error handling
       FreemiumModel.showUpgradeModal();
     };
 
+    window.openAuthModal = function (mode = "signin") {
+      if (!isFirebaseReady) {
+        showToast("Authentication is unavailable. Check Firebase configuration and enable Email/Password sign-in.", "error");
+        return;
+      }
+      state.authMode = mode;
+      state.authError = "";
+      state.authModalOpen = true;
+      state.menuOpen = false;
+      render();
+    };
+
+    window.closeAuthModal = function () {
+      state.authModalOpen = false;
+      state.authError = "";
+      render();
+    };
+
+    window.toggleAuthMode = function () {
+      state.authMode = state.authMode === "signin" ? "signup" : "signin";
+      state.authError = "";
+      render();
+    };
+
+    window.handleAuthSubmit = async function (event) {
+      event.preventDefault();
+      const email = document.getElementById("auth-email")?.value.trim();
+      const password = document.getElementById("auth-password")?.value;
+      if (!email || !password || !auth) {
+        state.authError = "Enter a valid email and password. Firebase authentication is not connected.";
+        render();
+        return;
+      }
+
+      try {
+        if (state.authMode === "signup") {
+          const credential = await createUserWithEmailAndPassword(auth, email, password);
+          await sendEmailVerification(credential.user);
+          await signOut(auth);
+          state.authModalOpen = false;
+          showToast("Account created. Verify your email using the link we sent, then sign in.", "success");
+        } else {
+          const credential = await signInWithEmailAndPassword(auth, email, password);
+          if (!credential.user.emailVerified) {
+            await sendEmailVerification(credential.user);
+            await signOut(auth);
+            throw new Error("Please verify your email. A new verification link has been sent.");
+          }
+          state.authModalOpen = false;
+          showToast("Signed in. Your private workspace is ready.", "success");
+        }
+        state.authError = "";
+        render();
+      } catch (error) {
+        console.error("[Auth] Sign-in flow failed:", error);
+        state.authError = error.message || "Authentication failed. Please try again.";
+        render();
+      }
+    };
+
+    window.sendPasswordReset = async function () {
+      const email = document.getElementById("auth-email")?.value.trim();
+      if (!email || !auth) {
+        state.authError = "Enter your email address first.";
+        render();
+        return;
+      }
+      try {
+        await sendPasswordResetEmail(auth, email);
+        showToast("If the account exists, a password-reset email has been sent.", "success");
+      } catch (error) {
+        console.error("[Auth] Password reset failed:", error);
+        state.authError = error.message || "Could not send a password-reset email.";
+        render();
+      }
+    };
+
+    window.signOutUser = async function () {
+      if (!auth) {
+        showToast("Authentication is unavailable.", "error");
+        return;
+      }
+      if (state.chatUploading) {
+        showToast("Wait for the current file upload to finish before signing out.", "error");
+        return;
+      }
+      try {
+        await signOut(auth);
+        showToast("You have been signed out.", "success");
+      } catch (error) {
+        console.error("[Auth] Sign-out failed:", error);
+        showToast(`Could not sign out: ${error.message}`, "error");
+      }
+    };
+
+    async function loadUserChatHistory(user) {
+      if (!db) return;
+      try {
+        const messagesQuery = query(
+          collection(db, `artifacts/${appId}/users/${user.uid}/chat_messages`),
+          orderBy("createdAt", "desc"),
+          limit(50)
+        );
+        const snapshot = await getDocs(messagesQuery);
+        const savedMessages = snapshot.docs.reverse().map((messageDoc) => {
+          const message = messageDoc.data();
+          return {
+            role: message.role === "user" ? "user" : "bot",
+            text: typeof message.text === "string" ? message.text : "",
+            files: Array.isArray(message.files) ? message.files : [],
+          };
+        }).filter((message) => message.text);
+        if (auth.currentUser?.uid !== user.uid) return;
+        if (savedMessages.length) state.messages = savedMessages;
+      } catch (error) {
+        console.error("[Chat] Could not restore private chat history:", error);
+        showToast(`Could not load saved chat history: ${error.message}`, "error");
+      }
+    }
+
+    async function persistChatMessage(uid, role, text, files = []) {
+      if (!db || !state.userProfile || state.userProfile.uid !== uid) {
+        throw new Error("Sign in to save chat history to your private account.");
+      }
+      await addDoc(
+        collection(db, `artifacts/${appId}/users/${uid}/chat_messages`),
+        {
+          role,
+          text,
+          files: files.map(({ name, path, contentType, size }) => ({ name, path, contentType, size })),
+          createdAt: serverTimestamp(),
+        }
+      );
+    }
+
+    window.handleChatFiles = async function (event) {
+      const input = event.target;
+      const files = Array.from(input.files || []);
+      input.value = "";
+      if (!files.length) return;
+      if (!state.userProfile?.emailVerified) {
+        showToast("Sign in with a verified email before uploading files.", "error");
+        state.authModalOpen = true;
+        render();
+        return;
+      }
+      if (!storage || !ref || !uploadBytesResumable) {
+        showToast("Cloud file storage is unavailable. Check Firebase Storage configuration and rules.", "error");
+        return;
+      }
+      const allowedTypes = {
+        pdf: "application/pdf",
+        txt: "text/plain",
+        md: "text/markdown",
+        csv: "text/csv",
+        docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      };
+      if (state.chatFiles.length + files.length > 5) {
+        showToast("Attach up to five files per chat message.", "error");
+        return;
+      }
+
+      state.chatUploading = true;
+      const ownerUid = state.userProfile.uid;
+      render();
+      try {
+        for (const file of files) {
+          const extension = file.name.split(".").pop()?.toLowerCase();
+          const contentType = allowedTypes[extension];
+          if (!contentType || file.size === 0 || file.size > 10 * 1024 * 1024) {
+            throw new Error("Attach non-empty PDF, DOCX, TXT, Markdown, or CSV files up to 10 MB each.");
+          }
+          const safeName = file.name.replace(/[^A-Za-z0-9._-]/g, "_").slice(-100) || "upload";
+          const objectPath = `users/${state.userProfile.uid}/chat_uploads/${crypto.randomUUID()}_${safeName}`;
+          const uploadTask = uploadBytesResumable(ref(storage, objectPath), file, { contentType });
+          const snapshot = await new Promise((resolve, reject) => {
+            uploadTask.on("state_changed", undefined, reject, () => resolve(uploadTask.snapshot));
+          });
+          if (state.userProfile?.uid !== ownerUid) {
+            throw new Error("Your account changed while the upload was in progress. Sign in again before uploading.");
+          }
+          state.chatFiles.push({
+            name: file.name,
+            path: snapshot.ref.fullPath,
+            contentType,
+            size: file.size,
+          });
+        }
+        showToast(`${files.length} file${files.length === 1 ? "" : "s"} uploaded to your private storage.`, "success");
+      } catch (error) {
+        console.error("[Chat] File upload failed:", error);
+        showToast(`File upload failed: ${error.message}`, "error");
+      } finally {
+        state.chatUploading = false;
+        render();
+      }
+    };
+
+    window.removeChatFile = async function (index) {
+      const file = state.chatFiles[index];
+      if (!file) {
+        showToast("That uploaded file is no longer available.", "error");
+        return;
+      }
+      if (!storage || !ref || !deleteObject) {
+        showToast("Cloud file storage is unavailable. The uploaded file could not be removed.", "error");
+        return;
+      }
+      try {
+        await deleteObject(ref(storage, file.path));
+        state.chatFiles.splice(index, 1);
+        render();
+      } catch (error) {
+        console.error("[Chat] Could not delete uploaded file:", error);
+        showToast(`Could not remove uploaded file: ${error.message}`, "error");
+      }
+    };
+
     window.toggleMenu = function () {
       state.menuOpen = !state.menuOpen;
       state.cartOpen = false;
@@ -1634,10 +1904,20 @@ Include all source files needed for a functional result, sensible error handling
     window.handleChatSubmit = async function (e) {
       e.preventDefault();
       const input = document.getElementById("chat-input");
-      const text = input.value.trim();
+      const text = input?.value.trim();
       if (!text) return;
+      if (!state.userProfile?.emailVerified) {
+        window.openAuthModal();
+        return;
+      }
+      const user = state.userProfile;
 
-      state.messages.push({ role: "user", text });
+      const attachedFiles = [...state.chatFiles];
+      const history = state.messages.slice(-20).map((message) => ({
+        role: message.role === "user" ? "user" : "assistant",
+        text: message.text,
+      }));
+      state.messages.push({ role: "user", text, files: attachedFiles });
       input.value = "";
       render();
 
@@ -1648,8 +1928,29 @@ Include all source files needed for a functional result, sensible error handling
       }, 50);
 
       try {
-        const response = await AIHub.generate(text, "", state.messages);
-        state.messages.push({ role: "bot", text: response });
+        try {
+          await persistChatMessage(user.uid, "user", text, attachedFiles);
+        } catch (error) {
+          console.error("[Chat] Could not save user message:", error);
+          showToast(`Message could not be saved to your account: ${error.message}`, "error");
+        }
+        const result = await callAgentApi("/chat", {
+          prompt: text,
+          history,
+          files: attachedFiles.map((file) => file.path),
+        }, user);
+        if (typeof result.answer !== "string" || !result.answer.trim()) {
+          throw new Error("The AI service returned an empty answer. Please try again.");
+        }
+        if (state.userProfile?.uid !== user.uid) return;
+        state.messages.push({ role: "bot", text: result.answer });
+        state.chatFiles = [];
+        try {
+          await persistChatMessage(user.uid, "assistant", result.answer);
+        } catch (error) {
+          console.error("[Chat] Could not save assistant message:", error);
+          showToast(`Reply received but could not be saved: ${error.message}`, "error");
+        }
         render();
         setTimeout(() => {
           const chatContainer = document.getElementById("chat-messages");
@@ -1657,15 +1958,18 @@ Include all source files needed for a functional result, sensible error handling
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }, 50);
       } catch (err) {
-        state.messages.push({
-          role: "bot",
-          text: "I'm having trouble connecting. Please try again.",
-        });
+        console.error("[Chat] Agent request failed:", err);
+        if (state.userProfile?.uid !== user.uid) return;
+        state.messages.push({ role: "bot", text: `I could not complete that request: ${err.message}` });
         render();
       }
     };
 
     window.startVoiceInput = function () {
+      if (!state.userProfile?.emailVerified) {
+        window.openAuthModal();
+        return;
+      }
       state.isVoiceRecording = !state.isVoiceRecording;
 
       if (state.isVoiceRecording) {
@@ -1677,6 +1981,11 @@ Include all source files needed for a functional result, sensible error handling
             if (isFinal) {
               state.isVoiceRecording = false;
               state.voiceTranscript = "";
+              const user = state.userProfile;
+              if (!user?.emailVerified) {
+                window.openAuthModal();
+                return;
+              }
 
               // Auto-submit the voice transcript as a chat message
               state.messages.push({ role: "user", text: transcript });
@@ -1687,8 +1996,23 @@ Include all source files needed for a functional result, sensible error handling
                 if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
 
                 try {
-                  const response = await AIHub.generate(transcript, "", state.messages);
+                  if (!state.userProfile?.emailVerified) {
+                    window.openAuthModal();
+                    return;
+                  }
+                  await persistChatMessage(user.uid, "user", transcript);
+                  const result = await callAgentApi("/chat", {
+                    prompt: transcript,
+                    history: state.messages.slice(0, -1).slice(-20).map((message) => ({
+                      role: message.role === "user" ? "user" : "assistant",
+                      text: message.text,
+                    })),
+                    files: [],
+                  }, user);
+                  const response = result.answer;
+                  if (state.userProfile?.uid !== user.uid) return;
                   state.messages.push({ role: "bot", text: response });
+                  await persistChatMessage(user.uid, "assistant", response);
                   render();
                   // Speak back response automatically
                   VoiceEngine.speak(response);
@@ -1697,7 +2021,9 @@ Include all source files needed for a functional result, sensible error handling
                     if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
                   }, 50);
                 } catch (err) {
-                  state.messages.push({ role: "bot", text: "I'm having trouble connecting. Please try again." });
+                  console.error("[Chat] Voice request failed:", err);
+                  if (state.userProfile?.uid !== user.uid) return;
+                  state.messages.push({ role: "bot", text: `I could not complete that request: ${err.message}` });
                   render();
                 }
               }, 100);
@@ -1735,7 +2061,12 @@ Include all source files needed for a functional result, sensible error handling
       return `
                       <nav class="bg-gray-900 border-b border-gray-800 sticky top-0 z-30 backdrop-blur-md bg-opacity-90">
                           <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-                              <div class="ml-auto flex items-center gap-3">
+                              <div class="flex items-center gap-3">
+                                  <button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800 transition-colors border border-gray-800 hover:border-gray-700" aria-label="Open navigation menu" aria-expanded="${state.menuOpen}" title="Menu & Quick Links">
+                                      <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                                      </svg>
+                                  </button>
                                   <div class="flex items-center cursor-pointer" onclick="setView('home')">
                                       <div class="bg-gradient-to-br from-blue-600 to-purple-600 p-1.5 rounded-lg mr-2">
                                           <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1743,7 +2074,7 @@ Include all source files needed for a functional result, sensible error handling
                                               <path d="M6 18h4v-4H6Z M14 18h4v-4h-4Z M6 10h4V6H6Z M14 10h4V6h-4Z"/>
                                           </svg>
                                       </div>
-                                      <span class="font-bold text-xl">The <span class="gradient-text">IAH CREATIONS</span></span>
+                                      <span class="text-base font-bold sm:text-xl">The <span class="gradient-text">IAH CREATIONS</span></span>
                                   </div>
                               </div>
 
@@ -1757,15 +2088,16 @@ Include all source files needed for a functional result, sensible error handling
                               </div>
 
                               <div class="flex items-center gap-3">
-                                  <span class="text-xs bg-gray-800 px-2 py-1 rounded border border-gray-700">v${APP_VERSION}</span>
+                                  <button onclick="${state.userProfile ? "signOutUser()" : "openAuthModal()"}"
+                                    class="rounded-lg border border-gray-700 px-2 py-2 text-xs text-gray-200 transition-colors hover:border-blue-500 sm:px-3 sm:text-sm"
+                                    aria-label="${state.userProfile ? "Sign out" : "Sign in"}">
+                                    <span class="sm:hidden">${state.userProfile ? "Out" : "In"}</span>
+                                    <span class="hidden sm:inline">${state.userProfile ? "Sign out" : "Sign in"}</span>
+                                  </button>
+                                  <span class="hidden text-xs bg-gray-800 px-2 py-1 rounded border border-gray-700 sm:inline">v${APP_VERSION}</span>
                                   <button onclick="toggleCart()" class="relative p-2 rounded-lg hover:bg-gray-800 transition-colors" aria-label="Shopping Cart">
                                       <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                                       ${state.cart.length > 0 ? `<span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">${state.cart.length}</span>` : ''}
-                                  </button>
-                                  <button onclick="toggleMenu()" class="p-2 rounded-lg hover:bg-gray-800 transition-colors border border-gray-800 hover:border-gray-700" aria-label="Open navigation menu" title="Menu & Quick Links">
-                                      <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                                      </svg>
                                   </button>
                               </div>
                           </div>
@@ -1779,7 +2111,7 @@ Include all source files needed for a functional result, sensible error handling
                           <div class="max-w-7xl mx-auto px-4 pt-20 pb-24 text-center">
                               <div class="inline-block mb-4 px-3 py-1 rounded-full bg-gray-800 border border-gray-700 text-xs">
                                   <span class="w-2 h-2 bg-green-400 rounded-full inline-block animate-pulse mr-2"></span>
-                                  Commercial Build v${APP_VERSION} - Production Ready
+                                  Platform v${APP_VERSION} · Configure Firebase and Cloud Run for production
                               </div>
                               <h1 class="text-4xl md:text-6xl font-extrabold text-white mb-6 professional-text">
                                   <span class="block">Enterprise-Grade AI Platform</span>
@@ -2034,16 +2366,11 @@ Include all source files needed for a functional result, sensible error handling
     // PROMPT-TO-APP BUILDER
     // ============================================
     function renderBuilder() {
-      const projectTypes = [
-        { id: "mobile", icon: "📱", label: "Mobile App" },
-        { id: "web", icon: "💻", label: "Web App" },
-        { id: "website", icon: "🌐", label: "Website" },
-        { id: "game", icon: "🎮", label: "Web Game" },
-      ];
-      const supportedLanguages = [
-        "JavaScript", "TypeScript", "Python", "Dart", "Kotlin", "Swift",
-        "Java", "C#", "Go", "PHP", "Ruby",
-      ];
+      const selectedProject = BUILDER_PROJECT_TYPES[state.selectedProjectType] || BUILDER_PROJECT_TYPES.website;
+      const supportedLanguages = selectedProject.languages;
+      if (!supportedLanguages.some((language) => language.value === state.selectedLanguage)) {
+        state.selectedLanguage = selectedProject.defaultLanguage;
+      }
       const includedModules = BUILDER_MODULES
         .filter((module) => module.tiers.includes(state.userTier))
         .slice(0, FreemiumModel.tiers[state.userTier].moduleLimit);
@@ -2063,24 +2390,21 @@ Include all source files needed for a functional result, sensible error handling
           </div>
 
           <div class="holographic-card p-6 md:p-8 rounded-xl">
-            <div class="mb-6 p-4 rounded-lg border border-amber-700/50 bg-amber-950/30">
-              <label for="gemini-api-key" class="block text-sm font-bold text-gray-200 mb-2">Your Gemini API key</label>
-              <div class="flex flex-col sm:flex-row gap-2">
-                <input id="gemini-api-key" type="password" autocomplete="off" value="${escapeHTML(AIHub.apiKey)}"
-                  placeholder="Paste your Gemini API key" class="flex-1 min-w-0 bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500" />
-                <button type="button" onclick="saveGeminiApiKey()" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold">Save on this device</button>
-              </div>
-              <p class="text-xs text-gray-400 mt-2">The key is stored in this browser and sent directly to Google Gemini. For a public production service, use a secured server-side API proxy instead.</p>
+            <div class="mb-6 rounded-lg border border-blue-800/60 bg-blue-950/30 p-4" role="status">
+              <p class="text-sm font-bold text-gray-200">Secure AI generation</p>
+              <p class="mt-1 text-xs text-gray-400">Requests run through the authenticated server-side AI service. Provider credentials are never stored in this browser.</p>
+              ${window.IAH_CONFIG?.agentApiUrl ? "" : `<p class="mt-2 text-xs text-amber-300">The AI service URL still needs to be configured in config.js before generation is available.</p>`}
+              ${state.userProfile?.emailVerified ? "" : `<button type="button" onclick="openAuthModal()" class="mt-2 text-sm text-blue-300 underline">Sign in or create an account to continue</button>`}
             </div>
 
             <form onsubmit="handlePromptSubmit(event)" class="space-y-6">
               <div>
                 <label class="block text-sm font-bold text-gray-300 mb-2">Project type</label>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  ${projectTypes.map((project) => `
-                    <button type="button" onclick="selectProjectType('${project.id}')"
-                      aria-pressed="${state.selectedProjectType === project.id}"
-                      class="p-4 rounded-lg border-2 ${state.selectedProjectType === project.id ? "border-blue-500 bg-blue-900/30" : "border-gray-700 bg-gray-800 hover:border-gray-600"}">
+                  ${Object.entries(BUILDER_PROJECT_TYPES).map(([id, project]) => `
+                    <button type="button" onclick="selectProjectType('${id}')"
+                      aria-pressed="${state.selectedProjectType === id}"
+                      class="p-4 rounded-lg border-2 ${state.selectedProjectType === id ? "border-blue-500 bg-blue-900/30" : "border-gray-700 bg-gray-800 hover:border-gray-600"}">
                       <div class="text-3xl mb-2">${project.icon}</div>
                       <div class="text-sm font-bold text-white">${project.label}</div>
                     </button>
@@ -2101,7 +2425,7 @@ Include all source files needed for a functional result, sensible error handling
                 <label for="project-language" class="block text-sm font-bold text-gray-300 mb-2">Programming language</label>
                 <select id="project-language" onchange="selectProjectLanguage(this.value)"
                   class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500">
-                  ${supportedLanguages.map((language) => `<option value="${language}" ${state.selectedLanguage === language ? "selected" : ""}>${language}</option>`).join("")}
+                  ${supportedLanguages.map((language) => `<option value="${escapeHTML(language.value)}" ${state.selectedLanguage === language.value ? "selected" : ""}>${escapeHTML(language.label)}</option>`).join("")}
                 </select>
               </div>
 
@@ -2256,23 +2580,24 @@ Include all source files needed for a functional result, sensible error handling
       const message = form.querySelector("textarea").value;
 
       try {
-        if (db && isFirebaseReady) {
-          await addDoc(
-            collection(db, getCollectionPath("contact_requests")),
-            {
-              name,
-              email,
-              message,
-              timestamp: serverTimestamp(),
-              status: "new",
-            }
-          );
+        if (!db || !isFirebaseReady) {
+          throw new Error("Contact storage is unavailable. Please email theiahcreations@gmail.com instead.");
         }
+        await addDoc(
+          collection(db, getCollectionPath("contact_requests")),
+          {
+            name,
+            email,
+            message,
+            timestamp: serverTimestamp(),
+            status: "new",
+          }
+        );
         showToast("✅ Message sent successfully!");
         form.reset();
       } catch (error) {
         console.error("Error:", error);
-        showToast("❌ Error sending message", "error");
+        showToast(error.message || "Contact message could not be saved.", "error");
       }
     };
 
@@ -2301,8 +2626,8 @@ Include all source files needed for a functional result, sensible error handling
                   ? "bg-blue-600 text-white rounded-tr-none"
                   : "bg-gray-700 text-gray-200 rounded-tl-none"
                 }">
-                                                  <div class="whitespace-pre-wrap">${escapeHTML(msg.text)
-                }</div>
+                                                  <div class="whitespace-pre-wrap">${escapeHTML(msg.text)}</div>
+                                                  ${msg.files?.length ? `<ul class="mt-2 space-y-1 text-xs">${msg.files.map((file) => `<li>📎 ${escapeHTML(file.name)}</li>`).join("")}</ul>` : ""}
                                                   ${msg.role === "bot"
                   ? `
                                                       <button onclick="speakMessageAt(${messageIndex})" class="text-xs text-blue-400 hover:text-blue-300 mt-2">
@@ -2311,6 +2636,7 @@ Include all source files needed for a functional result, sensible error handling
                                                   `
                   : ""
                 }
+
                                               </div>
                                           </div>
                                       `
@@ -2318,6 +2644,10 @@ Include all source files needed for a functional result, sensible error handling
             .join("")}
                                   </div>
                                   <form onsubmit="handleChatSubmit(event)" class="p-4 bg-gray-900 border-t border-gray-700">
+                                      ${state.chatFiles.length ? `<ul class="mb-2 space-y-1 text-xs text-gray-300">${state.chatFiles.map((file, index) => `<li class="flex items-center justify-between gap-2"><span class="truncate">📎 ${escapeHTML(file.name)}</span><button type="button" onclick="removeChatFile(${index})" class="text-red-300">Remove</button></li>`).join("")}</ul>` : ""}
+                                      ${state.chatUploading ? `<p class="mb-2 text-center text-xs text-blue-300" role="status">Uploading to your private storage…</p>` : ""}
+                                      <p class="mb-2 text-xs text-gray-500">PDF, DOCX, TXT, Markdown, CSV · max 10 MB per file</p>
+                                      <input id="chat-upload" type="file" class="hidden" multiple accept=".pdf,.docx,.txt,.md,.csv,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,text/markdown,text/csv" onchange="handleChatFiles(event)" />
                                       ${state.isVoiceRecording
             ? `
                                           <div class="text-center py-2 mb-2 bg-red-900/30 border border-red-500 rounded text-red-400 text-sm">
@@ -2329,14 +2659,15 @@ Include all source files needed for a functional result, sensible error handling
             : ""
           }
                                       <div class="flex gap-2">
-                                          <input type="text" id="chat-input" placeholder="Ask anything..." class="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500">
+                                          <button type="button" onclick="document.getElementById('chat-upload').click()" ${state.chatUploading ? "disabled" : ""} class="p-2 rounded-lg bg-gray-700 text-white disabled:opacity-50" aria-label="Attach files">📎</button>
+                                          <input type="text" id="chat-input" maxlength="4000" placeholder="Ask anything..." class="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500">
                                           <button type="button" onclick="startVoiceInput()" class="p-2 rounded-lg ${state.isVoiceRecording
             ? "bg-red-600 hover:bg-red-500"
             : "bg-gray-700 hover:bg-gray-600"
           } text-white transition-colors">
                                               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
                                           </button>
-                                          <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white p-2 rounded-lg transition-colors">
+                                          <button type="submit" ${state.chatUploading ? "disabled" : ""} class="bg-blue-600 hover:bg-blue-500 text-white p-2 rounded-lg transition-colors disabled:opacity-50">
                                               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
                                           </button>
                                       </div>
@@ -2359,30 +2690,61 @@ Include all source files needed for a functional result, sensible error handling
                   `;
     }
 
+    function renderAuthModal() {
+      if (!state.authModalOpen) return "";
+      const isSignUp = state.authMode === "signup";
+      return `
+        <div class="fixed inset-0 z-[1100] flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm" onclick="closeAuthModal()">
+          <section class="w-full max-w-md rounded-2xl border border-gray-700 bg-gray-900 p-6 shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title" onclick="event.stopPropagation()">
+            <div class="mb-5 flex items-center justify-between">
+              <div>
+                <h2 id="auth-modal-title" class="text-2xl font-bold text-white">${isSignUp ? "Create your account" : "Sign in"}</h2>
+                <p class="mt-1 text-sm text-gray-400">Use a verified email to securely store your chats and files.</p>
+              </div>
+              <button type="button" onclick="closeAuthModal()" class="rounded-lg p-2 text-gray-400 hover:bg-gray-800 hover:text-white" aria-label="Close sign-in dialog">✕</button>
+            </div>
+            <form onsubmit="handleAuthSubmit(event)" class="space-y-4">
+              <label class="block text-sm font-medium text-gray-300" for="auth-email">Email address</label>
+              <input id="auth-email" type="email" required autocomplete="email" class="w-full rounded-lg border border-gray-700 bg-gray-800 px-4 py-3 text-white focus:border-blue-500 focus:outline-none" />
+              <label class="block text-sm font-medium text-gray-300" for="auth-password">Password</label>
+              <input id="auth-password" type="password" required minlength="8" autocomplete="${isSignUp ? "new-password" : "current-password"}" class="w-full rounded-lg border border-gray-700 bg-gray-800 px-4 py-3 text-white focus:border-blue-500 focus:outline-none" />
+              ${state.authError ? `<p class="rounded-lg border border-red-800 bg-red-950/50 p-3 text-sm text-red-200" role="alert">${escapeHTML(state.authError)}</p>` : ""}
+              <button type="submit" class="w-full rounded-lg bg-blue-600 px-4 py-3 font-bold text-white hover:bg-blue-500">${isSignUp ? "Create account" : "Sign in securely"}</button>
+            </form>
+            <div class="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm">
+              <button type="button" onclick="toggleAuthMode()" class="text-blue-300 underline">${isSignUp ? "Already have an account? Sign in" : "New here? Create an account"}</button>
+              ${!isSignUp ? `<button type="button" onclick="sendPasswordReset()" class="text-gray-400 underline hover:text-white">Reset password</button>` : ""}
+            </div>
+          </section>
+        </div>
+      `;
+    }
+
     // ============================================
     // INTERACTIVE HANDLERS
     // ============================================
     window.selectProjectType = function (type) {
+      const project = BUILDER_PROJECT_TYPES[type];
+      if (!project) {
+        showToast("Choose a supported project type.", "error");
+        return;
+      }
       state.promptText = document.getElementById("app-description")?.value || state.promptText;
       state.selectedProjectType = type;
+      if (!project.languages.some((language) => language.value === state.selectedLanguage)) {
+        state.selectedLanguage = project.defaultLanguage;
+      }
       render();
     };
 
     window.selectProjectLanguage = function (language) {
-      state.selectedLanguage = language;
-    };
-
-    window.saveGeminiApiKey = function () {
-      const input = document.getElementById("gemini-api-key");
-      const key = input?.value.trim();
-      if (!key) {
-        AIHub.apiKey = "";
-        localStorage.removeItem("gemini_api_key");
-        showToast("Gemini API key removed from this device.");
+      const project = BUILDER_PROJECT_TYPES[state.selectedProjectType] || BUILDER_PROJECT_TYPES.website;
+      if (!project.languages.some((option) => option.value === language)) {
+        showToast("Choose a language supported by this project type.", "error");
+        render();
         return;
       }
-      AIHub.setApiKey(key);
-      showToast("Gemini API key saved on this device.");
+      state.selectedLanguage = language;
     };
 
     window.downloadGeneratedFile = function (index) {
@@ -2441,6 +2803,10 @@ Include all source files needed for a functional result, sensible error handling
 
     window.handlePromptSubmit = async function (e) {
       e.preventDefault();
+      if (!state.userProfile?.emailVerified) {
+        window.openAuthModal();
+        return;
+      }
       const description = document.getElementById("app-description").value.trim();
       const type = state.selectedProjectType || "website";
       const language = document.getElementById("project-language").value;
@@ -2767,7 +3133,7 @@ Include all source files needed for a functional result, sensible error handling
     }
 
     // ============================================
-    // HAMBURGER MENU (RIGHT-HAND SIDE DRAWER)
+    // HAMBURGER MENU (LEFT-HAND SIDE DRAWER)
     // ============================================
     function renderHamburgerMenu() {
       return `
@@ -3321,6 +3687,7 @@ Include all source files needed for a functional result, sensible error handling
       content += renderPaymentModal();
       content += renderCartModal();
       content += renderHamburgerMenu();
+      content += renderAuthModal();
 
       document.getElementById("root").innerHTML = content;
     }
@@ -3334,12 +3701,12 @@ Include all source files needed for a functional result, sensible error handling
     );
     console.log("%c✅ All systems operational", "color: green");
     console.log(
-      `%c🤖 Gemini AI: ${AIHub.apiKey ? "Configured" : "Not configured"}`,
-      AIHub.apiKey ? "color: green" : "color: orange"
+      `%c🤖 AI service: ${window.IAH_CONFIG?.agentApiUrl ? "Configured" : "Not configured"}`,
+      window.IAH_CONFIG?.agentApiUrl ? "color: green" : "color: orange"
     );
     console.log(
-      `%c🔒 Firebase: ${isFirebaseReady ? "Connected" : "Demo mode"}`,
-      isFirebaseReady ? "color: green" : "color: orange"
+      `%c🔒 Firebase: ${firebaseConfig.apiKey === "demo-api-key" ? "Not configured" : "Connecting"}`,
+      firebaseConfig.apiKey === "demo-api-key" ? "color: orange" : "color: blue"
     );
 
     // Initialize auto-update feature (silent)
