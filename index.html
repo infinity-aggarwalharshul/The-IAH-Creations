@@ -158,6 +158,95 @@
       font-family: var(--font-sans);
     }
 
+    .gradient-text {
+      color: transparent;
+      background: linear-gradient(100deg, #60a5fa 0%, #a78bfa 48%, #22d3ee 100%);
+      background-size: 200% 100%;
+      background-clip: text;
+      -webkit-background-clip: text;
+      animation: gradient-shift 9s ease-in-out infinite alternate;
+    }
+
+    .btn-primary {
+      background: linear-gradient(115deg, #2563eb, #7c3aed 55%, #0891b2);
+      background-size: 180% 100%;
+      box-shadow: 0 10px 30px rgba(37, 99, 235, 0.22);
+      transition: background-position 350ms ease, box-shadow 250ms ease, transform 250ms ease;
+    }
+
+    .btn-primary:hover {
+      background-position: 100% 0;
+      box-shadow: 0 14px 36px rgba(59, 130, 246, 0.35);
+      transform: translateY(-2px);
+    }
+
+    .holographic-card {
+      background: linear-gradient(145deg, rgba(31, 41, 55, 0.82), rgba(17, 24, 39, 0.94));
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.16);
+      transition: transform 280ms ease, border-color 280ms ease, box-shadow 280ms ease;
+    }
+
+    @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+      .holographic-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(96, 165, 250, 0.48);
+        box-shadow: 0 20px 46px rgba(2, 6, 23, 0.36), 0 0 26px rgba(59, 130, 246, 0.1);
+      }
+    }
+
+    .hero-section {
+      isolation: isolate;
+    }
+
+    .hero-section::before {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background-image: linear-gradient(rgba(148, 163, 184, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.035) 1px, transparent 1px);
+      background-size: 48px 48px;
+      content: "";
+      mask-image: linear-gradient(to bottom, black, transparent 90%);
+      pointer-events: none;
+    }
+
+    .hero-orb {
+      position: absolute;
+      z-index: -1;
+      width: min(42vw, 34rem);
+      aspect-ratio: 1;
+      border-radius: 9999px;
+      filter: blur(72px);
+      opacity: 0.22;
+      pointer-events: none;
+      will-change: transform;
+      animation: orb-drift 14s ease-in-out infinite alternate;
+    }
+
+    .hero-orb--blue {
+      top: -38%;
+      left: -12%;
+      background: #2563eb;
+    }
+
+    .hero-orb--purple {
+      right: -14%;
+      bottom: -48%;
+      background: #7c3aed;
+      animation-delay: -7s;
+    }
+
+    @keyframes gradient-shift {
+      from { background-position: 0% 50%; }
+      to { background-position: 100% 50%; }
+    }
+
+    @keyframes orb-drift {
+      from { transform: translate3d(-2%, -2%, 0) scale(0.96); }
+      to { transform: translate3d(4%, 5%, 0) scale(1.06); }
+    }
+
     .social-footer-link svg {
       width: 1.25rem;
       height: 1.25rem;
@@ -203,6 +292,17 @@
     /* Smooth scrolling */
     html {
       scroll-behavior: smooth;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
     }
 
     /* Selection */
@@ -2107,8 +2207,10 @@ Include all source files needed for a functional result, sensible error handling
 
     function renderHero() {
       return `
-                      <div class="relative bg-gradient-to-br from-gray-900 via-blue-900/20 to-purple-900/20 overflow-hidden">
-                          <div class="max-w-7xl mx-auto px-4 pt-20 pb-24 text-center">
+                      <section class="hero-section relative bg-gradient-to-br from-gray-900 via-blue-900/20 to-purple-900/20 overflow-hidden">
+                          <div class="hero-orb hero-orb--blue" aria-hidden="true"></div>
+                          <div class="hero-orb hero-orb--purple" aria-hidden="true"></div>
+                          <div class="relative z-10 max-w-7xl mx-auto px-4 pt-20 pb-24 text-center">
                               <div class="inline-block mb-4 px-3 py-1 rounded-full bg-gray-800 border border-gray-700 text-xs">
                                   <span class="w-2 h-2 bg-green-400 rounded-full inline-block animate-pulse mr-2"></span>
                                   Platform v${APP_VERSION} · Configure Firebase and Cloud Run for production
@@ -2131,7 +2233,7 @@ Include all source files needed for a functional result, sensible error handling
                                   </button>
                               </div>
                           </div>
-                      </div>
+                      </section>
                   `;
     }
 
