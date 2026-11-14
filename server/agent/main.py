@@ -33,8 +33,10 @@ DAILY_GENERATION_LIMITS = {"free": 3, "pro": 50, "enterprise": -1}
 ALLOWED_GENERATION_MODELS = {
     "gemini-4-carbon",
     "gemini-4-argon",
+    "gemini-4-hydrogen",
     "gemini-3.8-flash",
     "gemini-3.6-flash",
+    "gemini-3.5-flash-lite",
 }
 ALLOWED_FILE_SUFFIXES = {".pdf", ".docx", ".txt", ".md", ".csv"}
 BEARER = HTTPBearer(auto_error=False)
@@ -55,7 +57,7 @@ class GenerateRequest(BaseModel):
     prompt: str = Field(min_length=1, max_length=30_000)
     context: str = Field(default="", max_length=10_000)
     history: list[ChatTurn] = Field(default_factory=list, max_length=20)
-    model: str = Field(default="gemini-3.8-flash", max_length=80)
+    model: str = Field(default="gemini-4-carbon", max_length=80)
     max_output_tokens: int = Field(default=8_192, ge=256, le=32_768)
     response_mime_type: Literal["application/json"] | None = None
     response_schema: dict | None = None
@@ -162,7 +164,7 @@ def get_model(model_name: str | None = None, **model_options) -> ChatGoogleGener
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         raise HTTPException(status_code=503, detail="The AI provider is not configured.")
-    selected_model = model_name or os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
+    selected_model = model_name or os.getenv("GEMINI_MODEL", "gemini-4-carbon")
     if selected_model not in ALLOWED_GENERATION_MODELS:
         raise HTTPException(status_code=400, detail="The selected AI model is not supported.")
     return ChatGoogleGenerativeAI(

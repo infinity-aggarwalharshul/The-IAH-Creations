@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <defs>
+    <linearGradient id="iah-gradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2563eb"/>
+      <stop offset=".55" stop-color="#4f46e5"/>
+      <stop offset="1" stop-color="#9333ea"/>
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="44" fill="#111827"/>
+  <rect x="10" y="10" width="172" height="172" rx="38" fill="url(#iah-gradient)"/>
+  <path d="M47 135V57h17v78m17 0 27-78 27 78m-44-28h35m12-28h28v56m-28-34h28"
+    fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="9"/>
+  <path d="m148 34 7 11 12 7-12 7-7 12-7-12-12-7 12-7z" fill="#a5f3fc"/>
+</svg>

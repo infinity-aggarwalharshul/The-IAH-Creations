@@ -4,7 +4,14 @@ from unittest.mock import patch
 from fastapi.testclient import TestClient
 from langchain_core.messages import AIMessage
 
-from main import AgentIntent, app, extract_document_text, require_verified_user, validate_file_paths
+from main import (
+    ALLOWED_GENERATION_MODELS,
+    AgentIntent,
+    app,
+    extract_document_text,
+    require_verified_user,
+    validate_file_paths,
+)
 
 
 class ValidateFilePathsTests(unittest.TestCase):
@@ -110,6 +117,16 @@ class AgentApiTests(unittest.TestCase):
             )
         self.assertEqual(response.status_code, 200)
         self.assertIn('"index.html"', response.json()["text"])
+
+    def test_builder_accepts_supported_current_models_and_rejects_unlisted_models(self):
+        self.assertIn("gemini-4-hydrogen", ALLOWED_GENERATION_MODELS)
+        app.dependency_overrides[require_verified_user] = lambda: {"uid": "user-123"}
+        response = self.client.post(
+            "/generate",
+            headers={"Authorization": "Bearer test-token"},
+            json={"prompt": "Create a starter", "model": "unlisted-model"},
+        )
+        self.assertEqual(response.status_code, 400)
 
 
 if __name__ == "__main__":
