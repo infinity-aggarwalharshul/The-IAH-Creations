@@ -1,10 +1,9 @@
-const CACHE_NAME = "iah-site-v5.6.2";
+const CACHE_NAME = "iah-site-v5.6.3";
 const APP_ASSETS = [
   "./",
   "./index.html",
   "./config.js",
   "./favicon.ico",
-  "./icon-192.png",
   "./manifest.webmanifest",
   "./assets/iah-mark.svg",
   "./assets/ai_city_network.png",

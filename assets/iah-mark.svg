@@ -1,14 +1,25 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" role="img" aria-labelledby="title description">
+  <title id="title">The IAH Creations</title>
+  <desc id="description">A Sanskrit letter अ on a stylized palm-leaf manuscript.</desc>
   <defs>
-    <linearGradient id="iah-gradient" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#2563eb"/>
-      <stop offset=".55" stop-color="#4f46e5"/>
-      <stop offset="1" stop-color="#9333ea"/>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#172554"/>
+      <stop offset="1" stop-color="#312e81"/>
+    </linearGradient>
+    <linearGradient id="leaf" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fef3c7"/>
+      <stop offset="1" stop-color="#f5d58b"/>
     </linearGradient>
   </defs>
   <rect width="192" height="192" rx="44" fill="#111827"/>
-  <rect x="10" y="10" width="172" height="172" rx="38" fill="url(#iah-gradient)"/>
-  <path d="M47 135V57h17v78m17 0 27-78 27 78m-44-28h35m12-28h28v56m-28-34h28"
-    fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="9"/>
-  <path d="m148 34 7 11 12 7-12 7-7 12-7-12-12-7 12-7z" fill="#a5f3fc"/>
+  <rect x="9" y="9" width="174" height="174" rx="38" fill="url(#background)" stroke="#f59e0b" stroke-opacity=".65" stroke-width="2"/>
+  <path d="M37 67c26-12 92-12 118 0v59c-26-12-92-12-118 0z" fill="#c68b38" opacity=".8"/>
+  <path d="M37 58c26-12 92-12 118 0v59c-26-12-92-12-118 0z" fill="url(#leaf)" stroke="#fde68a" stroke-width="2"/>
+  <path d="M45 67c23-8 79-8 102 0M45 107c23-8 79-8 102 0" fill="none" stroke="#b77925" stroke-opacity=".38" stroke-width="2"/>
+  <circle cx="48" cy="88" r="3" fill="#9a6425"/>
+  <circle cx="144" cy="88" r="3" fill="#9a6425"/>
+  <text x="96" y="103" fill="#312e81" font-family="'Noto Serif Devanagari', 'Noto Sans Devanagari', serif" font-size="57" font-weight="600" text-anchor="middle">अ</text>
+  <path d="M57 139h78" fill="none" stroke="#fbbf24" stroke-linecap="round" stroke-width="3"/>
+  <circle cx="48" cy="139" r="3" fill="#fbbf24"/>
+  <circle cx="144" cy="139" r="3" fill="#fbbf24"/>
 </svg>

@@ -18,6 +18,8 @@ and test them before production use.
 - A project builder with type-specific categories for mobile apps, web apps,
   websites, and browser games. Generation uses the selected category and
   programming language.
+- A custom Sanskrit-script-inspired identity mark showing the Devanagari
+  letter अ on a stylized palm-leaf manuscript.
 - Private builder references for supported documents, images, audio, and
   video. Documents are extracted as text; supported media is sent as inline
   Gemini input. Files are limited to 10 MB each, five files, and 25 MB total.
@@ -30,7 +32,8 @@ and test them before production use.
 - Firebase Storage and Firestore security rules in `storage.rules` and
   `firestore.rules`.
 - A service worker that caches the public app shell and static assets and
-  checks for updates. New site code must first be built and deployed; this does
+  checks for updates on visits, when the page becomes visible, and every six
+  hours while open. New site code must first be built and deployed; this does
   not update the backend, dependencies, Firebase services, or model catalog.
 
 ## AI model support
