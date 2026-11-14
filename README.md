@@ -15,9 +15,15 @@ and test them before production use.
 - A chat workflow using LangGraph, a Gemini text-generation model, intent
   routing, and bounded text extraction from PDF, DOCX, TXT, Markdown, and CSV
   attachments.
-- Optional browser speech recognition and speech playback. The hands-free
-  Voice Bridge is turn-based; it is not Gemini Live or a real-time audio
-  streaming integration.
+- A project builder with type-specific categories for mobile apps, web apps,
+  websites, and browser games. Generation uses the selected category and
+  programming language.
+- Private builder references for supported documents, images, audio, and
+  video. Documents are extracted as text; supported media is sent as inline
+  Gemini input. Files are limited to 10 MB each, five files, and 25 MB total.
+- Browser speech dictation for the project description and optional browser
+  speech recognition/playback in chat. The hands-free Voice Bridge is
+  turn-based; it is not Gemini Live or real-time audio streaming.
 - Firebase Authentication, Firestore chat/contact records, and private
   Firebase Storage chat attachments when configured. Users can view, download,
   and delete their uploaded files in the chat.
@@ -29,19 +35,21 @@ and test them before production use.
 
 ## AI model support
 
-The browser selector and server allowlist include these Google text-generation
+The browser selector and server allowlist include these Google Gemini
 models, subject to API access and provider availability:
 
 - Gemini 4 Carbon, Gemini 4 Argon, Gemini 4 Hydrogen
-- Gemini 3.8 Flash, Gemini 3.6 Flash, Gemini 3.5 Flash-Lite
+- Gemini 3.8 Flash, Gemini 3.6 Flash, Gemini 3.5 Flash-Lite, Gemini 3.1 Flash-Lite
 
-The allowlist is intentionally limited to models tested through the current
-`ChatGoogleGenerativeAI` text-generation path. Live audio, speech, embedding,
-image, video, and other model APIs are not wired into that path. NLP intent
+Chat uses the `ChatGoogleGenerativeAI` path. All Builder generations use
+Gemini's Interactions API, including text-only prompts and multimodal requests;
+prompts are sent with `store: false`, and supported images, audio, video, and
+document-derived text are passed as typed input parts. This does not add Gemini
+Live streaming, speech synthesis, embeddings, or offline inference. NLP intent
 routing is performed by the chat agent; this project does not ship a separate
-trained NLP model. Model catalogs change: verify the official [Google Gemini
-model documentation](https://ai.google.dev/gemini-api/docs/models) and update
-both `index.html` and `server/agent/main.py` before enabling a new model.
+trained NLP model. Model catalogs change: verify the official [Google Gemini model
+documentation](https://ai.google.dev/gemini-api/docs/models) and update both
+`index.html` and `server/agent/main.py` before enabling a new model.
 
 ## Firebase file storage
 
@@ -58,9 +66,11 @@ firebase deploy --only firestore:rules,storage --project the-iah-creationgit-174
 ```
 
 Uploaded objects are stored beneath
-`users/{uid}/chat_uploads/`. The rules restrict access to the verified owner.
-The AI service also needs `FIREBASE_STORAGE_BUCKET` and a least-privileged
-service account with access to read those objects.
+`users/{uid}/chat_uploads/`. The rules restrict access to the verified owner
+and allow the file types used by chat and builder references. The AI service
+also needs `FIREBASE_STORAGE_BUCKET` and a least-privileged service account
+with access to read those objects. Builder references are sent to the
+configured Gemini API when the user submits a generation request.
 
 Firebase web configuration is public client configuration, not a server
 secret. Keep the Gemini API key and service-account credentials on the server,
@@ -88,10 +98,12 @@ push to `main` automatically publishes the repository root. The service
 worker checks the deployed site for changes on page visits and periodically
 while open; it asks before reloading if it detects unsaved work.
 
-Cloudflare Pages is not configured in this repository. To host there, connect
-the repository in the Cloudflare dashboard, set the build command to
-`sh scripts/build-pages.sh`, and set the output directory to `dist`. A Git
-push will deploy to Cloudflare only after that integration is configured.
+Cloudflare Pages account credentials and project name are not stored in this
+repository. The workflow at `.github/workflows/cloudflare-pages.yml` builds
+`dist/` and deploys on pushes to `main` after the Cloudflare repository
+configuration is added. Configure the `CLOUDFLARE_PAGES_PROJECT` repository
+variable and the `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` repository
+secrets first. GitHub Pages continues to publish the repository root.
 
 ## Legal and licensing
 

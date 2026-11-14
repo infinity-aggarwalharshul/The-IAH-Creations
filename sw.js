@@ -1,4 +1,4 @@
-const CACHE_NAME = "iah-site-v5.6.1";
+const CACHE_NAME = "iah-site-v5.6.2";
 const APP_ASSETS = [
   "./",
   "./index.html",

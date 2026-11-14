@@ -28,9 +28,12 @@ Review and deploy the rules before accepting user data:
 firebase deploy --only firestore:rules,storage --project the-iah-creationgit-1741-47b3f
 ```
 
-Chat files are stored under `users/{uid}/chat_uploads/`. A verified user can
-list, download, and delete files in that folder from the chat's **Manage my
-private files** control. Keep Storage rules scoped to the authenticated UID.
+Chat files and builder references are stored under `users/{uid}/chat_uploads/`.
+A verified user can list, download, and delete files in that folder from the
+chat's **Manage my private files** control. Builder references accept supported
+documents, images, audio, and video up to 10 MB per file, five files, and 25 MB
+total. Keep Storage rules scoped to the authenticated UID. Builder files are
+sent to Gemini for processing only when the user submits a generation request.
 
 Firebase Web config is public client configuration. Do not put Gemini API keys,
 service-account keys, or other server credentials in `config.js` or the
@@ -45,11 +48,19 @@ enforce Firestore rate limits, and read the private Storage objects used for
 chat attachments. Set `GEMINI_API_KEY`, `FIREBASE_STORAGE_BUCKET`, and the
 exact `AI_AGENT_ALLOWED_ORIGINS` server-side.
 
+For browser clients, include the exact Cloudflare Pages origin (or its
+configured custom domain) in `AI_AGENT_ALLOWED_ORIGINS`; the default origins
+do not include an unconfigured `*.pages.dev` hostname.
+
 The frontend reads the service URL from `window.IAH_CONFIG.agentApiUrl` in
 `config.js`. The UI's model choices and the server allowlist in
-`server/agent/main.py` must agree. The current allowlist covers text
-generation only; Gemini Live, speech generation, embeddings, image, and video
-APIs need separate integrations and are not enabled by these settings.
+`server/agent/main.py` must agree. Chat uses the LangChain integration. All
+Builder generations use Gemini's Interactions API, with `store: false` to avoid
+server-side storage of prompts. Supported image, audio, and video inputs are
+sent as typed media parts; PDF, DOCX, TXT, Markdown, and CSV references are
+extracted and included as text. Browser dictation uses the Web Speech API when
+available. Gemini Live streaming, speech synthesis, embeddings, and offline
+inference are not enabled.
 
 Run focused API tests after installing `server/agent/requirements.txt`:
 
@@ -70,17 +81,21 @@ Check the deployment status in repository **Settings → Pages**:
 
 ### Cloudflare Pages (requires account setup)
 
-Cloudflare Pages is not currently configured for this repository. In the
-Cloudflare dashboard, create or connect a Pages project to this GitHub
-repository and choose:
+The GitHub Actions workflow `.github/workflows/cloudflare-pages.yml` builds
+`dist/` and deploys it on changes pushed to `main`. It skips deployment until
+the Cloudflare Pages project is configured. Add these values in repository
+settings (**Settings → Secrets and variables → Actions**):
 
-- Production branch: `main`
-- Build command: `sh scripts/build-pages.sh`
-- Build output directory: `dist`
+- Repository variable `CLOUDFLARE_PAGES_PROJECT`: the exact existing Pages
+  project name.
+- Repository secret `CLOUDFLARE_ACCOUNT_ID`.
+- Repository secret `CLOUDFLARE_API_TOKEN`, scoped to deploy to that Pages
+  project.
 
-After connecting it, pushes to `main` can trigger Cloudflare deployments. For
-a manual deployment, first authenticate Wrangler to the correct Cloudflare
-account, then run:
+Do not use a Cloudflare token in source files or commit it to Git. The workflow
+does not create a Cloudflare project and cannot deploy until those values are
+provided. For a manual deployment, first authenticate Wrangler to the correct
+Cloudflare account, then run:
 
 ```sh
 npx wrangler pages deploy dist --project-name=YOUR_PAGES_PROJECT
@@ -107,7 +122,9 @@ those changes separately.
 - Confirm Firebase Authentication, Firestore, Storage, and security rules in
   the target Firebase project.
 - Verify uploads, private file listing/download/deletion, and server-side file
-  extraction using a test account.
+  extraction using a test account. Also verify builder uploads with each
+  supported media type and confirm the Firebase Storage rules have been
+  deployed.
 - Confirm AI requests use the configured server endpoint and that its API key
   is stored in a server-side secret manager.
 - Run the Python tests and review generated project files before deployment.

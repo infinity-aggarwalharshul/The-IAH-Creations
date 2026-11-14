@@ -1,0 +1,38 @@
+name: Deploy static site to Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "index.html"
+      - "config.js"
+      - "manifest.json"
+      - "manifest.webmanifest"
+      - "sw.js"
+      - "_redirects"
+      - "assets/**"
+      - "scripts/build-pages.sh"
+      - ".github/workflows/cloudflare-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: ${{ vars.CLOUDFLARE_PAGES_PROJECT != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Build static site
+        run: sh scripts/build-pages.sh
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT }} --branch=${{ github.ref_name }}
